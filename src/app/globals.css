@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens (Figma: Red Dragonzone V1 / Home page)
+   ------------------------------------------------------------------ */
+@theme inline {
+  /* Brand */
+  --color-crimson: #e01a22; /* buttons, hello bar */
+  --color-dragon: #e60012; /* accent text, links, arrows */
+
+  /* Neutrals */
+  --color-ink: #1a1a1a;
+  --color-charcoal: #222222; /* main navigation */
+  --color-graphite: #393939; /* category cards, labels */
+  --color-ghost: rgb(78 78 78 / 0.5); /* ghost display words on cards */
+  --color-hairline: #838383; /* bento grid borders */
+  --color-footer-rule: #2f3543;
+  --color-social: #222631;
+
+  /* Fonts (CSS variables injected by next/font in app/layout.tsx) */
+  --font-lato: var(--nf-lato);
+  --font-lexend: var(--nf-lexend);
+  --font-lexend-deca: var(--nf-lexend-deca);
+  --font-lexend-giga: var(--nf-lexend-giga);
+  --font-lexend-exa: var(--nf-lexend-exa);
+  --font-inter: var(--nf-inter);
+  --font-archivo: var(--nf-archivo);
+  --font-audiowide: var(--nf-audiowide);
+  --font-merriweather: var(--nf-merriweather);
+  --font-dm-sans: var(--nf-dm-sans);
+  --font-outfit: var(--nf-outfit);
+  --font-geist: var(--nf-geist);
+  --font-jetbrains: var(--nf-jetbrains);
+  /* "Gotham" is a commercial font – Montserrat is the closest free match.
+     Drop Gotham .woff2 files into /public/fonts and swap to next/font/local if licensed. */
+  --font-gotham: var(--nf-montserrat);
+
+  /* Layout */
+  --container-page: 1440px;
+}
+
+/* ------------------------------------------------------------------
+   Shared backgrounds (exact Figma radial gradients, rotated ellipses
+   cannot be expressed with CSS radial-gradient so SVG is used)
+   ------------------------------------------------------------------ */
+@utility bg-silver {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1440 800' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-73 64.95 -73.24 -82.318 720 300)'><stop stop-color='rgba(235,235,235,1)' offset='0'/><stop stop-color='rgba(218,218,219,1)' offset='0.28796'/><stop stop-color='rgba(177,179,181,1)' offset='0.64398'/><stop stop-color='rgba(136,139,142,1)' offset='1'/></radialGradient></defs></svg>");
+  background-size: 100% 100%;
+}
+
+@utility bg-silver-tall {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1440 1000' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-73 81.188 -73.24 -102.9 720 375)'><stop stop-color='rgba(235,235,235,1)' offset='0'/><stop stop-color='rgba(218,218,219,1)' offset='0.28796'/><stop stop-color='rgba(177,179,181,1)' offset='0.64398'/><stop stop-color='rgba(136,139,142,1)' offset='1'/></radialGradient></defs></svg>");
+  background-size: 100% 100%;
+}
+
+@utility bg-silver-footer {
+  background-color: #0f1115;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1440 436' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-73 35.398 -73.24 -44.863 720 163.5)'><stop stop-color='rgba(235,235,235,1)' offset='0'/><stop stop-color='rgba(218,218,219,1)' offset='0.288'/><stop stop-color='rgba(136,139,142,1)' offset='1'/></radialGradient></defs></svg>");
+  background-size: 100% 100%;
+}
+
+@utility bg-hero-panel {
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 415 688' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0.046008 43.063 -25.975 0.022347 207.5 344)'><stop stop-color='rgba(116,114,115,1)' offset='0.016155'/><stop stop-color='rgba(110,108,109,1)' offset='0.39971'/><stop stop-color='rgba(89,87,88,1)' offset='0.80968'/><stop stop-color='rgba(83,81,82,1)' offset='1'/></radialGradient></defs></svg>");
+  background-size: 100% 100%;
+}
+
+/* Outlined display type (Figma: transparent fill + stroke) */
+@utility text-outline-white {
+  color: transparent;
+  -webkit-text-stroke: 1px #ffffff;
+}
+
+@utility text-outline-faint {
+  color: transparent;
+  -webkit-text-stroke: 1.675px rgb(116 116 116 / 0.28);
+}
+
+/* Centered 1440px design canvas */
+@utility page-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
+body {
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: var(--nf-lato), system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------
+   Product drop shadows. Figma shadows follow the image alpha, so these
+   use filter: drop-shadow (box-shadow would draw a rectangle).
+   Zero-opacity layers from the design are omitted.
+   ------------------------------------------------------------------ */
+@utility drop-hero-main {
+  filter: drop-shadow(-108px 154px 37.5px rgb(0 0 0 / 0.01)) drop-shadow(-61px 87px 31.5px rgb(0 0 0 / 0.05))
+    drop-shadow(-27px 38px 23.5px rgb(0 0 0 / 0.09)) drop-shadow(-7px 10px 13px rgb(0 0 0 / 0.1));
+}
+
+@utility drop-thumb {
+  filter: drop-shadow(0 50px 10px rgb(0 0 0 / 0.01)) drop-shadow(0 28px 8.5px rgb(0 0 0 / 0.05))
+    drop-shadow(0 12px 6px rgb(0 0 0 / 0.09)) drop-shadow(0 3px 3.5px rgb(0 0 0 / 0.1));
+}
+
+@utility drop-gaming-mouse {
+  filter: drop-shadow(-160px 180px 48px rgb(0 0 0 / 0.01)) drop-shadow(-90px 101px 40.5px rgb(0 0 0 / 0.05))
+    drop-shadow(-40px 45px 30px rgb(0 0 0 / 0.09)) drop-shadow(-10px 11px 16.5px rgb(0 0 0 / 0.1));
+}
+
+@utility drop-office-mouse {
+  filter: drop-shadow(-220px 233px 64px rgb(0 0 0 / 0.01)) drop-shadow(-124px 131px 54px rgb(0 0 0 / 0.05))
+    drop-shadow(-55px 58px 40px rgb(0 0 0 / 0.09)) drop-shadow(-14px 15px 22px rgb(0 0 0 / 0.1));
+}
+
+@utility drop-bento {
+  filter: drop-shadow(-142px 125px 38px rgb(0 0 0 / 0.01)) drop-shadow(-80px 70px 32px rgb(0 0 0 / 0.05))
+    drop-shadow(-35px 31px 23.5px rgb(0 0 0 / 0.09)) drop-shadow(-9px 8px 13px rgb(0 0 0 / 0.1));
+}
+
+/* "Choose Your Gears" – Office tab product renders */
+@utility drop-office-gear {
+  filter: drop-shadow(-121px 139px 37px rgb(0 0 0 / 0.01)) drop-shadow(-68px 78px 31px rgb(0 0 0 / 0.05))
+    drop-shadow(-30px 35px 23px rgb(0 0 0 / 0.09)) drop-shadow(-8px 9px 12.5px rgb(0 0 0 / 0.1));
+}
+
+/* Search overlay product thumbnails */
+@utility drop-search-product {
+  filter: drop-shadow(0 12px 1.5px rgb(0 0 0 / 0.01)) drop-shadow(0 7px 1.5px rgb(0 0 0 / 0.01))
+    drop-shadow(0 4px 1.5px rgb(0 0 0 / 0.05)) drop-shadow(0 2px 1px rgb(0 0 0 / 0.09))
+    drop-shadow(0 0 0.5px rgb(0 0 0 / 0.1));
+}
+
+@utility drop-card {
+  filter: drop-shadow(0 6px 3.5px rgb(0 0 0 / 0.2));
+}
+
+/* ------------------------------------------------------------------
+   Gaming pages
+   ------------------------------------------------------------------ */
+
+/* Large product-card render (category listing) */
+@utility drop-product {
+  filter: drop-shadow(0 62px 12.5px rgb(0 0 0 / 0.01)) drop-shadow(0 35px 10.5px rgb(0 0 0 / 0.05))
+    drop-shadow(0 16px 8px rgb(0 0 0 / 0.09)) drop-shadow(0 4px 4.5px rgb(0 0 0 / 0.1));
+}
+
+/* "The Latest" centre-stage render */
+@utility drop-latest {
+  filter: drop-shadow(-160px 180px 48px rgb(0 0 0 / 0.01)) drop-shadow(-90px 101px 40.5px rgb(0 0 0 / 0.05))
+    drop-shadow(-40px 45px 30px rgb(0 0 0 / 0.09)) drop-shadow(-10px 11px 16.5px rgb(0 0 0 / 0.1));
+}
+
+/* Hovered product card (rectangular, so box-shadow is exact) */
+@utility shadow-card-hover {
+  box-shadow: 19px 25px 13px rgb(0 0 0 / 0.01), 11px 14px 11px rgb(0 0 0 / 0.05), 5px 6px 8px rgb(0 0 0 / 0.09),
+    1px 2px 4px rgb(0 0 0 / 0.1);
+}
+
+/* Slider counter box – Figma inner shadow */
+@utility shadow-inset-bevel {
+  box-shadow: inset -3px -3px 4px rgb(255 255 255 / 0.25), inset 2px 2px 4px rgb(0 0 0 / 0.25);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Office pages
+   ------------------------------------------------------------------ */
+
+/* Category-hero spotlight product (raw renders without baked shadow) */
+@utility drop-office-spotlight {
+  filter: drop-shadow(-12px 12px 18.5px rgb(0 0 0 / 0.05)) drop-shadow(-46px 48px 33.5px rgb(0 0 0 / 0.04))
+    drop-shadow(-104px 109px 45px rgb(0 0 0 / 0.03)) drop-shadow(-184px 194px 53.5px rgb(0 0 0 / 0.01));
+}

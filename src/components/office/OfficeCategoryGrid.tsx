@@ -1,0 +1,115 @@
+import Image from "next/image";
+import Link from "next/link";
+import CenteredHeading from "@/components/gaming/CenteredHeading";
+import type { OfficeTile } from "@/data/office";
+
+const TILE_BG = "/images/gaming/categories/tile-bg.png";
+
+/**
+ * Figma fills the short tiles with the pattern rotated 90° and cropped
+ * (imageTransform). These CSS matrices map the 3000×2000 image onto the 632×248 tile.
+ */
+const SHORT_TILE_BG = [
+  "matrix(0, -0.442876, 0.44288, 0, -0.108, 854.26)",
+  "matrix(0, -0.315999, 0.3865, 0, 0, 598)",
+];
+
+function Browse({ href, label, className }: { href: string; label: string; className: string }) {
+  return (
+    <Link
+      href={href}
+      aria-label={`Browse ${label}`}
+      className={`group absolute flex items-center gap-4 font-lexend-deca text-[24px] font-medium uppercase leading-normal tracking-[1px] text-dragon ${className}`}
+    >
+      Browse
+      <Image
+        src="/icons/arrow-circle-right.svg"
+        alt=""
+        width={48}
+        height={48}
+        className="transition-transform group-hover:translate-x-1"
+      />
+    </Link>
+  );
+}
+
+function TileArt({ tile }: { tile: OfficeTile }) {
+  const { art } = tile;
+  return (
+    <Image
+      src={art.src}
+      alt={`Redragon office ${tile.label.toLowerCase()}`}
+      width={art.width}
+      height={art.height}
+      className="pointer-events-none absolute max-w-none"
+      style={{ left: art.left, top: art.top, width: art.width / 2, height: art.height / 2 }}
+    />
+  );
+}
+
+/** One 632×248 tile (Keyboards / Combo) */
+function ShortTile({ tile, bg }: { tile: OfficeTile; bg: string }) {
+  return (
+    <div className="relative h-[248px] w-[632px] overflow-clip border border-black">
+      <Image
+        src={TILE_BG}
+        alt=""
+        width={3000}
+        height={2000}
+        className="absolute left-0 top-0 h-[2000px] w-[3000px] max-w-none origin-top-left opacity-60"
+        style={{ transform: bg }}
+      />
+      <p
+        aria-hidden
+        className="absolute left-[-10px] top-0 font-gotham text-[120px] font-black leading-[1.2] whitespace-nowrap text-[#b6b6b6]/50"
+      >
+        {tile.ghost}
+      </p>
+      <h3 className="absolute left-10 top-12 font-lexend-deca text-[40px] font-medium leading-[1.2] whitespace-nowrap text-ink">
+        {tile.label}
+      </h3>
+      {!tile.artOnTop && <TileArt tile={tile} />}
+      <Browse href={`/office/${tile.slug}`} label={tile.label} className="left-10 top-44" />
+      {tile.artOnTop && <TileArt tile={tile} />}
+    </div>
+  );
+}
+
+/** Figma "Desktop - 8" (Office landing page) – one tall + two short category tiles (1440×800). */
+export default function OfficeCategoryGrid({ tall, short }: { tall: OfficeTile; short: [OfficeTile, OfficeTile] }) {
+  return (
+    <section className="overflow-hidden bg-white">
+      <div className="page-frame relative h-[800px]">
+        <CenteredHeading
+          title="Office Category"
+          subtitle="Which gear type are you looking for?"
+          className="absolute left-1/2 top-20 -translate-x-1/2"
+        />
+
+        <div className="absolute left-20 top-[208px] flex gap-4">
+          {/* Tall tile (632×512) */}
+          <div className="relative h-[512px] w-[632px] overflow-clip border border-black">
+            <Image src={TILE_BG} alt="" fill sizes="632px" className="object-cover opacity-60" />
+            <p
+              aria-hidden
+              className="absolute left-[-18px] top-10 font-gotham text-[152px] font-black leading-[1.2] whitespace-nowrap text-[#b6b6b6]/50"
+            >
+              {tall.ghost}
+            </p>
+            <h3 className="absolute left-[38px] top-[107px] font-lexend-deca text-[40px] font-medium leading-[1.2] whitespace-nowrap text-ink">
+              {tall.label}
+            </h3>
+            <TileArt tile={tall} />
+            <Browse href={`/office/${tall.slug}`} label={tall.label} className="left-[38px] top-[408px]" />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {short.map((tile, i) => (
+              <ShortTile key={tile.slug} tile={tile} bg={SHORT_TILE_BG[i]} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

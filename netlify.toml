@@ -1,0 +1,13 @@
+# Used when the site is connected to Git on Netlify (drag-and-drop deploys just upload `out/`).
+[build]
+  command = "pnpm build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Long-cache the hashed build assets
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

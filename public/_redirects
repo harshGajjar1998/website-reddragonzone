@@ -1,0 +1,8 @@
+# Netlify redirects (static export can't use next.config redirects)
+/support/download   /support/        302
+/support/download/  /support/        302
+/news               /blog/           302
+/news/              /blog/           302
+/where-to-buy/*     /where-to-buy/   302
+
+# Unknown URLs fall through to Netlify's default handling, which serves out/404.html
