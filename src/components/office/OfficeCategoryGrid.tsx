@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ArtImage, { type Art } from "@/components/gaming/ArtImage";
 import CenteredHeading from "@/components/gaming/CenteredHeading";
 import type { OfficeTile } from "@/data/office";
 
@@ -75,11 +76,87 @@ function ShortTile({ tile, bg }: { tile: OfficeTile; bg: string }) {
   );
 }
 
+/** Mobile tile art (Figma "Office Produce" screen 2), anchored to the tile's right edge. */
+const MOBILE_ART: Record<string, Art> = {
+  mice: {
+    src: "/images/home/office/mouse.png",
+    width: 1600,
+    height: 1600,
+    box: { right: 0, top: 1, w: 168, h: 207 },
+    crop: { w: 130.88, h: 106.22, left: 0.18, top: -0.06 },
+  },
+  keyboards: {
+    src: "/images/office/products/bk-7111wg-alt.png",
+    width: 482,
+    height: 320,
+    box: { right: 21, top: 24, w: 355, h: 141 },
+    outer: { w: 141, h: 355 },
+    rotate: 90,
+    crop: { w: 115.87, h: 192.77, left: -7.93, top: -46.39 },
+  },
+  combo: {
+    src: "/images/office/products/combo-k-alt.png",
+    width: 1600,
+    height: 1600,
+    box: { right: -73, top: 35, w: 303, h: 138 },
+    crop: { w: 105.46, h: 231.25, left: -1.9, top: -65.63 },
+  },
+};
+
+/** 394×208 mobile tile – the pattern is turned 180° on every tile after the first. */
+function MobileTile({ tile, flip }: { tile: OfficeTile; flip: boolean }) {
+  const art = MOBILE_ART[tile.slug];
+  return (
+    <li className="relative h-[208px] overflow-clip border border-[#696969]">
+      <div className={`absolute inset-0 bg-white ${flip ? "-scale-100" : ""}`}>
+        <Image
+          src="/images/home/office-pattern-bg.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-[50%_9.3%] opacity-40"
+        />
+      </div>
+      <p
+        aria-hidden
+        className="absolute left-[-9px] top-[23px] font-gotham text-[88px] font-black leading-[1.2] tracking-[-0.88px] whitespace-nowrap text-[#bababa]"
+      >
+        {tile.ghost === "Mice" ? "MICE" : tile.ghost}
+      </p>
+      {art && <ArtImage art={{ ...art, alt: `Redragon office ${tile.label.toLowerCase()}`, sizes: "50vw" }} />}
+      <h3 className="absolute left-4 top-16 font-lexend-deca text-[20px] font-medium leading-[1.2] text-ink">{tile.label}</h3>
+      <Link
+        href={`/office/${tile.slug}`}
+        aria-label={`Browse ${tile.label}`}
+        className="group absolute left-4 top-[144px] flex items-center gap-4 font-lexend-deca text-[20px] font-medium uppercase leading-[1.25] tracking-[1px] text-dragon"
+      >
+        Browse
+        <Image
+          src="/icons/arrow-circle-right.svg"
+          alt=""
+          width={32}
+          height={32}
+          className="transition-transform group-hover:translate-x-1"
+        />
+      </Link>
+    </li>
+  );
+}
+
 /** Figma "Desktop - 8" (Office landing page) – one tall + two short category tiles (1440×800). */
 export default function OfficeCategoryGrid({ tall, short }: { tall: OfficeTile; short: [OfficeTile, OfficeTile] }) {
   return (
     <section className="overflow-hidden bg-white">
-      <div className="page-frame relative h-[800px]">
+      <div className="mobile-frame pt-16 lg:hidden">
+        <CenteredHeading compact title="Office Category" subtitle="Which gear type are you looking for?" />
+        <ul className="mt-[29px]">
+          {[tall, ...short].map((tile, i) => (
+            <MobileTile key={tile.slug} tile={tile} flip={i > 0} />
+          ))}
+        </ul>
+      </div>
+
+      <div className="page-frame relative hidden h-[800px] lg:block">
         <CenteredHeading
           title="Office Category"
           subtitle="Which gear type are you looking for?"

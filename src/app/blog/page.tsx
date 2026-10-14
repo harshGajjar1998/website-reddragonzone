@@ -24,17 +24,17 @@ export default function BlogPage() {
         className="pointer-events-none absolute left-1/2 top-[97px] h-[884px] w-[1440px] max-w-none -translate-x-1/2"
       />
 
-      <div className="page-frame relative px-16 pt-20 pb-20">
+      <div className="page-frame relative px-4 pt-12 pb-14 lg:px-16 lg:pt-20 lg:pb-20">
         <header className="flex flex-col items-center gap-3 text-center">
           <p className="flex h-7 items-center gap-1 rounded-[37px] py-0.5 pr-2 pl-3 font-lexend-deca text-[16px] leading-[1.5] text-[#111] shadow-[0_4px_10px_rgb(17_17_17/0.02)]">
             Redragon Zone Blog
             <Image src="/icons/pages/sparkle.svg" alt="" width={16} height={16} />
           </p>
           <div className="flex flex-col items-center gap-4">
-            <h1 className="w-[1136px] font-lexend-deca text-[64px] leading-[1.2] text-[#111]">
+            <h1 className="w-full font-lexend-deca text-[36px] leading-[1.2] text-[#111] lg:w-[1136px] lg:text-[64px]">
               Latest in Gaming Tech &amp; Accessories
             </h1>
-            <p className="w-[473px] font-lexend-deca text-[18px] leading-[1.5] text-[#111]/60">{description}</p>
+            <p className="w-full max-w-[473px] font-lexend-deca text-[16px] leading-[1.5] text-[#111]/60 lg:text-[18px]">{description}</p>
           </div>
         </header>
 

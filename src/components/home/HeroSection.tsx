@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
+import MobileProductHero from "@/components/ui/MobileProductHero";
 import { heroSlides, type HeroSlide } from "@/data/home";
 
 const AUTOPLAY_MS = 5000;
@@ -17,7 +18,7 @@ function Slide({ slide, priority }: { slide: HeroSlide; priority: boolean }) {
   // Only the first slide carries the page's h1
   const Title = priority ? "h1" : "h2";
   return (
-    <div className="page-frame h-[688px]">
+    <div className="page-frame hidden h-[688px] lg:block">
       {/* Right-hand spotlight panel – bleeds to the viewport edge above 1440px */}
       <div className="bg-hero-panel absolute left-[1025px] right-[min(0px,calc(720px-50vw))] top-0 h-[688px]" />
 
@@ -147,13 +148,19 @@ export default function HeroSection() {
             inert={i !== index}
             className="relative w-full shrink-0 overflow-hidden"
           >
+            <MobileProductHero
+              {...slide}
+              as={i === 0 ? "h1" : "h2"}
+              title={slide.title}
+              priority={i === 0}
+            />
             <Slide slide={slide} priority={i === 0} />
           </div>
         ))}
       </div>
 
       {/* Slide indicator – 12px dots on a 28px pitch (Figma "Frame 2") */}
-      <div className="page-frame pointer-events-none absolute inset-x-0 top-0 h-[688px]">
+      <div className="page-frame pointer-events-none absolute inset-x-0 top-0 hidden h-[688px] lg:block">
         <div className="pointer-events-auto absolute left-1/2 top-[646px] flex -translate-x-1/2 gap-4">
           {heroSlides.map((slide, i) => (
             <button

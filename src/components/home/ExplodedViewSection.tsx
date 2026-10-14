@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SectionHeading from "@/components/ui/SectionHeading";
+import MobileExplodedView from "./MobileExplodedView";
 
 type Callout = {
   label: string;
@@ -54,8 +55,10 @@ const callouts: Callout[] = [
 /** Figma "Section 3" – exploded architectural blueprint (1440×1000). */
 export default function ExplodedViewSection() {
   return (
-    <section className="bg-silver-tall overflow-hidden">
-      <div className="page-frame h-[1000px]">
+    <section className="bg-silver-mobile overflow-hidden lg:bg-silver-tall">
+      <MobileExplodedView productName="Prism Pro M997" />
+
+      <div className="page-frame hidden h-[1000px] lg:block">
         <SectionHeading
           eyebrow="Exploded Architectural Blueprint"
           title="Unrivaled Internal Assembly of Prism Pro M997"

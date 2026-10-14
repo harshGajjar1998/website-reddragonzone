@@ -1,4 +1,5 @@
 import Image from "next/image";
+import MobileExplodedView from "@/components/home/MobileExplodedView";
 
 type Callout = {
   label: string;
@@ -53,8 +54,9 @@ const callouts: Callout[] = [
 /** Exploded architectural blueprint of a featured product (SPECIAL PAGE "Section 3"). */
 export default function ExplodedBlueprint({ productName }: { productName: string }) {
   return (
-    <section className="bg-silver-tall overflow-hidden">
-      <div className="page-frame relative h-[1000px]">
+    <section className="bg-silver-mobile overflow-hidden lg:bg-silver-tall">
+      <MobileExplodedView productName={productName} />
+      <div className="page-frame relative hidden h-[1000px] lg:block">
         <div className="absolute left-1/2 top-16 flex -translate-x-1/2 flex-col items-center whitespace-nowrap">
           <h2 className="font-lexend-giga text-[40px] font-semibold leading-none tracking-[-3.2px] text-dragon">
             Exploded Architectural Blueprint

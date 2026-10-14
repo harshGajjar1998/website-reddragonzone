@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { LatestItem } from "@/data/gaming";
 import ArtImage, { type Art } from "./ArtImage";
 import CenteredHeading from "./CenteredHeading";
@@ -51,6 +51,16 @@ function Layer({ layer }: { layer: StageLayer }) {
   );
 }
 
+/**
+ * Mobile (Figma "Game Product" / "Office Produce" screen 3): the desktop stage drawn at
+ * `scale` inside the 394px frame, offset so the centre product lands where the design has
+ * it. The right-hand neighbour sits closer in on the gaming frame (`rightSlot`, desktop px).
+ */
+const MOBILE_STAGE = {
+  gaming: { scale: 0.833, x: -405.6, y: 39.4, rightSlot: 819, back: false, height: 800, nameTop: 638, dotsTop: 736 },
+  office: { scale: 0.8, x: -379.8, y: 29.2, rightSlot: 874, back: true, height: 760, nameTop: 615, dotsTop: 704 },
+};
+
 type LatestGearSectionProps = {
   items: LatestItem[];
   stage?: LatestStage;
@@ -68,13 +78,77 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
   const prev = items[(index - 1 + count) % count];
   const next = items[(index + 1) % count];
 
+  const m = light ? MOBILE_STAGE.office : MOBILE_STAGE.gaming;
+  const mobileRight = (item: LatestItem): Art =>
+    item.slots?.right ?? { ...sideArt(item, "right"), box: { ...sideArt(item, "right").box, left: m.rightSlot } };
+  const touchX = useRef<number | null>(null);
+
   return (
     <section
-      className={`overflow-hidden ${light ? "bg-white" : "bg-silver"}`}
+      className={`overflow-hidden ${light ? "bg-white" : "bg-silver-mobile lg:bg-silver"}`}
       aria-roledescription="carousel"
       aria-label="The latest gear"
     >
-      <div className="page-frame relative h-[800px]">
+      {/* Mobile */}
+      <div
+        className="mobile-frame touch-pan-y lg:hidden"
+        style={{ height: m.height }}
+        onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (touchX.current === null) return;
+          const dx = e.changedTouches[0].clientX - touchX.current;
+          if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+          touchX.current = null;
+        }}
+      >
+        <div className="absolute left-1/2 top-0 h-full w-[394px] -translate-x-1/2">
+          <div
+            className="absolute left-0 top-0 h-[800px] w-[1440px] origin-top-left"
+            style={{ transform: `translate(${m.x}px, ${m.y}px) scale(${m.scale})` }}
+          >
+            {m.back && stage.back.map((layer) => <Layer key={layer.src} layer={layer} />)}
+            {count > 1 && (
+              <>
+                <ArtImage key={`p-${prev.name}`} art={sideArt(prev, "left")} />
+                <ArtImage key={`n-${next.name}`} art={mobileRight(next)} />
+              </>
+            )}
+            <Layer layer={stage.glow} />
+            <ArtImage key={current.name} art={current.center} className="animate-[fade-in_400ms_ease-out]" />
+          </div>
+        </div>
+
+        <CenteredHeading compact title="The Latest" subtitle="Explore our new collection gear!" className="relative pt-[72px]" />
+
+        <div aria-live="polite" className="absolute inset-x-4 flex flex-col items-center" style={{ top: m.nameTop }}>
+          <h3 className="text-center font-lexend-deca text-[24px] font-medium leading-[1.2] tracking-[-0.48px] whitespace-pre text-ink">
+            {current.name.trim()}
+          </h3>
+          <Link
+            href={current.href}
+            className="mt-2 font-lexend-deca text-[16px] font-medium uppercase leading-normal tracking-[1px] text-dragon"
+          >
+            Learn more
+          </Link>
+        </div>
+
+        {count > 1 && (
+          <div className="absolute inset-x-0 flex justify-center gap-3" style={{ top: m.dotsTop }}>
+            {items.map((item, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Show ${item.name.trim()}`}
+                aria-current={i === index}
+                onClick={() => setIndex(i)}
+                className={`size-4 cursor-pointer rounded-full ${i === index ? "bg-dragon" : "border border-[#151c21]"}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="page-frame relative hidden h-[800px] lg:block">
         <CenteredHeading
           title="The Latest"
           subtitle="Explore our new collection gear!"

@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import BrowseLink from "@/components/ui/BrowseLink";
+import { cq } from "@/lib/mobile";
 
 type PanelCopyProps = {
   title: string;
@@ -31,11 +33,122 @@ function PanelCopy({ title, description, href, left, ruleTop }: PanelCopyProps) 
   );
 }
 
+/** Mobile panel copy (Figma screen 2: title y79, rule y198, text y210, browse y288). */
+function MobilePanelCopy({ title, description, href }: { title: string; description: string; href: string }) {
+  return (
+    <div className="absolute left-4 top-[79px] flex w-[188px] flex-col items-start">
+      <h2 className="ml-2 font-lexend-deca text-[32px] font-medium leading-[1.2] text-ink">{title}</h2>
+      <Image src="/icons/red-line.svg" alt="" width={87} height={2} className="mt-[80px] ml-px" />
+      <p className="mt-[10px] font-lexend-deca text-[16px] font-light leading-[1.4] tracking-[0.48px] text-ink/90">
+        {description}
+      </p>
+      <Link
+        href={href}
+        className="group mt-3 inline-flex items-center gap-4 font-lexend-deca text-[20px] font-semibold uppercase leading-[1.25] text-dragon"
+      >
+        Browse
+        <Image
+          src="/icons/arrow-circle-right.svg"
+          alt=""
+          width={32}
+          height={32}
+          className="transition-transform group-hover:translate-x-1"
+        />
+      </Link>
+    </div>
+  );
+}
+
+const mobileGhost = "absolute font-gotham font-bold leading-[1.2] tracking-[0.03em] whitespace-nowrap";
+
+/** Mobile – the two panels stacked (Figma "Home Mobile version" screen 2, 390×800). */
+function MobileSplit() {
+  return (
+    <div className="overflow-hidden bg-silver-mobile lg:hidden">
+      {/* ---------- Gaming ---------- */}
+      <div className="mobile-frame">
+        <div className="relative min-h-[330px]" style={{ height: cq(400) }}>
+          <Image
+            src="/images/home/dragon-head-logo.png"
+            alt=""
+            width={1024}
+            height={676}
+            className="absolute object-cover opacity-40 mix-blend-screen"
+            style={{ left: cq(1), top: cq(277), width: cq(186), height: cq(123) }}
+          />
+          <p aria-hidden className={`${mobileGhost} text-white/50`} style={{ left: cq(-23), top: cq(40), fontSize: cq(96) }}>
+            Game
+          </p>
+          <Image
+            src="/images/home/m997-main.png"
+            alt="Redragon PRISM PRO M997 gaming mouse"
+            width={1600}
+            height={1600}
+            className="absolute max-w-none drop-gaming-mouse"
+            style={{ left: cq(195), top: cq(34), width: cq(341), height: cq(341) }}
+          />
+          <MobilePanelCopy
+            title="Game"
+            description="High performance gaming gear built for pro-level precision"
+            href="/gaming"
+          />
+        </div>
+
+      </div>
+
+      {/* ---------- Office (its backdrop spans the full width on tablets) ---------- */}
+      <div className="overflow-hidden bg-[linear-gradient(202.93deg,#f0f0f0_4.6171%,#ffffff_86.213%)]">
+        <div className="mobile-frame">
+          <div className="relative min-h-[330px]" style={{ height: cq(400) }}>
+            <Image
+              src="/images/home/office-pattern-bg.png"
+              alt=""
+              width={3000}
+              height={2000}
+              className="absolute top-0 h-full max-w-none -scale-y-100 object-cover opacity-40"
+              style={{ left: cq(-105), width: cq(600) }}
+            />
+            <Image
+              src="/images/home/r-logo-office.png"
+              alt=""
+              width={927}
+              height={1024}
+              className="absolute bottom-0 left-0 object-cover opacity-5"
+              style={{ width: cq(112), height: cq(124) }}
+            />
+            <p
+              aria-hidden
+              className={`${mobileGhost} text-[rgba(182,182,182,0.5)]`}
+              style={{ left: cq(-23), top: cq(40), fontSize: cq(96) }}
+            >
+              Office
+            </p>
+            <Image
+              src="/images/home/office-mouse-bm4235.png"
+              alt="Redragon BM-4235 ergonomic office mouse"
+              width={1600}
+              height={1600}
+              className="absolute max-w-none drop-office-mouse"
+              style={{ left: cq(153), top: cq(29), width: cq(341), height: cq(341) }}
+            />
+            <MobilePanelCopy
+              title="Office"
+              description="Reliable and comfortable gear for work and everyday use."
+              href="/office"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Figma "Section 9" – Gaming / Office split (1440×800). */
 export default function CategorySplitSection() {
   return (
-    <section className="bg-silver overflow-hidden">
-      <div className="page-frame h-[800px]">
+    <section className="overflow-hidden lg:bg-silver">
+      <MobileSplit />
+      <div className="page-frame hidden h-[800px] lg:block">
         {/* Dragon watermark behind the gaming panel */}
         <Image
           src="/images/home/dragon-head-logo.png"

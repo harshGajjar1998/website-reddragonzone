@@ -28,9 +28,9 @@ function SearchBox({
         e.preventDefault();
         onSubmit();
       }}
-      className={`flex items-center gap-[18px] ${className ?? ""}`}
+      className={`flex flex-col gap-3 sm:flex-row sm:items-center lg:gap-[18px] ${className ?? ""}`}
     >
-      <label className="flex h-12 w-[341px] items-center justify-between rounded-[4px] border border-ink px-5">
+      <label className="flex h-12 w-full items-center justify-between rounded-[4px] border border-ink px-5 sm:w-[341px]">
         <span className="sr-only">Search products</span>
         <input
           type="search"
@@ -43,7 +43,7 @@ function SearchBox({
       </label>
       <button
         type="submit"
-        className="h-[50px] w-[200px] cursor-pointer rounded-[4px] bg-crimson font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
+        className="h-[50px] w-full cursor-pointer rounded-[4px] bg-crimson sm:w-[200px] font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
       >
         {button}
       </button>
@@ -118,11 +118,54 @@ function Tile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; 
   );
 }
 
+/** Mobile tile: label over the product art, two per row (no Figma frame for this state). */
+function MobileTile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; onSelect: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onSelect}
+      className={`relative flex h-[132px] cursor-pointer flex-col justify-between overflow-hidden bg-white p-3 text-left outline outline-1 ${
+        active ? "outline-2 outline-dragon" : "outline-black"
+      }`}
+    >
+      <span className="relative z-10 font-lexend-deca text-[16px] font-medium leading-[1.2] text-ink">{tile.label}</span>
+      <span className="pointer-events-none absolute right-1 bottom-1 h-[88px] w-[60%]">
+        <Image src={tile.art.src} alt="" fill sizes="30vw" className="object-contain object-right-bottom" />
+      </span>
+    </button>
+  );
+}
+
+/** Mobile download card: name + keywords, the render, then Software / Manual links. */
+function MobileDownloadCard({ item }: { item: Download }) {
+  const link =
+    "flex items-center gap-1 font-lexend-deca text-[12px] font-medium uppercase tracking-[0.5px] text-[#e60012]";
+  return (
+    <li className="flex flex-col bg-[#f6f6f6] p-3 lg:hidden">
+      <p className="font-lexend text-[13px] font-medium uppercase leading-[1.2] text-ink">{item.name}</p>
+      <div className="relative mt-2 aspect-[4/3] w-full">
+        <Image src={item.image.src} alt={item.name} fill sizes="45vw" className="object-contain" />
+      </div>
+      <div className="mt-3 flex flex-col items-start gap-2">
+        <a href={item.software} className={link}>
+          <Image src="/icons/pages/download.svg" alt="" width={18} height={18} />
+          Software
+        </a>
+        <a href={item.manual} className={link}>
+          <Image src="/icons/pages/download.svg" alt="" width={18} height={18} />
+          Manual
+        </a>
+      </div>
+    </li>
+  );
+}
+
 function DownloadCard({ item }: { item: Download }) {
   const { image } = item;
   const link = "flex items-center gap-1 font-lexend-deca text-[14px] font-medium uppercase tracking-[1px] text-[#e60012] hover:underline";
   return (
-    <li className="relative h-[384px] w-[308px] bg-[#f6f6f6] outline outline-[1.2px] outline-offset-[-1.2px] outline-white/50">
+    <li className="relative hidden h-[384px] w-[308px] bg-[#f6f6f6] outline outline-[1.2px] outline-offset-[-1.2px] outline-white/50 lg:block">
       <p className="absolute left-4 top-6 w-32 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] whitespace-pre-wrap text-ink">
         {item.name}
       </p>
@@ -173,7 +216,7 @@ export default function SupportCenter() {
   return (
     <>
       {/* Hero (Figma "Desktop - 23") */}
-      <section className="relative h-[544px] overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071]">
+      <section className="relative overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071] lg:h-[544px]">
         <Image
           src="/images/pages/support/hero.png"
           alt=""
@@ -182,7 +225,29 @@ export default function SupportCenter() {
           preload
           className="absolute left-1/2 top-0 h-[544px] w-[1440px] max-w-none -translate-x-1/2"
         />
-        <div className="page-frame relative h-full">
+        <div className="relative px-4 pt-14 pb-14 lg:hidden">
+          {/* Wash over the photo so the copy stays legible on narrow screens */}
+          <div aria-hidden className="absolute inset-0 bg-white/75" />
+          <p className="relative font-lexend-deca text-[18px] text-[#e60012]">Support</p>
+          <h1 className="relative mt-2 font-lexend-exa text-[32px] font-black tracking-[-2.4px] text-ink">Manuals &amp; Software&apos;s</h1>
+          <p className="relative mt-3 font-lexend-deca text-[16px] font-light leading-[1.5] text-ink">
+            Get the latest software, drivers and manuals for your redragon products
+          </p>
+          <SearchBox
+            value={heroQuery}
+            onChange={setHeroQuery}
+            onSubmit={() => {
+              setQuery(heroQuery);
+              setApplied(heroQuery);
+              setShown(PAGE);
+              toList();
+            }}
+            placeholder="Search"
+            button="Find"
+            className="relative mt-6"
+          />
+        </div>
+        <div className="page-frame relative hidden h-full lg:block">
           <p className="absolute left-20 top-[163px] font-lexend-deca text-[22px] text-[#e60012]">Support</p>
           <h1 className="absolute left-20 top-[203px] font-lexend-exa text-[40px] font-black tracking-[-3.2px] text-ink">
             Manuals &amp; Software&apos;s
@@ -208,7 +273,21 @@ export default function SupportCenter() {
 
       {/* Category tiles */}
       <section className="bg-white">
-        <div className="page-frame flex h-[800px] flex-col gap-6">
+        <div className="grid grid-cols-2 gap-3 px-4 py-8 lg:hidden">
+          {supportTiles.flat().map((tile) => (
+            <MobileTile
+              key={tile.slug}
+              tile={tile}
+              active={category === tile.slug}
+              onSelect={() => {
+                setCategory(category === tile.slug ? null : tile.slug);
+                setShown(PAGE);
+                toList();
+              }}
+            />
+          ))}
+        </div>
+        <div className="page-frame hidden h-[800px] flex-col gap-6 lg:flex">
           {supportTiles.map((row, i) => (
             <div key={i} className="flex justify-between">
               {row.map((tile) => (
@@ -230,8 +309,14 @@ export default function SupportCenter() {
 
       {/* Manuals & software list (Figma "Section 12") */}
       <section ref={listRef} className="bg-silver scroll-mt-4">
-        <div className="page-frame flex min-h-[1152px] flex-col items-center px-20 pt-[72px] pb-10">
-          <div className="relative h-[77px] w-[624px]">
+        <div className="page-frame flex flex-col items-center px-4 pt-14 pb-10 lg:min-h-[1152px] lg:px-20 lg:pt-[72px]">
+          <div className="flex flex-col items-center text-center lg:hidden">
+            <h2 className="font-lexend-giga text-[28px] font-bold leading-[1.2] tracking-[-2px] text-[#e60012]/60">
+              Manuals &amp; Software&apos;s
+            </h2>
+            <p className="font-lexend-exa text-[20px] font-medium leading-[1.2] text-ink">Features Products</p>
+          </div>
+          <div className="relative hidden h-[77px] w-[624px] lg:block">
             <h2 className="absolute left-0 top-0 font-lexend-giga text-[48px] font-bold leading-[1.2] tracking-[-3.84px] whitespace-nowrap text-[#e60012]/50 [text-shadow:0_4px_4px_rgb(0_0_0/0.15)]">
               Manuals &amp; Software&apos;s
             </h2>
@@ -249,7 +334,7 @@ export default function SupportCenter() {
             }}
             placeholder="Search...."
             button="Search"
-            className="mt-[14px]"
+            className="mt-6 w-full sm:w-auto lg:mt-[14px]"
           />
 
           {category && (
@@ -262,9 +347,12 @@ export default function SupportCenter() {
             </button>
           )}
 
-          <ul className="mt-7 grid grid-cols-[repeat(4,308px)] gap-4">
+          <ul className="mt-7 grid w-full grid-cols-2 gap-3 lg:w-auto lg:grid-cols-[repeat(4,308px)] lg:gap-4">
             {results.slice(0, shown).map((item, i) => (
               <DownloadCard key={item.name + i} item={item} />
+            ))}
+            {results.slice(0, shown).map((item, i) => (
+              <MobileDownloadCard key={`m-${item.name}${i}`} item={item} />
             ))}
           </ul>
           {results.length === 0 && (

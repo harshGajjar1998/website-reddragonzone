@@ -12,15 +12,20 @@ const PER_PAGE = 6;
 function FeaturedPost({ post }: { post: BlogPost }) {
   const href = `/blog/${post.slug}`;
   return (
-    <article className="flex h-[500px] w-[1312px] overflow-hidden rounded-[6px] bg-white outline outline-1 outline-[#111]/10">
-      <Link href={href} tabIndex={-1} aria-hidden className="relative block h-[500px] w-[769px] shrink-0 overflow-hidden">
-        <Image src={post.image.src} alt="" fill sizes="769px" preload className="object-cover" />
+    <article className="flex flex-col overflow-hidden rounded-[6px] bg-white outline outline-1 outline-[#111]/10 lg:h-[500px] lg:w-[1312px] lg:flex-row">
+      <Link
+        href={href}
+        tabIndex={-1}
+        aria-hidden
+        className="relative block h-[240px] w-full shrink-0 overflow-hidden lg:h-[500px] lg:w-[769px]"
+      >
+        <Image src={post.image.src} alt="" fill sizes="(max-width: 1023px) 100vw, 769px" preload className="object-cover" />
       </Link>
-      <div className="flex flex-1 flex-col justify-between px-14 py-12">
+      <div className="flex flex-1 flex-col justify-between gap-6 p-5 lg:gap-0 lg:px-14 lg:py-12">
         <div className="flex flex-col gap-6">
           <PostMeta post={post} />
           <div className="flex flex-col gap-4">
-            <h2 className="font-lexend-deca text-[40px] leading-[1.2] text-[#111]">
+            <h2 className="font-lexend-deca text-[28px] leading-[1.2] text-[#111] lg:text-[40px]">
               <Link href={href} className="hover:text-dragon">
                 {post.title}
               </Link>
@@ -114,21 +119,21 @@ export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: 
 
   return (
     <>
-      <div className="mt-12 flex justify-center">
+      <div className="-mx-4 mt-10 flex overflow-x-auto px-4 [scrollbar-width:none] lg:mx-0 lg:mt-12 lg:justify-center lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
         <div
           role="tablist"
           aria-label="Blog categories"
-          className="flex h-14 items-center rounded-[6px] bg-white p-2 shadow-[0_4px_10px_rgb(17_17_17/0.02),inset_0_0_0_1px_rgb(17_17_17/0.08)]"
+          className="flex h-14 shrink-0 items-center rounded-[6px] whitespace-nowrap bg-white p-2 shadow-[0_4px_10px_rgb(17_17_17/0.02),inset_0_0_0_1px_rgb(17_17_17/0.08)]"
         >
           {tab("Browse all", category === null, () => choose(null))}
           {blogCategories.map((c) => tab(c, category === c, () => choose(c)))}
         </div>
       </div>
 
-      <div className="mt-16 flex flex-col gap-16">
+      <div className="mt-10 flex flex-col gap-6 lg:mt-16 lg:gap-16">
         {featured && current === 1 && <FeaturedPost post={featured} />}
         {rows.map((row, i) => (
-          <div key={i} className="flex gap-8">
+          <div key={i} className="flex flex-col gap-6 lg:flex-row lg:gap-8">
             {row.map((post) => (
               <BlogCard key={post.slug} post={post} />
             ))}
@@ -139,7 +144,7 @@ export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: 
         )}
       </div>
 
-      <div className="mt-20">
+      <div className="mt-12 lg:mt-20">
         <Pagination page={current} total={total} href={href} />
       </div>
     </>

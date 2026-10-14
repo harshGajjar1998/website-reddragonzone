@@ -18,11 +18,11 @@ export default function ContactPage() {
       <section className="relative overflow-hidden">
         <Image src="/images/pages/contact/hero.png" alt="" fill sizes="100vw" preload className="object-cover" />
         <div className="absolute inset-0 bg-black/16" />
-        <div className="page-frame relative h-[1010px]">
-          <h1 className="absolute left-[77px] top-20 font-lexend-exa text-[64px] font-medium leading-[1.1] tracking-[-5.12px] text-white">
+        <div className="page-frame relative px-4 pt-14 pb-14 lg:h-[1010px] lg:p-0">
+          <h1 className="font-lexend-exa text-[40px] font-medium leading-[1.1] tracking-[-3px] text-white lg:absolute lg:left-[77px] lg:top-20 lg:text-[64px] lg:tracking-[-5.12px]">
             Get in touch
           </h1>
-          <p className="absolute left-20 top-[166px] font-lexend-deca text-[24px] leading-[1.4] tracking-[0.72px] text-white/80">
+          <p className="mt-3 font-lexend-deca text-[18px] leading-[1.4] tracking-[0.54px] text-white/80 lg:absolute lg:left-20 lg:top-[166px] lg:mt-0 lg:text-[24px] lg:tracking-[0.72px]">
             Would love to hear from you
           </p>
           <ContactForm />
@@ -30,9 +30,9 @@ export default function ContactPage() {
       </section>
 
       <section className="bg-[#f6f6f6]">
-        <div className="page-frame flex flex-col items-center pt-20 pb-20">
+        <div className="page-frame flex flex-col items-center pt-14 pb-14 lg:pt-20 lg:pb-20">
           <CenteredHeading title="FAQS" subtitle="Frequently asked questions" />
-          <div className="mt-14">
+          <div className="mt-10 w-full px-4 lg:mt-14 lg:w-auto lg:px-0">
             <FaqList faqs={faqs} />
           </div>
         </div>

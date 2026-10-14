@@ -10,7 +10,7 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
   const [open, setOpen] = useState<number | null>(defaultOpen);
 
   return (
-    <ul className="flex w-[720px] flex-col gap-6">
+    <ul className="flex w-full flex-col gap-4 lg:w-[720px] lg:gap-6">
       {faqs.map((f, i) => {
         const isOpen = open === i;
         return (
@@ -20,9 +20,9 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
               aria-expanded={isOpen}
               aria-controls={`faq-${i}`}
               onClick={() => setOpen(isOpen ? null : i)}
-              className="flex min-h-[92.8px] w-full cursor-pointer items-center justify-between gap-2 px-8 py-8 text-left"
+              className="flex min-h-[72px] w-full cursor-pointer items-center justify-between gap-3 px-5 py-5 text-left lg:min-h-[92.8px] lg:gap-2 lg:px-8 lg:py-8"
             >
-              <span className="w-[624px] font-lexend-deca text-[16.5px] leading-[28.8px] tracking-[-0.26px] text-black">
+              <span className="font-lexend-deca text-[16px] leading-[1.5] tracking-[-0.26px] text-black lg:w-[624px] lg:text-[16.5px] lg:leading-[28.8px]">
                 {f.q}
               </span>
               <Image
@@ -34,9 +34,9 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
               />
             </button>
             {isOpen && (
-              <div id={`faq-${i}`} className="-mt-6 px-8 pb-8">
+              <div id={`faq-${i}`} className="-mt-3 px-5 pb-5 lg:-mt-6 lg:px-8 lg:pb-8">
                 {f.a.map((line) => (
-                  <p key={line} className="font-lexend-deca text-[16px] font-light leading-8 tracking-[-0.18px] text-[#626466]">
+                  <p key={line} className="font-lexend-deca text-[15px] font-light leading-7 tracking-[-0.18px] text-[#626466] lg:text-[16px] lg:leading-8">
                     {line}
                   </p>
                 ))}

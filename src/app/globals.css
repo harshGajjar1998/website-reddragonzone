@@ -61,6 +61,13 @@
   background-size: 100% 100%;
 }
 
+/* Mobile 390×800 screen background (Figma "iPhone 13 & 14" frames) */
+@utility bg-silver-mobile {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 390 800' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)'/><defs><radialGradient id='g' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='matrix(-197.708 649.5 -198.359 -823.179 195 300)'><stop stop-color='%23EBEBEB'/><stop offset='0.28796' stop-color='%23DADADB'/><stop offset='1' stop-color='%23888B8E'/></radialGradient></defs></svg>");
+  background-size: 100% 100%;
+}
+
 @utility bg-hero-panel {
   background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 415 688' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0.046008 43.063 -25.975 0.022347 207.5 344)'><stop stop-color='rgba(116,114,115,1)' offset='0.016155'/><stop stop-color='rgba(110,108,109,1)' offset='0.39971'/><stop stop-color='rgba(89,87,88,1)' offset='0.80968'/><stop stop-color='rgba(83,81,82,1)' offset='1'/></radialGradient></defs></svg>");
   background-size: 100% 100%;
@@ -85,10 +92,45 @@
   margin-inline: auto;
 }
 
+/* Mobile canvas (Figma frames are 390px wide). Fluid up to 640px, then a centred
+   column on tablets. Art placed with `cq()` (lib/mobile.ts) scales with this box. */
+@utility mobile-frame {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
 body {
   background: #ffffff;
   color: #1a1a1a;
   font-family: var(--nf-lato), system-ui, sans-serif;
+}
+
+/* Desktop (≥1024px) is a fixed 1440px design: shrink it to fit narrower
+   windows. --desktop-zoom is kept in sync by the inline script in app/layout.tsx. */
+@media (min-width: 1024px) {
+  body {
+    zoom: var(--desktop-zoom, 1);
+  }
+}
+
+/* Mobile hello-bar ticker */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility animate-marquee {
+  animation: marquee 18s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 /* ------------------------------------------------------------------

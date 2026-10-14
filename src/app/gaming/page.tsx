@@ -4,7 +4,7 @@ import CategorySlider from "@/components/gaming/CategorySlider";
 import FeaturedProductsGrid from "@/components/gaming/FeaturedProductsGrid";
 import GamingHero from "@/components/gaming/GamingHero";
 import LatestGearSection from "@/components/gaming/LatestGearSection";
-import { featuredCards, gamingCategories, gamingHero, latestItems } from "@/data/gaming";
+import { featuredCards, featuredGrid, gamingCategories, gamingHero, latestItems } from "@/data/gaming";
 
 export const metadata: Metadata = {
   title: "Gaming Products | Redragon",
@@ -18,7 +18,7 @@ export default function GamingPage() {
       <GamingHero {...gamingHero} />
       <CategorySlider categories={gamingCategories} />
       <LatestGearSection items={latestItems} />
-      <FeaturedProductsGrid cards={featuredCards} />
+      <FeaturedProductsGrid cards={featuredCards} mobileCards={featuredGrid} />
       <CommunitySection />
     </>
   );

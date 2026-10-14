@@ -38,27 +38,27 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
 export default function BlogCard({ post }: { post: BlogPost }) {
   const href = `/blog/${post.slug}`;
   return (
-    <article className="flex w-[416px] flex-col overflow-hidden rounded-[6px] bg-white outline outline-1 outline-[#111]/10">
+    <article className="flex w-full flex-col overflow-hidden lg:w-[416px] rounded-[6px] bg-white outline outline-1 outline-[#111]/10">
       <Link
         href={href}
         tabIndex={-1}
         aria-hidden
-        className="relative block h-[300px] w-full shrink-0 overflow-hidden shadow-[inset_0_-1px_0_rgb(17_17_17/0.1)]"
+        className="relative block h-[220px] w-full shrink-0 overflow-hidden lg:h-[300px] shadow-[inset_0_-1px_0_rgb(17_17_17/0.1)]"
         style={{ background: post.image.bg }}
       >
         <Image
           src={post.image.src}
           alt=""
           fill
-          sizes="416px"
+          sizes="(max-width: 1023px) 100vw, 416px"
           className="object-cover transition-transform duration-500 hover:scale-[1.03]"
         />
       </Link>
-      <div className="flex flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-1 flex-col gap-5 p-5 lg:gap-6 lg:p-6">
         <div className="flex flex-col gap-4">
           <PostMeta post={post} />
           <div className="flex flex-col gap-2">
-            <h3 className="font-lexend-deca text-[24px] leading-[1.39] text-[#111]">
+            <h3 className="font-lexend-deca text-[20px] leading-[1.39] text-[#111] lg:text-[24px]">
               <Link href={href} className="hover:text-dragon">
                 {post.title}
               </Link>

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
-import type { FilterGroup, GamingCategory, GamingProduct } from "@/data/gaming";
+import { useEffect, useMemo, useState } from "react";
+import { productHref, type FilterGroup, type GamingCategory, type GamingProduct } from "@/data/gaming";
 import ProductCard from "./ProductCard";
 
 /** Page 1 shows 2 large + 3 small cards under the banner; later pages a 3×3 grid */
@@ -24,15 +24,18 @@ function FilterGroupBlock({
   onToggle,
   last,
   office,
+  idPrefix = "filter",
 }: {
   group: FilterGroup;
   selected: Set<string>;
   onToggle: (option: string) => void;
   last: boolean;
   office: boolean;
+  /** Keeps ids unique when the mobile filter sheet renders a second copy */
+  idPrefix?: string;
 }) {
   const [open, setOpen] = useState(!group.collapsed);
-  const id = `filter-${group.title.toLowerCase().replace(/\W+/g, "-")}`;
+  const id = `${idPrefix}-${group.title.toLowerCase().replace(/\W+/g, "-")}`;
 
   return (
     <div
@@ -112,16 +115,25 @@ function Pagination({
   total,
   href,
   outlined,
+  compact,
 }: {
   page: number;
   total: number;
   href: (p: number) => string;
   /** Office: 1px black/37% outline on the white buttons */
   outlined: boolean;
+  /** Mobile: black outlines, 12px gaps and "…" for skipped pages (first, last and neighbours shown) */
+  compact?: boolean;
 }) {
   const cell = `flex size-10 items-center justify-center rounded-[2px] font-lexend text-[16px] leading-[1.5] ${
-    outlined ? "shadow-[inset_0_0_0_1px_rgb(0_0_0/0.37)]" : ""
+    compact ? "shadow-[inset_0_0_0_1px_#000]" : outlined ? "shadow-[inset_0_0_0_1px_rgb(0_0_0/0.37)]" : ""
   }`;
+  const all = Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "gap")[] = compact
+    ? all
+        .filter((p) => p === 1 || p === total || Math.abs(p - page) <= 1)
+        .flatMap((p, i, kept) => (i > 0 && p - kept[i - 1] > 1 ? ["gap" as const, p] : [p]))
+    : all;
   const arrow = (dir: "prev" | "next") => {
     const target = dir === "prev" ? page - 1 : page + 1;
     const disabled = target < 1 || target > total;
@@ -148,9 +160,14 @@ function Pagination({
 
   return (
     <nav aria-label="Pagination" className="flex justify-center">
-      <ul className="flex gap-4">
+      <ul className={`flex items-center ${compact ? "gap-3" : "gap-4"}`}>
         <li>{arrow("prev")}</li>
-        {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
+        {pages.map((p, i) =>
+          p === "gap" ? (
+            <li key={`gap-${i}`} aria-hidden className="w-[19px] text-center font-lexend text-[24px] leading-none text-black">
+              …
+            </li>
+          ) : (
           <li key={p}>
             <Link
               href={href(p)}
@@ -160,10 +177,38 @@ function Pagination({
               {p}
             </Link>
           </li>
-        ))}
+          ),
+        )}
         <li>{arrow("next")}</li>
       </ul>
     </nav>
+  );
+}
+
+/** 171×168 mobile card with the name and tagline underneath (Figma "Rectangle 28" … "31"). */
+function MobileProductCard({ product }: { product: GamingProduct }) {
+  const office = product.range === "office";
+  return (
+    <Link href={productHref(product)} className="group block">
+      <div
+        className={`relative aspect-[171/168] overflow-hidden border-[1.2px] border-white ${office ? "bg-[#f6f6f6]" : "bg-white"}`}
+      >
+        <Image
+          src={product.image.src}
+          alt={product.name}
+          fill
+          sizes="45vw"
+          className="object-contain p-[9%] transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+        <p className="absolute right-4 top-3 font-lexend text-[12px] uppercase leading-[1.2] text-ink">{product.keywords}</p>
+      </div>
+      <h3 className="mt-4 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] text-ink">
+        {product.name}
+      </h3>
+      <p className="mt-1 font-lexend text-[12px] font-light capitalize leading-[14px] tracking-[0.72px] text-ink/75">
+        {product.tagline}
+      </p>
+    </Link>
   );
 }
 
@@ -185,6 +230,18 @@ export default function CategoryListing({ category, products, page }: CategoryLi
   const [sort, setSort] = useState<Sort>("featured");
   const [show, setShow] = useState<number | null>(null);
   const [selected, setSelected] = useState<Record<string, Set<string>>>({});
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const activeCount = Object.values(selected).reduce((n, set) => n + set.size, 0);
+
+  // Lock page scroll behind the mobile filter sheet
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [filtersOpen]);
 
   const firstSize = show ?? FIRST_PAGE;
   const otherSize = show ?? OTHER_PAGES;
@@ -227,37 +284,144 @@ export default function CategoryListing({ category, products, page }: CategoryLi
   const { listing } = category;
   const office = category.range === "office";
 
+  const filterControls = (idPrefix?: string) => (
+    <>
+      <div className="flex items-end justify-between border-b border-[rgba(230,0,18,0.8)] pb-6 leading-none whitespace-nowrap">
+        <p className="font-lexend text-[24px] font-medium tracking-[-0.24px] text-ink">Category</p>
+        <button
+          type="button"
+          onClick={() => {
+            setSelected({});
+            resetPage();
+          }}
+          className="cursor-pointer font-lexend text-[16px] font-light text-[rgba(230,0,18,0.8)] hover:underline"
+        >
+          Clear
+        </button>
+      </div>
+      {category.filters.map((group, i) => (
+        <FilterGroupBlock
+          key={group.title}
+          idPrefix={idPrefix}
+          group={group}
+          selected={selected[group.title] ?? new Set()}
+          office={office}
+          onToggle={(o) => toggle(group.title, o)}
+          last={i === category.filters.length - 1}
+        />
+      ))}
+    </>
+  );
+
+  const sortSelect = (className: string) => (
+    <select
+      aria-label="Sort by"
+      value={sort}
+      onChange={(e) => setSort(e.target.value as Sort)}
+      className={`h-full w-full cursor-pointer appearance-none bg-transparent outline-none ${className}`}
+    >
+      <option value="featured">Feature</option>
+      <option value="az">Name A–Z</option>
+      <option value="za">Name Z–A</option>
+    </select>
+  );
+
   return (
-    <section className={office ? "bg-white" : "bg-silver"}>
-      <div className="page-frame flex min-h-[1680px] items-start gap-4 px-20 pt-20 pb-12">
+    <section className={office ? "bg-white" : "bg-silver-mobile lg:bg-silver"}>
+      {/* ---------- Mobile (Figma "Mice Category" screen 2) ---------- */}
+      <div className="mobile-frame px-4 pt-[46px] pb-12 lg:hidden">
+        <p className="font-lexend-exa text-[14px] leading-[1.2] tracking-[-0.42px] text-ink">
+          <span className="text-ink/70">{listing.breadcrumb.split(" / ")[0]} /</span>{" "}
+          {listing.breadcrumb.split(" / ").slice(1).join(" / ")}
+        </p>
+        <h2 className="mt-3 font-lexend-giga text-[32px] font-bold leading-[1.1] tracking-[-2.56px] text-[rgba(230,0,18,0.8)]">
+          {listing.title}
+        </h2>
+        <p className="mt-2 font-lexend text-[16px] font-light leading-6 text-ink/80">{listing.description}</p>
+
+        <div className="mt-[27px] flex h-10 items-center justify-between">
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => setFiltersOpen(true)}
+            className="flex h-10 w-[100px] cursor-pointer items-center justify-center gap-2.5 rounded-[4px] bg-ink font-outfit text-[12px] font-bold tracking-[1px] text-white"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <path
+                d="M3 2v4m0 4v4M8 2v6m0 4v2m5-12v2m0 4v6M1.5 8h3M6.5 10h3M11.5 6h3"
+                stroke="#fff"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
+            </svg>
+            Filters
+            {activeCount > 0 && <span className="text-[rgba(230,0,18,1)]">({activeCount})</span>}
+          </button>
+          <label className="relative flex h-10 w-[103px] items-center rounded-[4px] border border-[#9f9e9e]">
+            {sortSelect("pr-8 pl-4 font-lexend-deca text-[12px] text-ink")}
+            <span className="pointer-events-none absolute right-2">
+              <ArrowDown />
+            </span>
+          </label>
+        </div>
+
+        {current === 1 && listing.banner && (
+          <div className="relative mt-4 aspect-[1536/708] w-full border border-ink/50">
+            <Image src={listing.banner} alt={listing.title} fill sizes="(max-width: 640px) 100vw, 640px" className="object-cover" />
+          </div>
+        )}
+
+        <ul className="mt-4 grid grid-cols-2 gap-x-[17px] gap-y-4">
+          {pageItems.map((p) => (
+            <li key={p.slug}>
+              <MobileProductCard product={p} />
+            </li>
+          ))}
+        </ul>
+        {visible.length === 0 && (
+          <p className="py-16 text-center font-lexend text-[16px] font-light text-ink/70">No products match your filters.</p>
+        )}
+
+        {total > 1 && (
+          <div className="mt-8">
+            <Pagination page={current} total={total} href={href} outlined compact />
+          </div>
+        )}
+
+        {filtersOpen && (
+          <div role="dialog" aria-modal="true" aria-label="Filters" className="fixed inset-0 z-50 flex flex-col bg-white">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-ink/10 px-4">
+              <p className="font-lexend-deca text-[20px] font-medium text-ink">Filters</p>
+              <button
+                type="button"
+                aria-label="Close filters"
+                onClick={() => setFiltersOpen(false)}
+                className="flex size-8 cursor-pointer items-center justify-center"
+              >
+                <Image src="/icons/close.svg" alt="" width={24} height={24} className="invert" />
+              </button>
+            </div>
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">{filterControls("filter-mobile")}</div>
+            <div className="shrink-0 border-t border-ink/10 p-4">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="h-12 w-full cursor-pointer rounded-[4px] bg-crimson font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white"
+              >
+                Show {visible.length} {visible.length === 1 ? "product" : "products"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="page-frame hidden min-h-[1680px] items-start gap-4 px-20 pt-20 pb-12 lg:flex">
         {/* ---------- Filters ---------- */}
         <aside
           aria-label="Filters"
           className="flex w-[308px] shrink-0 flex-col gap-4 border border-ink/40 px-[14px] py-4"
         >
-          <div className="flex items-end justify-between border-b border-[rgba(230,0,18,0.8)] pb-6 leading-none whitespace-nowrap">
-            <p className="font-lexend text-[24px] font-medium tracking-[-0.24px] text-ink">Category</p>
-            <button
-              type="button"
-              onClick={() => {
-                setSelected({});
-                resetPage();
-              }}
-              className="cursor-pointer font-lexend text-[16px] font-light text-[rgba(230,0,18,0.8)] hover:underline"
-            >
-              Clear
-            </button>
-          </div>
-          {category.filters.map((group, i) => (
-            <FilterGroupBlock
-              key={group.title}
-              group={group}
-              selected={selected[group.title] ?? new Set()}
-              office={office}
-              onToggle={(o) => toggle(group.title, o)}
-              last={i === category.filters.length - 1}
-            />
-          ))}
+          {filterControls()}
         </aside>
 
         {/* ---------- Results ---------- */}

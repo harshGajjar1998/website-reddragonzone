@@ -45,6 +45,8 @@ export type GamingCategory = {
   tileArt: Art;
   /** Tile label top – the design nudges a few */
   tileLabelTop?: number;
+  /** Render on the 390×152 mobile tile (Figma "Game Product" screen 2); a generic placement is used when absent */
+  mobileTileArt?: Art;
 
   /* Category landing page */
   hero: {
@@ -126,6 +128,13 @@ export const gamingCategories: GamingCategory[] = [
       box: { left: 403, top: -23, w: 451, h: 451 },
       shadow: tileShadow,
     },
+    mobileTileArt: {
+      src: `${IMG}/categories/mice.png`,
+      alt: "Redragon gaming mouse",
+      width: 1600,
+      height: 1600,
+      box: { left: 188, top: 0, w: 274, h: 274 },
+    },
   }),
   category({
     slug: "headsets",
@@ -138,6 +147,13 @@ export const gamingCategories: GamingCategory[] = [
       height: 1600,
       box: { left: 352, top: 0, w: 380, h: 380 },
       shadow: tileShadow,
+    },
+    mobileTileArt: {
+      src: "/images/home/headset-h894.png",
+      alt: "Redragon gaming headset",
+      width: 1600,
+      height: 1600,
+      box: { left: 208, top: -18, w: 170, h: 170 },
     },
   }),
   category({
@@ -155,6 +171,16 @@ export const gamingCategories: GamingCategory[] = [
       rotate: 90,
       crop: { w: 100, h: 278.26, left: 0, top: -77.91 },
       shadow: tileShadow,
+    },
+    mobileTileArt: {
+      src: `${IMG}/categories/keyboards.png`,
+      alt: "Redragon mechanical keyboard",
+      width: 1600,
+      height: 1600,
+      box: { left: 236, top: 0, w: 345, h: 124 },
+      outer: { w: 124, h: 345 },
+      rotate: 90,
+      crop: { w: 100, h: 278.26, left: 0, top: -77.91 },
     },
     hero: {
       breadcrumb: "MECHANICAL KEYBOARDS",
@@ -184,6 +210,13 @@ export const gamingCategories: GamingCategory[] = [
       height: 2081,
       box: { right: -250, top: -48, w: 674, h: 467 },
       shadow: tileShadow,
+    },
+    mobileTileArt: {
+      src: "/images/home/gamepad-ig09.png",
+      alt: "Redragon wireless gamepad",
+      width: 3000,
+      height: 2081,
+      box: { left: 136, top: -31, w: 365, h: 253 },
     },
   }),
   category({
@@ -803,5 +836,168 @@ export const featuredCards: FeaturedCard[] = [
         box: { left: 0, top: 56, w: 416, h: 320 },
       },
     ],
+  },
+];
+
+/* ------------------------------------------------------------------
+   Featured products – mobile grid (Figma "Game Product" screen 4):
+   twelve 171×205 cards. `image.box` is relative to the card.
+   ------------------------------------------------------------------ */
+
+export type MobileFeaturedCard = {
+  name: string;
+  description: string;
+  href: string;
+  image: Art;
+};
+
+const M = `${IMG}/featured/mobile`;
+const cardBox = (left: number, top: number, size: number) => ({ left, top, w: size, h: size });
+const SIM_CROP = { w: 150.6, h: 100, left: -25.31, top: 0 };
+
+export const featuredGrid: MobileFeaturedCard[] = [
+  {
+    name: "URANUS PRO 82 K732MC-RGB-PRO",
+    description: "3 Modes Connection Aluminum Alloy Body Mechanical Keyboard",
+    href: productHref({ category: "keyboards", slug: "k732mc-rgb-pro" }),
+    image: {
+      src: `${IMG}/featured/k732.png`,
+      alt: "URANUS PRO 82 K732MC-RGB-PRO keyboard",
+      width: 1600,
+      height: 1600,
+      box: cardBox(10.69, 27.79, 149.63),
+    },
+  },
+  {
+    name: "M686 Vampire Elite",
+    description: "Wireless Gaming Mouse",
+    href: productHref({ category: "mice", slug: "m686-vampire-elite" }),
+    image: {
+      src: `${IMG}/featured/m686.png`,
+      alt: "M686 Vampire Elite gaming mouse",
+      width: 844,
+      height: 560,
+      box: cardBox(10.69, 27.79, 149.63),
+      crop: { w: 278.66, h: 185, left: -89.33, top: -42.5 },
+    },
+  },
+  {
+    name: "TITAN H894",
+    description: "WIRELESS GAMING HEADSET",
+    href: "/gaming/headsets",
+    image: {
+      src: `${M}/titan-h894.png`,
+      alt: "TITAN H894 wireless gaming headset",
+      width: 482,
+      height: 320,
+      box: cardBox(10.69, 27.79, 149.63),
+      crop: { w: 137.71, h: 91.43, left: -18.86, top: 4.29 },
+    },
+  },
+  {
+    name: "K552-BB-3",
+    description: "Wired gaming 4 in 1 combo keyboard, mouse, headset, mouse pad",
+    href: productHref({ category: "combo", slug: "k552-bb-3" }),
+    image: {
+      src: `${IMG}/featured/k552.png`,
+      alt: "K552-BB-3 gaming combo",
+      width: 1600,
+      height: 1600,
+      box: cardBox(10.69, 11.79, 149.63),
+    },
+  },
+  {
+    name: "ANVIL GS520",
+    description: "RGB Computer Stereo Desktop Speakers",
+    href: "/gaming/speakers",
+    image: {
+      src: `${M}/anvil-gs520.png`,
+      alt: "ANVIL GS520 desktop speakers",
+      width: 512,
+      height: 512,
+      box: cardBox(11, 21, 149.63),
+    },
+  },
+  {
+    name: "GW800",
+    description: "Built-in Dual Microphone 360-Degree Rotation Webcam",
+    href: "/gaming/content-creation",
+    image: { src: `${M}/gw800.png`, alt: "GW800 webcam", width: 512, height: 512, box: cardBox(21, 29, 129) },
+  },
+  {
+    name: "RST-09",
+    description: "COCKPIT RACING SIMULATOR with Monitor Mount",
+    href: "/gaming/gamer-room",
+    image: {
+      src: "/images/nav/gaming-gamer-room.png",
+      alt: "RST-09 racing simulator cockpit",
+      width: 482,
+      height: 320,
+      box: cardBox(19, 27, 134),
+      crop: SIM_CROP,
+    },
+  },
+  {
+    name: "GB-127",
+    description: "Gaming backpack",
+    href: "/gaming/laptop-accessories",
+    image: {
+      src: `${M}/gb-127.png`,
+      alt: "GB-127 gaming backpack",
+      width: 482,
+      height: 320,
+      box: cardBox(18, 31, 135),
+      crop: SIM_CROP,
+    },
+  },
+  {
+    name: "CA-632B",
+    description: "Gaming Case",
+    href: "/gaming/pc-components",
+    image: {
+      src: `${M}/ca-632b.png`,
+      alt: "CA-632B gaming case",
+      width: 482,
+      height: 320,
+      box: cardBox(11, 28, 149.63),
+      crop: { w: 114.05, h: 75.71, left: -7.02, top: 8.72 },
+    },
+  },
+  {
+    name: "SLEEVED EXTENSION CABLE",
+    description: "COLORFUL MOD 4 IN 1 POWER SUPPLY SLEEVED EXTENSION CABLE COMBO",
+    href: "/gaming/diy-accessories",
+    image: {
+      src: `${M}/sleeved-cable.png`,
+      alt: "Sleeved power supply extension cables",
+      width: 512,
+      height: 512,
+      box: cardBox(21, 31, 129),
+    },
+  },
+  {
+    name: "PG1M",
+    description: "Glass Gaming Mouse Pad",
+    href: "/gaming/mice-pads",
+    image: {
+      src: `${M}/pg1m.png`,
+      alt: "PG1M glass gaming mouse pad",
+      width: 512,
+      height: 512,
+      box: cardBox(19, 32, 134),
+    },
+  },
+  {
+    name: "BM-2659",
+    description: "Wireless LCD display controller",
+    href: "/gaming/gamepads",
+    image: {
+      src: `${M}/bm-2659.png`,
+      alt: "Wireless controller with LCD display",
+      width: 512,
+      height: 288,
+      box: cardBox(14, 27, 143),
+      crop: { w: 136.69, h: 76.89, left: -24.34, top: 9.18 },
+    },
   },
 ];

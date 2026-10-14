@@ -39,6 +39,11 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
         <BlueprintSection
           src="/images/office/products/bm4195/blueprint.png"
           alt={`${product.name} exploded view: 2.4GHz + Bluetooth, up to 3 devices, AA battery, 5-level DPI, 250Hz polling rate, silent click`}
+          heading={{
+            lead: "Built for your",
+            accent: "Everyday workflow",
+            subtitle: `Unrivaled Internal Assembly of ${product.name}`,
+          }}
         />
         <NewsletterSection {...officeNewsletter} />
       </>

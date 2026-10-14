@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { storesByCountry, type Store } from "@/data/pages";
 
-const control = "flex h-[54px] items-center rounded-[4px] font-lexend-deca text-[20px] leading-none";
+const control = "flex h-[54px] items-center rounded-[4px] font-lexend-deca text-[16px] leading-none lg:text-[20px]";
 
 /** Country select + "Find stores near me" + Submit (Figma "Desktop - 8" on Where to buy). */
 export default function StoreFinder() {
@@ -34,8 +34,8 @@ export default function StoreFinder() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className="mt-14 flex gap-4">
-        <label className="relative w-[740px]">
+      <form onSubmit={onSubmit} className="mt-10 flex w-full flex-col gap-3 lg:mt-14 lg:w-auto lg:flex-row lg:gap-4">
+        <label className="relative w-full lg:w-[740px]">
           <span className="sr-only">Country</span>
           <select
             value={country}
@@ -58,13 +58,13 @@ export default function StoreFinder() {
         <button
           type="button"
           onClick={nearMe}
-          className={`${control} w-[308px] cursor-pointer justify-center border border-ink uppercase text-ink transition-colors hover:bg-ink hover:text-white`}
+          className={`${control} w-full cursor-pointer justify-center lg:w-[308px] border border-ink uppercase text-ink transition-colors hover:bg-ink hover:text-white`}
         >
           {locating ? "Locating…" : "FIND STORES NEAR ME"}
         </button>
         <button
           type="submit"
-          className={`${control} w-[200px] cursor-pointer justify-center bg-crimson font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]`}
+          className={`${control} w-full cursor-pointer justify-center lg:w-[200px] bg-crimson font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]`}
         >
           Submit
         </button>
@@ -81,7 +81,7 @@ export default function StoreFinder() {
               .
             </p>
           ) : (
-            <ul className="grid grid-cols-3 gap-4">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
               {results.stores.map((s) => (
                 <li key={s.name}>
                   <a

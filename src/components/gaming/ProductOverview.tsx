@@ -79,26 +79,141 @@ export default function ProductOverview({
   const [module, setModule] = useState(0);
   const [color, setColor] = useState(0);
 
+  const moduleSwitch = (
+    <div role="radiogroup" aria-label="Module" className="mt-2 flex border border-ink/50">
+      {modules.map((m, i) => {
+        const active = i === module;
+        const cls = `flex flex-1 items-center justify-center px-2 py-[10px] font-lexend text-[12px] leading-none whitespace-nowrap ${
+          active ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : "text-ink hover:bg-black/5"
+        } ${i > 0 ? "border-l border-ink/50" : ""}`;
+        return m.href && !active ? (
+          <Link key={m.label} href={m.href} className={cls}>
+            {m.label}
+          </Link>
+        ) : (
+          <button
+            key={m.label}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => setModule(i)}
+            className={`cursor-pointer ${cls}`}
+          >
+            {m.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  const colorSwatches = (
+    <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-3">
+      {colors.map((c, i) => (
+        <button
+          key={c.name}
+          type="button"
+          role="radio"
+          aria-checked={i === color}
+          aria-label={c.name}
+          onClick={() => setColor(i)}
+          className={`size-6 cursor-pointer rounded-full ${
+            i === color && colors.length > 1 ? "ring-2 ring-dragon ring-offset-2" : ""
+          }`}
+          style={{ background: c.hex }}
+        />
+      ))}
+    </div>
+  );
+
+  const breadcrumb = (className: string) => (
+    <nav aria-label="Breadcrumb">
+      <ol className={className}>
+        <li>
+          <Link href={range.base} className="hover:text-dragon">
+            {range.label} Products
+          </Link>
+          <span aria-hidden className="ml-[0.3em]">/</span>
+        </li>
+        <li>
+          <Link href={categoryHref(category)} className="hover:text-dragon">
+            {range.label} {category.label}
+          </Link>
+          <span aria-hidden className="ml-[0.3em]">/</span>
+        </li>
+        <li aria-current="page">{product.name}</li>
+      </ol>
+    </nav>
+  );
+
   return (
-    <section className={office ? "bg-white" : "bg-silver"}>
-      <div className="page-frame px-20 pt-12 pb-24">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex gap-[0.3em] font-lexend-exa text-[16px] font-semibold leading-none tracking-[-0.48px] whitespace-nowrap text-ink">
-            <li>
-              <Link href={range.base} className="hover:text-dragon">
-                {range.label} Products
-              </Link>
-              <span aria-hidden className="ml-[0.3em]">/</span>
+    <section className={`relative overflow-hidden ${office ? "bg-white" : "bg-white lg:bg-silver"}`}>
+      {/* Mobile – Figma "Game detail page" screen 1 */}
+      <div className="mobile-frame pt-10 pb-12 lg:hidden">
+        {/* Outlined product name behind the accordions, cropped by the section edge */}
+        <p
+          aria-hidden
+          className="pointer-events-none absolute bottom-[-28px] left-[13px] right-4 font-lato text-[64px] font-bold leading-[0.95] tracking-[-1.28px] text-transparent [-webkit-text-stroke:1.2px_rgb(116_116_116/0.3)]"
+        >
+          {product.name}
+        </p>
+
+        <div className="relative px-4">
+          {breadcrumb("flex flex-wrap gap-x-[0.3em] font-lato text-[14px] leading-normal text-ink/80")}
+          <h1 className="mt-2 font-lexend-exa text-[32px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
+        </div>
+
+        <ul
+          aria-label={`${product.name} gallery`}
+          className="relative mt-6 flex snap-x snap-mandatory gap-[25px] overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {gallery.map((image, i) => (
+            <li
+              key={image.src + i}
+              className="relative h-[320px] w-[88%] max-w-[344px] shrink-0 snap-start overflow-hidden"
+              style={{ background: image.bg ?? "#f6f6f6" }}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 640px) 88vw, 344px"
+                preload={i === 0}
+                className="object-cover"
+              />
             </li>
-            <li>
-              <Link href={categoryHref(category)} className="hover:text-dragon">
-                {range.label} {category.label}
-              </Link>
-              <span aria-hidden className="ml-[0.3em]">/</span>
-            </li>
-            <li aria-current="page">{product.name}</li>
-          </ol>
-        </nav>
+          ))}
+        </ul>
+
+        <div className="relative px-4">
+          <hr className="mt-6 border-0 border-t border-ink" />
+          <p className="mt-4 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
+          {moduleSwitch}
+          {colors.length > 0 && (
+            <>
+              <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
+                Color {colors[color].name}
+              </p>
+              {colorSwatches}
+            </>
+          )}
+          <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+          <p className="mt-2.5 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
+            {product.description ?? product.tagline}
+          </p>
+          {details.length > 0 && (
+            <div className="mt-5 flex flex-col gap-5">
+              {details.map((d) => (
+                <Accordion key={d.title} title={d.title} body={d.body} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="page-frame hidden px-20 pt-12 pb-24 lg:block">
+        {breadcrumb(
+          "flex gap-[0.3em] font-lexend-exa text-[16px] font-semibold leading-none tracking-[-0.48px] whitespace-nowrap text-ink",
+        )}
 
         <div className="mt-8 flex items-start gap-[65px]">
           <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${product.name} gallery`}>
@@ -114,52 +229,14 @@ export default function ProductOverview({
             <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
 
             <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
-            <div role="radiogroup" aria-label="Module" className="mt-2 flex border border-ink/50">
-              {modules.map((m, i) => {
-                const active = i === module;
-                const cls = `flex flex-1 items-center justify-center px-2 py-[10px] font-lexend text-[12px] leading-none whitespace-nowrap ${
-                  active ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : "text-ink hover:bg-black/5"
-                } ${i > 0 ? "border-l border-ink/50" : ""}`;
-                return m.href && !active ? (
-                  <Link key={m.label} href={m.href} className={cls}>
-                    {m.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={m.label}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => setModule(i)}
-                    className={`cursor-pointer ${cls}`}
-                  >
-                    {m.label}
-                  </button>
-                );
-              })}
-            </div>
+            {moduleSwitch}
 
             {colors.length > 0 && (
               <>
                 <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
                   Color {colors[color].name}
                 </p>
-                <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-3">
-                  {colors.map((c, i) => (
-                    <button
-                      key={c.name}
-                      type="button"
-                      role="radio"
-                      aria-checked={i === color}
-                      aria-label={c.name}
-                      onClick={() => setColor(i)}
-                      className={`size-6 cursor-pointer rounded-full ${
-                        i === color && colors.length > 1 ? "ring-2 ring-dragon ring-offset-2" : ""
-                      }`}
-                      style={{ background: c.hex }}
-                    />
-                  ))}
-                </div>
+                {colorSwatches}
               </>
             )}
 

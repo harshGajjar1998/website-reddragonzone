@@ -13,7 +13,7 @@ type GamingHeroProps = {
 
 /**
  * Figma "Hero Section 2" (Gaming Landing page) – blurred set-up backdrop,
- * "Gaming Produce" display title and slide dots. 688px tall below the header.
+ * "Gaming Product" display title and slide dots. 688px tall below the header.
  */
 export default function GamingHero({ title, description, images }: GamingHeroProps) {
   const [index, setIndex] = useState(0);
@@ -31,7 +31,7 @@ export default function GamingHero({ title, description, images }: GamingHeroPro
     <section
       aria-roledescription="carousel"
       aria-label="Gaming products"
-      className="bg-silver relative overflow-hidden"
+      className="relative overflow-hidden bg-[linear-gradient(90deg,#454344_0%,#727071_78.646%)] lg:bg-silver"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -40,7 +40,7 @@ export default function GamingHero({ title, description, images }: GamingHeroPro
         <div
           key={i}
           aria-hidden
-          className={`absolute inset-0 blur-[4.5px] transition-opacity duration-700 motion-reduce:transition-none ${
+          className={`absolute inset-0 mix-blend-multiply transition-opacity lg:mix-blend-normal lg:blur-[4.5px] duration-700 motion-reduce:transition-none ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -50,12 +50,22 @@ export default function GamingHero({ title, description, images }: GamingHeroPro
             fill
             sizes="100vw"
             preload={i === 0}
-            className="object-cover object-left"
+            className="object-cover object-[59.5%_center] lg:object-left"
           />
         </div>
       ))}
 
-      <div className="page-frame relative h-[688px] text-white">
+      {/* Mobile – Figma "Game Product" screen 1 (394×800 incl. 96px header) */}
+      <div className="mobile-frame relative flex h-[704px] flex-col items-center px-4 pt-[159px] text-center text-white lg:hidden">
+        <h1 className="font-audiowide text-[64px] leading-[1.2]">
+          {title[0]}
+          <br />
+          <span className="text-dragon">{title[1]}</span>
+        </h1>
+        <p className="mt-4 max-w-[358px] font-lexend-deca text-[16px] font-medium leading-6">{description}</p>
+      </div>
+
+      <div className="page-frame relative hidden h-[688px] text-white lg:block">
         <h1 className="absolute left-1/2 top-[228px] -translate-x-1/2 font-audiowide text-[112px] leading-[1.2] whitespace-nowrap">
           {title[0]} <span className="text-dragon">{title[1]}</span>
         </h1>

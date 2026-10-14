@@ -27,8 +27,108 @@ function Accordion({ title, body }: { title: string; body: string }) {
         />
       </button>
       {open && (
-        <p className="mt-2 w-[632px] font-lexend text-[14px] font-light leading-[1.4] tracking-[0.84px] text-ink/75">{body}</p>
+        <p className="mt-2 font-lexend text-[14px] font-light leading-[1.4] tracking-[0.84px] text-ink/75 lg:w-[632px]">
+          {body}
+        </p>
       )}
+    </div>
+  );
+}
+
+type SwatchProps = { colors: { name: string; hex: string }[]; color: number; setColor: (i: number) => void };
+
+function Swatches({ colors, color, setColor, size }: SwatchProps & { size: string }) {
+  return (
+    <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-2">
+      {colors.map((c, i) => (
+        <button
+          key={c.name}
+          type="button"
+          role="radio"
+          aria-checked={i === color}
+          aria-label={c.name}
+          onClick={() => setColor(i)}
+          className={`${size} cursor-pointer rounded-full ${i === color ? "ring-1 ring-ink/40 ring-offset-2" : ""}`}
+          style={{ background: c.hex }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Mobile – Figma "Spice detal" screen 1: breadcrumb, name, swipeable renders, colour + description. */
+function MobileSpecHero({
+  product,
+  category,
+  ...swatches
+}: { product: GamingProduct; category: GamingCategory } & SwatchProps) {
+  const hero = product.featured!.hero;
+  const shots = [
+    { src: product.image.src, alt: product.name, cover: true },
+    ...hero.thumbnails.map((t) => ({ src: t.src, alt: t.alt, cover: false })),
+  ];
+  const { colors, color } = swatches;
+
+  return (
+    <div className="mobile-frame pt-10 lg:hidden">
+      <div className="px-4">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex flex-wrap gap-x-[0.25em] font-lato text-[14px] leading-normal text-ink/80">
+            <li>
+              <Link href="/office">Office Products</Link> <span aria-hidden>/</span>
+            </li>
+            <li>
+              <Link href={categoryHref(category)}>Office {category.label}</Link> <span aria-hidden>/</span>
+            </li>
+            <li aria-current="page">{product.name}</li>
+          </ol>
+        </nav>
+        <h1 className="mt-2 font-lexend-exa text-[32px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
+      </div>
+
+      <ul
+        aria-label="Product images"
+        className="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {shots.map((s, i) => (
+          <li key={s.src} className="relative h-[320px] w-[88%] max-w-[344px] shrink-0 snap-start bg-[#f6f6f6]">
+            <Image
+              src={s.src}
+              alt={s.alt}
+              fill
+              sizes="(max-width: 640px) 88vw, 344px"
+              preload={i === 0}
+              className={s.cover ? "object-cover" : "object-contain p-6"}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className="px-4">
+        <hr className="mt-[25px] border-0 border-t border-ink" />
+        {colors.length > 0 && (
+          <div className="mt-[18px]">
+            <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Color {colors[color].name}</p>
+            <Swatches {...swatches} size="size-6" />
+          </div>
+        )}
+        <p className="mt-4 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+        <p className="mt-2.5 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
+          {product.description ?? product.tagline}
+        </p>
+        <div className="mt-5 flex flex-col gap-5">
+          {(product.details ?? []).map((d) => (
+            <Accordion key={d.title} title={d.title} body={d.body} />
+          ))}
+        </div>
+      </div>
+
+      {/* Outlined model name, cropped by the section edge */}
+      <div aria-hidden className="mt-3 h-[72px] overflow-hidden px-[13px]">
+        <p className="font-lato text-[96px] font-bold leading-[1.1] tracking-[-1.92px] whitespace-nowrap text-transparent [-webkit-text-stroke:1.675px_rgb(116_116_116/0.35)]">
+          {hero.model}
+        </p>
+      </div>
     </div>
   );
 }
@@ -44,7 +144,9 @@ export default function OfficeSpecHero({ product, category }: { product: GamingP
 
   return (
     <section className="overflow-hidden bg-white">
-      <div className="page-frame relative h-[688px]">
+      <MobileSpecHero product={product} category={category} colors={colors} color={color} setColor={setColor} />
+
+      <div className="page-frame relative hidden h-[688px] lg:block">
         {/* Right spotlight panel (radial gradient fading to white + faint pattern) */}
         <Image
           src={`${Q}/hero-panel.png`}
@@ -122,20 +224,7 @@ export default function OfficeSpecHero({ product, category }: { product: GamingP
         {colors.length > 0 && (
           <div className="absolute left-20 top-[235px]">
             <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Color {colors[color].name}</p>
-            <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-2">
-              {colors.map((c, i) => (
-                <button
-                  key={c.name}
-                  type="button"
-                  role="radio"
-                  aria-checked={i === color}
-                  aria-label={c.name}
-                  onClick={() => setColor(i)}
-                  className={`size-6 cursor-pointer rounded-full ${i === color ? "ring-1 ring-ink/40 ring-offset-2" : ""}`}
-                  style={{ background: c.hex }}
-                />
-              ))}
-            </div>
+            <Swatches colors={colors} color={color} setColor={setColor} size="size-6" />
           </div>
         )}
 

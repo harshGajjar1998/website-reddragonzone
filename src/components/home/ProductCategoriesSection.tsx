@@ -206,6 +206,162 @@ function OfficeGears() {
   );
 }
 
+/* ------------------------------------------------------------------
+   Mobile (Figma "Home Mobile version" screen 4): 358×122 cards, 32px apart.
+   Art is anchored to the card's right edge so it stays put on wider phones.
+   ------------------------------------------------------------------ */
+
+function MobileGearCard({
+  title,
+  ghost,
+  href,
+  clippedArt,
+  children,
+}: {
+  title: string;
+  ghost: string;
+  href: string;
+  clippedArt?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <li className="relative h-[122px]">
+      <div className="absolute inset-0 overflow-clip rounded-[24px] bg-graphite">
+        <p
+          aria-hidden
+          className="absolute left-[-10px] top-2 font-gotham text-[64px] font-medium leading-[1.2] whitespace-nowrap text-ghost"
+        >
+          {ghost}
+        </p>
+        {clippedArt}
+      </div>
+      {children}
+      <h3 className="absolute left-6 top-[35px] font-lexend-deca text-[20px] font-medium leading-[1.2] text-white">{title}</h3>
+      <BrowseLink href={href} size="sm" className="absolute left-6 top-[86px] font-semibold!" />
+    </li>
+  );
+}
+
+/** Soft floor shadow under a product (Figma ellipse, #242424 + blur). */
+function MobileShadow({ right, top, w, h }: { right: number; top: number; w: number; h: number }) {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute rounded-[50%] bg-[#242424] blur-[6px]"
+      style={{ right, top, width: w, height: h }}
+    />
+  );
+}
+
+function MobileGameGears() {
+  return (
+    <ul className="flex flex-col gap-8">
+      <MobileGearCard title="Mice" ghost="MICE" href="/gaming/mice">
+        <MobileShadow right={61} top={99} w={80} h={14} />
+        <Image
+          src="/images/home/mouse-m919.png"
+          alt="Redragon M919 gaming mouse"
+          width={159}
+          height={159}
+          className={`absolute right-0 top-[-51px] size-[159px] ${dropShadow}`}
+        />
+      </MobileGearCard>
+      <MobileGearCard title="Headsets" ghost="Headsets" href="/gaming/headsets">
+        <MobileShadow right={29} top={103} w={70} h={12} />
+        <Image
+          src="/images/home/headset-h894.png"
+          alt="Redragon H894 gaming headset"
+          width={131}
+          height={131}
+          className={`absolute right-0 top-[-32px] size-[131px] ${dropShadow}`}
+        />
+      </MobileGearCard>
+      <MobileGearCard
+        title="Keyboards"
+        ghost="Keyboards"
+        href="/gaming/keyboards"
+        clippedArt={
+          <Image
+            src="/images/home/keyboard-k754.png"
+            alt=""
+            width={170}
+            height={170}
+            className="absolute right-0 top-[-47px] size-[170px] -scale-x-100"
+          />
+        }
+      >
+        {/* Rounded copy breaking out of the card top */}
+        <div className="absolute right-[15px] top-[-47px] h-[170px] w-[155px] -scale-x-100 overflow-hidden rounded-[32px]">
+          <Image
+            src="/images/home/keyboard-k754.png"
+            alt="Redragon K754 mechanical keyboard"
+            width={170}
+            height={170}
+            className="absolute left-[-15px] top-0 size-[170px] max-w-none"
+          />
+        </div>
+      </MobileGearCard>
+      <MobileGearCard title="Gamepads" ghost="Gamepads" href="/gaming/gamepads">
+        <Image
+          src="/images/home/gamepad-ig09.png"
+          alt="Redragon gamepad"
+          width={244}
+          height={170}
+          className={`absolute right-[-51px] top-[-48px] h-[170px] w-[244px] max-w-none object-cover ${dropShadow}`}
+        />
+        <MobileShadow right={24} top={96} w={122} h={17} />
+      </MobileGearCard>
+    </ul>
+  );
+}
+
+/** Office tab has no mobile frame – same card pattern with the office renders. */
+function MobileOfficeGears() {
+  return (
+    <ul className="flex flex-col gap-8">
+      <MobileGearCard title="Mice" ghost="MICE" href="/office/mice">
+        <MobileShadow right={45} top={101} w={80} h={14} />
+        <div className="pointer-events-none absolute right-0 top-[-60px] h-[174px] w-[150px] overflow-hidden drop-office-gear">
+          <Image
+            src="/images/home/office/mouse.png"
+            alt="Redragon office mouse"
+            width={1600}
+            height={1600}
+            className="absolute left-0 top-0 h-full w-[132.12%] max-w-none"
+          />
+        </div>
+      </MobileGearCard>
+      <MobileGearCard
+        title="Keyboards"
+        ghost="Keyboards"
+        href="/office/keyboards"
+        clippedArt={
+          <div className="absolute right-[-40px] top-[-30px] h-[90px] w-[226px] rotate-[29deg] overflow-hidden drop-office-gear">
+            <Image
+              src="/images/home/office/keyboard.png"
+              alt="Redragon office keyboard"
+              width={482}
+              height={320}
+              className="absolute left-[-7.93%] top-[-46.39%] h-[192.77%] w-[115.87%] max-w-none"
+            />
+          </div>
+        }
+      />
+      <MobileGearCard title="Combo" ghost="COMBO" href="/office/combo">
+        <div className="pointer-events-none absolute right-[-12px] top-[-40px] h-[108px] w-[238px] rotate-[6.31deg] overflow-hidden drop-office-gear">
+          <Image
+            src="/images/home/office/combo.png"
+            alt="Redragon office keyboard and mouse combo"
+            width={1600}
+            height={1600}
+            className="absolute left-[-1.9%] top-[-65.63%] h-[231.25%] w-[105.46%] max-w-none"
+          />
+        </div>
+      </MobileGearCard>
+    </ul>
+  );
+}
+
 /** Figma "Section 4" – Discover Our Products / Choose Your Gears (1440×800). */
 export default function ProductCategoriesSection() {
   const [tab, setTab] = useState<Tab>("game");
@@ -223,9 +379,34 @@ export default function ProductCategoriesSection() {
     </Button>
   );
 
+  const mobileTab = (value: Tab, label: string) => (
+    <Button
+      role="tab"
+      aria-selected={tab === value}
+      aria-controls="gears-panel-mobile"
+      variant={tab === value ? "solid" : "outline"}
+      onClick={() => setTab(value)}
+      className="h-8 px-5 font-lexend-deca text-[12px] font-bold leading-normal"
+    >
+      {label}
+    </Button>
+  );
+
   return (
-    <section className="bg-silver overflow-hidden">
-      <div className="page-frame h-[800px] px-[120px] pt-20">
+    <section className="bg-silver-mobile overflow-hidden lg:bg-silver">
+      <div className="mobile-frame px-4 pt-8 pb-6 lg:hidden">
+        <p className="font-lexend-giga text-[20px] font-semibold leading-[1.2] text-dragon">Discover Our Products</p>
+        <h2 className="mt-1.5 font-lexend-exa text-[28px] font-medium leading-[1.2] text-ink">Choose Your Gears</h2>
+        <div role="tablist" aria-label="Product line" className="mt-[14px] flex gap-3">
+          {mobileTab("game", "Game")}
+          {mobileTab("office", "Office")}
+        </div>
+        <div id="gears-panel-mobile" role="tabpanel" className="mt-[50px]">
+          {tab === "game" ? <MobileGameGears /> : <MobileOfficeGears />}
+        </div>
+      </div>
+
+      <div className="page-frame hidden h-[800px] px-[120px] pt-20 lg:block">
         <div className="flex items-end justify-between">
           <SectionHeading eyebrow="Discover Our Products" title="Choose Your Gears" />
           <div role="tablist" aria-label="Product line" className="flex gap-6">

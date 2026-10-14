@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { mainNav, megaMenus } from "@/data/navigation";
 import { useProductRange } from "@/lib/useProductRange";
 import MegaMenu from "./MegaMenu";
+import MobileMenu from "./MobileMenu";
 import SearchOverlay from "./SearchOverlay";
 
 /** Grace period so the pointer can travel from a nav link down into its panel */
@@ -14,8 +16,10 @@ const CLOSE_DELAY_MS = 150;
 export default function MainNav() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const closeTimer = useRef<number | undefined>(undefined);
   const range = useProductRange();
+  const pathname = usePathname();
 
   const cancelClose = () => window.clearTimeout(closeTimer.current);
   const open = (label: string) => {
@@ -27,6 +31,33 @@ export default function MainNav() {
     closeTimer.current = window.setTimeout(() => setOpenMenu(null), CLOSE_DELAY_MS);
   };
   const closeSearch = useCallback(() => setSearchOpen(false), []);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  // Mobile (Figma "Frame 130"): office category/product pages show the R mark, every other page the wordmark
+  const officeSubpage = range === "office" && pathname.replace(/\/$/, "") !== "/office";
+  const mobileLogo = (
+    <Link href="/" aria-label="Redragon home" onClick={closeMenu} className="flex h-8 items-center">
+      {officeSubpage ? (
+        <Image
+          src="/brand/redragon-logo-office.png"
+          alt="Redragon"
+          width={1167}
+          height={1290}
+          preload
+          className="size-8 object-contain"
+        />
+      ) : (
+        <Image
+          src="/brand/redragon-logo.png"
+          alt="Redragon"
+          width={120}
+          height={32}
+          preload
+          className="h-8 w-[120px] object-contain"
+        />
+      )}
+    </Link>
+  );
 
   useEffect(() => {
     if (!openMenu) return;
@@ -41,7 +72,33 @@ export default function MainNav() {
 
   return (
     <>
-      <nav aria-label="Main" className="relative bg-charcoal" onMouseLeave={scheduleClose} onMouseEnter={cancelClose}>
+      {/* Mobile header (Figma "Frame 130", 390×64) */}
+      <div className="flex h-16 items-center justify-between bg-charcoal px-6 lg:hidden">
+        {mobileLogo}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            aria-label="Search"
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen(true)}
+            className="flex size-6 cursor-pointer items-center"
+          >
+            <Image src="/icons/mobile/search.svg" alt="" width={24} height={24} />
+          </button>
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+            className="flex size-6 cursor-pointer items-center"
+          >
+            <Image src="/icons/mobile/menu.svg" alt="" width={24} height={24} />
+          </button>
+        </div>
+      </div>
+      {menuOpen && <MobileMenu onClose={closeMenu} logo={mobileLogo} />}
+
+      <nav aria-label="Main" className="relative hidden bg-charcoal lg:block" onMouseLeave={scheduleClose} onMouseEnter={cancelClose}>
         <div className="page-frame flex items-center justify-between px-[120px] py-4">
           <Link href="/" aria-label="Redragon home" className="flex h-10 items-center">
             {range === "office" ? (

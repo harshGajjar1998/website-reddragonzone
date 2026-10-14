@@ -9,8 +9,42 @@ const crumb = "font-lexend-giga text-[24px] leading-[1.2] whitespace-nowrap";
 export default function CategoryHero({ category }: { category: GamingCategory }) {
   const { hero } = category;
   return (
-    <section className="bg-silver overflow-hidden">
-      <div className="page-frame relative h-[688px]">
+    <section className="bg-silver-mobile overflow-hidden lg:bg-silver">
+      {/* Mobile – no Figma frame; follows the office category hero (copy over a 344×320 render) */}
+      <div className="mobile-frame px-4 pt-10 pb-12 lg:hidden">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex flex-wrap items-center gap-x-2 font-lexend-giga text-[14px] leading-[1.2] text-ink">
+            <li>
+              <Link href="/gaming" className="text-ink/70">
+                GAMING PRODUCTS
+              </Link>
+            </li>
+            <li aria-hidden className="text-ink/70">
+              /
+            </li>
+            <li aria-current="page" className="font-medium text-dragon">
+              {hero.breadcrumb}
+            </li>
+          </ol>
+        </nav>
+        <h1 className="mt-2 font-lexend-exa text-[32px] font-semibold leading-[1.2] text-ink">{hero.title}</h1>
+        <div className="relative mt-6 h-[320px] w-full">
+          <Image
+            src={hero.image.src}
+            alt={hero.image.alt ?? hero.title}
+            fill
+            sizes="(max-width: 640px) 100vw, 640px"
+            preload
+            className={`object-contain ${hero.image.shadow ?? "drop-product"}`}
+          />
+        </div>
+        <Image src="/icons/gaming/hero-rule.svg" alt="" width={87} height={2} className="mt-6" />
+        <p className="mt-5 whitespace-pre-line font-lexend-deca text-[16px] font-light leading-[1.4] tracking-[0.48px] text-[#626466]">
+          {hero.description}
+        </p>
+      </div>
+
+      <div className="page-frame relative hidden h-[688px] lg:block">
         <ArtImage art={hero.image} />
 
         <nav aria-label="Breadcrumb" className="absolute left-20 top-[217px]">
