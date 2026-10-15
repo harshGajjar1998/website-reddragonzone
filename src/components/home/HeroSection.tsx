@@ -48,6 +48,7 @@ function Slide({ slide, priority }: { slide: HeroSlide; priority: boolean }) {
           alt={slide.image.alt}
           width={1600}
           height={1600}
+          sizes="600px"
           preload={priority}
           draggable={false}
           className="absolute left-0 top-[0.05%] h-full w-[171.5%] max-w-none"

@@ -51,11 +51,37 @@ const callouts: Callout[] = [
   },
 ];
 
+/** Mobile with a pre-labelled render – Figma "Spice detal" screen 4 (394×808). */
+function MobileLabelledView({ productName, src }: { productName: string; src: string }) {
+  return (
+    <div className="mobile-frame flex flex-col items-center pt-[41px] pb-[42px] lg:hidden">
+      <h2 className="px-4 text-center font-lexend-deca text-[32px] font-bold leading-[38px] text-dragon">
+        Exploded Architectural Blueprint
+      </h2>
+      <p className="mt-4 px-4 text-center font-lexend-deca text-[18px] font-light leading-[25px] tracking-[0.54px] text-ink/60">
+        Unrivaled Internal Assembly of {productName}
+      </p>
+      <Image
+        src={src}
+        alt={`Exploded view of the ${productName} internal components`}
+        width={1173}
+        height={1635}
+        sizes="(max-width: 640px) 100vw, 640px"
+        className="h-auto w-full max-w-[391px]"
+      />
+    </div>
+  );
+}
+
 /** Exploded architectural blueprint of a featured product (SPECIAL PAGE "Section 3"). */
-export default function ExplodedBlueprint({ productName }: { productName: string }) {
+export default function ExplodedBlueprint({ productName, mobileImage }: { productName: string; mobileImage?: string }) {
   return (
     <section className="bg-silver-mobile overflow-hidden lg:bg-silver-tall">
-      <MobileExplodedView productName={productName} />
+      {mobileImage ? (
+        <MobileLabelledView productName={productName} src={mobileImage} />
+      ) : (
+        <MobileExplodedView productName={productName} />
+      )}
       <div className="page-frame relative hidden h-[1000px] lg:block">
         <div className="absolute left-1/2 top-16 flex -translate-x-1/2 flex-col items-center whitespace-nowrap">
           <h2 className="font-lexend-giga text-[40px] font-semibold leading-none tracking-[-3.2px] text-dragon">

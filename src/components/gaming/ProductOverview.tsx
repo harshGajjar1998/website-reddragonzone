@@ -63,9 +63,16 @@ function Accordion({ title, body }: { title: string; body: string }) {
 export default function ProductOverview({
   product,
   category,
+  special,
 }: {
   product: GamingProduct;
   category: GamingCategory;
+  /**
+   * Mobile layout of the featured ("SPECIAL PAGE") product, Figma "Spice detal" screen 1:
+   * no module switch, and the model name as a centred ghost word under the accordions.
+   * Desktop keeps the featured hero, so only the mobile block renders.
+   */
+  special?: { ghost: string };
 }) {
   const gallery: GalleryImage[] = product.gallery ?? [
     { ...product.image, alt: product.name, bg: "#f6f6f6" },
@@ -79,8 +86,8 @@ export default function ProductOverview({
   const [module, setModule] = useState(0);
   const [color, setColor] = useState(0);
 
-  const moduleSwitch = (
-    <div role="radiogroup" aria-label="Module" className="mt-2 flex border border-ink/50">
+  const moduleSwitch = (className = "mt-2") => (
+    <div role="radiogroup" aria-label="Module" className={`${className} flex border border-ink/50`}>
       {modules.map((m, i) => {
         const active = i === module;
         const cls = `flex flex-1 items-center justify-center px-2 py-[10px] font-lexend text-[12px] leading-none whitespace-nowrap ${
@@ -106,8 +113,8 @@ export default function ProductOverview({
     </div>
   );
 
-  const colorSwatches = (
-    <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-3">
+  const colorSwatches = (className = "mt-2 gap-3") => (
+    <div role="radiogroup" aria-label="Color" className={`${className} flex`}>
       {colors.map((c, i) => (
         <button
           key={c.name}
@@ -146,16 +153,20 @@ export default function ProductOverview({
   );
 
   return (
-    <section className={`relative overflow-hidden ${office ? "bg-white" : "bg-white lg:bg-silver"}`}>
-      {/* Mobile – Figma "Game detail page" screen 1 */}
-      <div className="mobile-frame pt-10 pb-12 lg:hidden">
+    <section
+      className={`relative overflow-hidden ${office ? "bg-white" : "bg-silver-mobile lg:bg-silver"} ${special ? "lg:hidden" : ""}`}
+    >
+      {/* Mobile – Figma "Frame 153" screen 1 (394×1056 incl. 96px header) */}
+      <div className={`mobile-frame pt-10 lg:hidden ${special ? "" : "pb-7"}`}>
         {/* Outlined product name behind the accordions, cropped by the section edge */}
-        <p
-          aria-hidden
-          className="pointer-events-none absolute bottom-[-28px] left-[13px] right-4 font-lato text-[64px] font-bold leading-[0.95] tracking-[-1.28px] text-transparent [-webkit-text-stroke:1.2px_rgb(116_116_116/0.3)]"
-        >
-          {product.name}
-        </p>
+        {!special && (
+          <p
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 right-4 font-lato text-[64px] font-bold leading-[0.95] tracking-[-1.28px] text-transparent [-webkit-text-stroke:1.2px_rgb(116_116_116/0.3)]"
+          >
+            {product.name}
+          </p>
+        )}
 
         <div className="relative px-4">
           {breadcrumb("flex flex-wrap gap-x-[0.3em] font-lato text-[14px] leading-normal text-ink/80")}
@@ -164,12 +175,12 @@ export default function ProductOverview({
 
         <ul
           aria-label={`${product.name} gallery`}
-          className="relative mt-6 flex snap-x snap-mandatory gap-[25px] overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="relative mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {gallery.map((image, i) => (
             <li
               key={image.src + i}
-              className="relative h-[320px] w-[88%] max-w-[344px] shrink-0 snap-start overflow-hidden"
+              className="relative h-[320px] w-[95%] max-w-[344px] shrink-0 snap-start overflow-hidden"
               style={{ background: image.bg ?? "#f6f6f6" }}
             >
               <Image
@@ -186,18 +197,22 @@ export default function ProductOverview({
 
         <div className="relative px-4">
           <hr className="mt-6 border-0 border-t border-ink" />
-          <p className="mt-4 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
-          {moduleSwitch}
-          {colors.length > 0 && (
+          {!special && (
             <>
-              <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
-                Color {colors[color].name}
-              </p>
-              {colorSwatches}
+              <p className="mt-4 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
+              {moduleSwitch("mt-3")}
             </>
           )}
-          <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
-          <p className="mt-2.5 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
+          {colors.length > 0 && (
+            <>
+              <p className="mt-5 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
+                Color {colors[color].name}
+              </p>
+              {colorSwatches("mt-3 gap-2")}
+            </>
+          )}
+          <p className="mt-5 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+          <p className="mt-3 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
             {product.description ?? product.tagline}
           </p>
           {details.length > 0 && (
@@ -208,55 +223,66 @@ export default function ProductOverview({
             </div>
           )}
         </div>
+
+        {/* Ghost model name, cut off by the section's bottom edge */}
+        {special && (
+          <div aria-hidden className="mt-3.5 h-[69px] overflow-hidden text-center">
+            <p className="font-lato text-[96px] font-bold leading-[0.8] text-transparent [-webkit-text-stroke:1.5px_rgb(116_116_116/0.55)]">
+              {special.ghost}
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="page-frame hidden px-20 pt-12 pb-24 lg:block">
-        {breadcrumb(
-          "flex gap-[0.3em] font-lexend-exa text-[16px] font-semibold leading-none tracking-[-0.48px] whitespace-nowrap text-ink",
-        )}
+      {!special && (
+        <div className="page-frame hidden px-20 pt-12 pb-24 lg:block">
+          {breadcrumb(
+            "flex gap-[0.3em] font-lexend-exa text-[16px] font-semibold leading-none tracking-[-0.48px] whitespace-nowrap text-ink",
+          )}
 
-        <div className="mt-8 flex items-start gap-[65px]">
-          <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${product.name} gallery`}>
-            {gallery.map((image, i) => (
-              <GalleryCell key={image.src + i} image={image} priority={i < 2} />
-            ))}
-          </ul>
+          <div className="mt-8 flex items-start gap-[65px]">
+            <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${product.name} gallery`}>
+              {gallery.map((image, i) => (
+                <GalleryCell key={image.src + i} image={image} priority={i < 2} />
+              ))}
+            </ul>
 
-          <div className="flex w-[524px] shrink-0 flex-col">
-            {product.series && (
-              <p className="font-lexend-giga text-[24px] leading-[1.2] text-ink/80">{product.series}</p>
-            )}
-            <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
+            <div className="flex w-[524px] shrink-0 flex-col">
+              {product.series && (
+                <p className="font-lexend-giga text-[24px] leading-[1.2] text-ink/80">{product.series}</p>
+              )}
+              <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
 
-            <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
-            {moduleSwitch}
+              <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
+              {moduleSwitch()}
 
-            {colors.length > 0 && (
-              <>
-                <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
-                  Color {colors[color].name}
-                </p>
-                {colorSwatches}
-              </>
-            )}
+              {colors.length > 0 && (
+                <>
+                  <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">
+                    Color {colors[color].name}
+                  </p>
+                  {colorSwatches()}
+                </>
+              )}
 
-            <hr className={`mt-6 h-[1.5px] border-0 ${office ? "bg-[#e7e7e7]" : "bg-ink/50"}`} />
+              <hr className={`mt-6 h-[1.5px] border-0 ${office ? "bg-[#e7e7e7]" : "bg-ink/50"}`} />
 
-            <p className="mt-[30px] font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
-            <p className="mt-2 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-pretty text-ink/75">
-              {product.description ?? product.tagline}
-            </p>
+              <p className="mt-[30px] font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+              <p className="mt-2 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-pretty text-ink/75">
+                {product.description ?? product.tagline}
+              </p>
 
-            {details.length > 0 && (
-              <div className="mt-6 flex flex-col gap-6">
-                {details.map((d) => (
-                  <Accordion key={d.title} title={d.title} body={d.body} />
-                ))}
-              </div>
-            )}
+              {details.length > 0 && (
+                <div className="mt-6 flex flex-col gap-6">
+                  {details.map((d) => (
+                    <Accordion key={d.title} title={d.title} body={d.body} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

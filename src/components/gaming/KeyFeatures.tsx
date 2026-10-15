@@ -39,7 +39,7 @@ export default function KeyFeatures({
     );
 
   return (
-    <section className={`overflow-hidden ${light ? "bg-white" : "bg-white lg:bg-silver"}`}>
+    <section className={`overflow-hidden ${light ? "bg-white" : "bg-silver-mobile lg:bg-silver"}`}>
       {/* Mobile – Figma "Game detail page" screen 2 */}
       <div className="mobile-frame flex flex-col items-center pt-[72px] pb-[72px] lg:hidden">
         <h2 className="font-lexend-giga text-[32px] font-bold leading-[1.1] tracking-[-2.56px] text-[rgba(230,0,18,0.8)]">
@@ -53,7 +53,7 @@ export default function KeyFeatures({
         </div>
         <ul
           aria-label={`${productName} features`}
-          className="mt-4 flex snap-x snap-mandatory scroll-px-4 gap-[21px] self-stretch overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-4 flex snap-x snap-mandatory scroll-px-4 gap-4 self-stretch overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {data.items.map((item, i) => (
             <li key={i} className="w-[90%] max-w-[352px] shrink-0 snap-start">
@@ -70,7 +70,7 @@ export default function KeyFeatures({
                 />
               </div>
               {item.title && (
-                <h3 className="mt-6 font-lexend text-[20px] font-medium leading-[1.2] text-ink">{item.title}</h3>
+                <h3 className="mt-[26px] font-lexend text-[20px] font-medium leading-[1.2] text-ink">{item.title}</h3>
               )}
               {item.text && (
                 <p className="mt-3 font-lexend text-[16px] font-light capitalize leading-[19px] tracking-[0.96px] text-ink/75">

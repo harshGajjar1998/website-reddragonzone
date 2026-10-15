@@ -33,18 +33,35 @@ export default function MainNav() {
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Mobile (Figma "Frame 130"): office category/product pages show the R mark, every other page the wordmark
-  const officeSubpage = range === "office" && pathname.replace(/\/$/, "") !== "/office";
+  // Close the mega menu as soon as a navigation lands, even if the pointer never leaves the panel
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpenMenu(null);
+  }
+
+  // Mobile mirrors desktop: office pages show the R mark, gaming pages the dragon head, other pages the wordmark
   const mobileLogo = (
-    <Link href="/" aria-label="Redragon home" onClick={closeMenu} className="flex h-8 items-center">
-      {officeSubpage ? (
+    <Link href="/" aria-label="Redragon home" onClick={closeMenu} className="flex h-10 items-center">
+      {range === "office" ? (
         <Image
           src="/brand/redragon-logo-office.png"
           alt="Redragon"
           width={1167}
           height={1290}
+          sizes="32px"
           preload
           className="size-8 object-contain"
+        />
+      ) : range === "gaming" ? (
+        /* Figma mobile "GAMING LOGO 2", 58×40 */
+        <Image
+          src="/brand/redragon-logo-gaming.png"
+          alt="Redragon"
+          width={58}
+          height={40}
+          preload
+          className="h-10 w-[58px] max-w-none object-cover"
         />
       ) : (
         <Image
@@ -68,7 +85,10 @@ export default function MainNav() {
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
-  const activeMenu = openMenu ? megaMenus[openMenu] : undefined;
+  // Last opened menu stays mounted after closing so it can fade out
+  const [shownMenu, setShownMenu] = useState<string | null>(null);
+  if (openMenu && openMenu !== shownMenu) setShownMenu(openMenu);
+  const panel = shownMenu ? megaMenus[shownMenu] : undefined;
 
   return (
     <>
@@ -108,6 +128,7 @@ export default function MainNav() {
                 alt="Redragon"
                 width={1167}
                 height={1290}
+                sizes="48px"
                 preload
                 className="size-12 max-w-none object-contain"
               />
@@ -187,8 +208,16 @@ export default function MainNav() {
           </button>
         </div>
 
-        {activeMenu && openMenu && (
-          <MegaMenu key={openMenu} id={`mega-menu-${openMenu.toLowerCase()}`} menu={activeMenu} />
+        {panel && shownMenu && (
+          <MegaMenu
+            id={`mega-menu-${shownMenu.toLowerCase()}`}
+            menu={panel}
+            open={openMenu !== null}
+            onNavigate={() => {
+              cancelClose();
+              setOpenMenu(null);
+            }}
+          />
         )}
       </nav>
 

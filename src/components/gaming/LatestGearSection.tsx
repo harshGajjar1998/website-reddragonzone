@@ -51,6 +51,122 @@ function Layer({ layer }: { layer: StageLayer }) {
   );
 }
 
+type Rect = { x: number; y: number; w: number; h: number };
+
+/** Where the product image lands inside an art box (stage px). */
+function imageRect(art: Art): Rect {
+  const { box } = art;
+  const left = box.left ?? 0;
+  const top = box.top ?? 0;
+  if (art.crop) {
+    return {
+      x: left + (box.w * art.crop.left) / 100,
+      y: top + (box.h * art.crop.top) / 100,
+      w: (box.w * art.crop.w) / 100,
+      h: (box.h * art.crop.h) / 100,
+    };
+  }
+  if (art.fit === "contain") {
+    const s = Math.min(box.w / art.width, box.h / art.height);
+    const w = art.width * s;
+    const h = art.height * s;
+    return { x: left + (box.w - w) / 2, y: top + (box.h - h) / 2, w, h };
+  }
+  return { x: left, y: top, w: box.w, h: box.h };
+}
+
+/** The visible product inside the centre render (image rect trimmed by `centerBounds`). */
+function productRect(item: LatestItem): Rect {
+  const r = imageRect(item.center);
+  const b = item.centerBounds ?? { l: 0, t: 0, r: 1, b: 1 };
+  return { x: r.x + r.w * b.l, y: r.y + r.h * b.t, w: r.w * (b.r - b.l), h: r.h * (b.b - b.t) };
+}
+
+type Slot = "left" | "center" | "right";
+
+const slotOf = (i: number, index: number, count: number): Slot => {
+  const d = (i - index + count) % count;
+  return d === 0 ? "center" : d === 1 ? "right" : "left";
+};
+
+/**
+ * Each item is ONE image – its centre render – that moves and scales between slots, so the product
+ * coming to the centre grows smoothly and the one leaving shrinks, with no double images. In a side
+ * slot it is scaled to fit that slot's Figma box and softly blurred. An item wrapping from one side to
+ * the other fades in at its new slot instead of flying across the stage.
+ */
+function StageItems({
+  items,
+  index,
+  sideFor,
+  glow,
+  centerFit,
+}: {
+  items: LatestItem[];
+  index: number;
+  sideFor: (item: LatestItem, slot: "left" | "right") => Art;
+  glow: StageLayer;
+  /** Largest centre product (stage px) – mobile shows a narrower slice of the stage */
+  centerFit?: { w: number; h: number };
+}) {
+  const count = items.length;
+  // Remember the index we're animating from, to spot items wrapping round
+  const [shownIndex, setShownIndex] = useState(index);
+  const [fromIndex, setFromIndex] = useState(index);
+  if (index !== shownIndex) {
+    setFromIndex(shownIndex);
+    setShownIndex(index);
+  }
+
+  return (
+    <>
+      {items.map((item, i) => {
+        const slot = slotOf(i, index, count);
+        const from = slotOf(i, fromIndex, count);
+        const wraps = (from === "left" && slot === "right") || (from === "right" && slot === "left");
+
+        let transform = "none";
+        let filter = "none";
+        if (slot === "center" && centerFit) {
+          const p = productRect(item);
+          const scale = Math.min(1, centerFit.w / p.w, centerFit.h / p.h);
+          if (scale < 1) {
+            const cx = p.x + p.w / 2;
+            const cy = p.y + p.h / 2;
+            transform = `translate(${cx * (1 - scale)}px, ${cy * (1 - scale)}px) scale(${scale})`;
+          }
+        } else if (slot !== "center") {
+          const p = productRect(item);
+          const { box } = sideFor(item, slot);
+          const scale = 0.9 * Math.min(box.w / p.w, box.h / p.h);
+          const tx = (box.left ?? 0) + box.w / 2 - (p.x + p.w / 2) * scale;
+          const ty = (box.top ?? 0) + box.h / 2 - (p.y + p.h / 2) * scale;
+          transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+          // blur is drawn before the scale, so divide to keep it ~1px on screen
+          filter = `blur(${(slot === "left" ? 1 : 0.5) / scale}px)`;
+        }
+
+        return (
+          <div
+            key={i}
+            className={`pointer-events-none absolute inset-0 origin-top-left ${slot === "center" ? "z-20" : "z-0"} ${
+              wraps
+                ? "motion-safe:animate-[fade-in_700ms_ease-out]"
+                : "transition-[transform,filter] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none"
+            }`}
+            style={{ transform, filter }}
+          >
+            <ArtImage art={item.center} />
+          </div>
+        );
+      })}
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <Layer layer={glow} />
+      </div>
+    </>
+  );
+}
+
 /**
  * Mobile (Figma "Game Product" / "Office Produce" screen 3): the desktop stage drawn at
  * `scale` inside the 394px frame, offset so the centre product lands where the design has
@@ -60,6 +176,9 @@ const MOBILE_STAGE = {
   gaming: { scale: 0.833, x: -405.6, y: 39.4, rightSlot: 819, back: false, height: 800, nameTop: 638, dotsTop: 736 },
   office: { scale: 0.8, x: -379.8, y: 29.2, rightSlot: 874, back: true, height: 760, nameTop: 615, dotsTop: 704 },
 };
+
+/** Mobile centre product limit (stage px): wide products fit the phone, the tall mouse stays clear of its neighbours */
+const MOBILE_CENTER_FIT = { w: 330, h: 340 };
 
 type LatestGearSectionProps = {
   items: LatestItem[];
@@ -75,8 +194,6 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
   const go = (step: number) => setIndex((i) => (i + step + count) % count);
 
   const current = items[index];
-  const prev = items[(index - 1 + count) % count];
-  const next = items[(index + 1) % count];
 
   const m = light ? MOBILE_STAGE.office : MOBILE_STAGE.gaming;
   const mobileRight = (item: LatestItem): Art =>
@@ -107,20 +224,19 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
             style={{ transform: `translate(${m.x}px, ${m.y}px) scale(${m.scale})` }}
           >
             {m.back && stage.back.map((layer) => <Layer key={layer.src} layer={layer} />)}
-            {count > 1 && (
-              <>
-                <ArtImage key={`p-${prev.name}`} art={sideArt(prev, "left")} />
-                <ArtImage key={`n-${next.name}`} art={mobileRight(next)} />
-              </>
-            )}
-            <Layer layer={stage.glow} />
-            <ArtImage key={current.name} art={current.center} className="animate-[fade-in_400ms_ease-out]" />
+            <StageItems
+              items={items}
+              index={index}
+              glow={stage.glow}
+              sideFor={(item, slot) => (slot === "left" ? sideArt(item, "left") : mobileRight(item))}
+              centerFit={MOBILE_CENTER_FIT}
+            />
           </div>
         </div>
 
         <CenteredHeading compact title="The Latest" subtitle="Explore our new collection gear!" className="relative pt-[72px]" />
 
-        <div aria-live="polite" className="absolute inset-x-4 flex flex-col items-center" style={{ top: m.nameTop }}>
+        <div aria-live="polite" className="absolute inset-x-4 z-30 flex flex-col items-center" style={{ top: m.nameTop }}>
           <h3 className="text-center font-lexend-deca text-[24px] font-medium leading-[1.2] tracking-[-0.48px] whitespace-pre text-ink">
             {current.name.trim()}
           </h3>
@@ -159,16 +275,7 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
           <Layer key={layer.src} layer={layer} />
         ))}
 
-        {count > 1 && (
-          <>
-            <ArtImage key={`p-${prev.name}`} art={sideArt(prev, "left")} />
-            <ArtImage key={`n-${next.name}`} art={sideArt(next, "right")} />
-          </>
-        )}
-
-        <Layer layer={stage.glow} />
-
-        <ArtImage key={current.name} art={current.center} className="animate-[fade-in_400ms_ease-out]" />
+        <StageItems items={items} index={index} glow={stage.glow} sideFor={sideArt} />
 
         {count > 1 && (
           <>
@@ -176,7 +283,7 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
               type="button"
               aria-label="Previous product"
               onClick={() => go(-1)}
-              className="absolute left-[266px] top-[402px] cursor-pointer transition-transform hover:-translate-x-1"
+              className="absolute left-[266px] top-[402px] z-30 cursor-pointer transition-transform hover:-translate-x-1"
             >
               <Image src="/icons/arrow-long-red.svg" alt="" width={56} height={56} className="rotate-90" />
             </button>
@@ -184,14 +291,14 @@ export default function LatestGearSection({ items, stage = gamingStage, light }:
               type="button"
               aria-label="Next product"
               onClick={() => go(1)}
-              className="absolute left-[1174px] top-[402px] cursor-pointer transition-transform hover:translate-x-1"
+              className="absolute left-[1174px] top-[402px] z-30 cursor-pointer transition-transform hover:translate-x-1"
             >
               <Image src="/icons/arrow-long-red.svg" alt="" width={56} height={56} className="rotate-90 -scale-y-100" />
             </button>
           </>
         )}
 
-        <div aria-live="polite" className="absolute left-1/2 top-[690px] flex -translate-x-1/2 flex-col items-center">
+        <div aria-live="polite" className="absolute left-1/2 top-[690px] z-30 flex -translate-x-1/2 flex-col items-center">
           <h3
             className={`font-lexend-deca text-[24px] font-medium leading-[1.2] tracking-[-0.48px] whitespace-pre ${
               light ? "text-ink" : "text-white"

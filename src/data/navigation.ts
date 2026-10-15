@@ -331,7 +331,7 @@ export const footerColumns: FooterColumn[] = [
     title: "About us",
     links: [
       { label: "Our Company", href: "/about-us" },
-      { label: "Latest News", href: "/news" },
+      { label: "Latest News", href: "/blog" },
       { label: "Careers", href: "/careers" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Media Kit", href: "/media-kit" },

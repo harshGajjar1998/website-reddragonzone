@@ -434,12 +434,12 @@ export const officeLatestStage: LatestStage = {
   glow: { src: `${L}/glow.png`, left: 413, top: 123, w: 614, h: 614 },
 };
 
-const latestCenterBox = { left: 566, top: 176, w: 309, h: 514 };
 
 export const officeLatestItems: LatestItem[] = [
   {
     name: "NUBULA  K769OFL-M ",
     href: "/office/mice/bm-4131",
+    centerBounds: { l: 0.463, t: 0.143, r: 0.935, b: 0.724 },
     center: {
       src: `${L}/mouse-center.png`,
       alt: "Redragon BM-4131 vertical mouse",
@@ -452,12 +452,14 @@ export const officeLatestItems: LatestItem[] = [
   {
     name: "BK-7111WG",
     href: "/office/combo/bk-7111wg-combo",
+    centerBounds: { l: 0.026, t: 0.319, r: 0.96, b: 0.701 },
     center: {
       src: `${P}/combo-k-alt.png`,
       alt: "Redragon keyboard and mouse combo",
       width: 1600,
       height: 1600,
-      box: latestCenterBox,
+      // Sized to match the centre mouse: product ~560px wide (same visual weight as the gaming centre items), centred on the stage (720, 434)
+      box: { left: 424, top: 128, w: 600, h: 600 },
       fit: "contain",
       shadow: "drop-latest",
     },
@@ -469,12 +471,14 @@ export const officeLatestItems: LatestItem[] = [
   {
     name: "BK-7111WG",
     href: "/office/keyboards/bk-7111wg",
+    centerBounds: { l: 0.075, t: 0.275, r: 0.921, b: 0.725 },
     center: {
       src: `${P}/bk-7111wg-alt.png`,
       alt: "Redragon BK-7111WG keyboard",
       width: 482,
       height: 320,
-      box: latestCenterBox,
+      // Sized to match the centre mouse: product ~600px wide (same visual weight as the gaming centre items), centred on the stage (720, 434)
+      box: { left: 367, top: 198.5, w: 709, h: 471 },
       fit: "contain",
       shadow: "drop-latest",
     },

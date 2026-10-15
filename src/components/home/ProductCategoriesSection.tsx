@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import BrowseLink from "@/components/ui/BrowseLink";
 import SectionHeading from "@/components/ui/SectionHeading";
+import TabFade from "@/components/ui/TabFade";
 import CategoryCard from "./CategoryCard";
 
 type Tab = "game" | "office";
@@ -401,9 +402,15 @@ export default function ProductCategoriesSection() {
           {mobileTab("game", "Game")}
           {mobileTab("office", "Office")}
         </div>
-        <div id="gears-panel-mobile" role="tabpanel" className="mt-[50px]">
-          {tab === "game" ? <MobileGameGears /> : <MobileOfficeGears />}
-        </div>
+        <TabFade
+          id="gears-panel-mobile"
+          active={tab}
+          className="mt-[50px]"
+          panels={[
+            { key: "game", content: <MobileGameGears /> },
+            { key: "office", content: <MobileOfficeGears /> },
+          ]}
+        />
       </div>
 
       <div className="page-frame hidden h-[800px] px-[120px] pt-20 lg:block">
@@ -415,9 +422,15 @@ export default function ProductCategoriesSection() {
           </div>
         </div>
 
-        <div id="gears-panel" role="tabpanel" className="mt-[109px]">
-          {tab === "game" ? <GameGears /> : <OfficeGears />}
-        </div>
+        <TabFade
+          id="gears-panel"
+          active={tab}
+          className="mt-[109px]"
+          panels={[
+            { key: "game", content: <GameGears /> },
+            { key: "office", content: <OfficeGears /> },
+          ]}
+        />
       </div>
     </section>
   );

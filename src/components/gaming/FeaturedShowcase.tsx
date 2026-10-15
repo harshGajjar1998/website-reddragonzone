@@ -8,38 +8,52 @@ import ArtImage from "./ArtImage";
  */
 export default function FeaturedShowcase({ showcase }: { showcase: FeaturedDetail["showcase"] }) {
   const { banners } = showcase;
+  const mobileBanners = showcase.mobileBanners ?? banners;
   return (
     <section id="features" className="bg-silver-mobile overflow-hidden lg:bg-silver">
-      {/* Mobile – no Figma frame; follows the office special page (stacked banners + feature rows) */}
+      {/* Mobile – Figma "Spice detal" screen 2 (394×1379) */}
       <div className="mobile-frame flex flex-col items-center px-4 pt-[72px] pb-[72px] lg:hidden">
-        <h2 className="text-center font-lexend-giga text-[32px] font-bold leading-[38px] tracking-[-2.56px] text-[rgba(230,0,18,0.8)]">
-          {showcase.title[0]}
-          <br />
-          {showcase.title[1]}
+        {/* Each title line: lead words in ink, last word in red ("Designed for / Gamers") */}
+        <h2 className="text-center font-lexend-deca text-[40px] font-semibold leading-[38px]">
+          {showcase.title.map((line) => {
+            const split = line.lastIndexOf(" ");
+            return (
+              <span key={line} className="block">
+                <span className="block text-ink/80">{line.slice(0, split)}</span>
+                <span className="block text-[rgba(230,0,18,0.8)]">{line.slice(split + 1)}</span>
+              </span>
+            );
+          })}
         </h2>
         <p className="mt-6 text-center font-lexend-deca text-[18px] font-light leading-[25px] tracking-[0.54px] text-ink/60">
           {showcase.description}
         </p>
-        <div className="mt-12 flex w-full flex-col gap-4">
-          {banners?.top && (
+        <div className="mt-6 flex w-full flex-col gap-4">
+          {mobileBanners?.top && (
             <div className="relative h-[232px] overflow-hidden rounded-2xl">
-              <Image src={banners.top} alt="" fill sizes="(max-width: 640px) 100vw, 640px" className="object-cover" />
+              <Image src={mobileBanners.top} alt="" fill sizes="(max-width: 640px) 100vw, 640px" className="object-cover" />
             </div>
           )}
           {showcase.cards.map((card) => (
-            <div key={card.title} className="flex min-h-[144px] overflow-hidden rounded-2xl bg-[#f6f6f6]">
+            <div key={card.title} className="flex h-[144px] overflow-hidden rounded-2xl bg-[#f6f6f6]">
               <div className="relative w-[136px] shrink-0">
-                <Image src={card.image.src} alt={card.image.alt ?? ""} fill sizes="136px" className="object-contain p-2" />
+                <Image
+                  src={card.mobileImage ?? card.image.src}
+                  alt={card.image.alt ?? ""}
+                  fill
+                  sizes="136px"
+                  className={card.mobileImage ? "object-cover" : "object-contain p-2"}
+                />
               </div>
-              <div className="flex flex-col justify-center gap-1.5 py-4 pr-4 pl-3.5">
-                <h3 className="font-lexend text-[18px] font-medium uppercase leading-[22px] text-ink">{card.title}</h3>
+              <div className="flex flex-col justify-center gap-2 pr-3 pl-3.5">
+                <h3 className="font-lexend text-[18px] font-medium leading-[22px] text-ink">{card.title}</h3>
                 <p className="font-lexend text-[13px] font-light leading-4 text-ink/80">{card.text}</p>
               </div>
             </div>
           ))}
-          {banners?.bottom && (
+          {mobileBanners?.bottom && (
             <div className="relative h-[232px] overflow-hidden rounded-2xl">
-              <Image src={banners.bottom} alt="" fill sizes="(max-width: 640px) 100vw, 640px" className="object-cover" />
+              <Image src={mobileBanners.bottom} alt="" fill sizes="(max-width: 640px) 100vw, 640px" className="object-cover" />
             </div>
           )}
         </div>

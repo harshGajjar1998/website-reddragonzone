@@ -15,6 +15,7 @@ export default function FooterLogo() {
           alt="Redragon"
           width={1167}
           height={1290}
+          sizes="64px"
           className="size-16 object-contain"
         />
       ) : (

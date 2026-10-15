@@ -91,7 +91,7 @@ function MobileSpecHero({
         className="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {shots.map((s, i) => (
-          <li key={s.src} className="relative h-[320px] w-[88%] max-w-[344px] shrink-0 snap-start bg-[#f6f6f6]">
+          <li key={s.src} className="relative h-[320px] w-[95%] max-w-[344px] shrink-0 snap-start bg-[#f6f6f6]">
             <Image
               src={s.src}
               alt={s.alt}

@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated WebP copies (scripts/optimize-images.mjs)
+/public/_img/
+
 # misc
 .DS_Store
 *.pem

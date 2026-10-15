@@ -380,9 +380,14 @@ export type FeaturedDetail = {
     description: string;
     /** 1280×600 lead image and 1280×512 closing image */
     banners?: { top?: string; bottom?: string };
-    cards: { title: string; text: string; image: Art }[];
+    /** Mobile 362×232 banners (Figma "Spice detal" screen 2) */
+    mobileBanners?: { top?: string; bottom?: string };
+    /** `mobileImage`: 136×144 thumbnail used by the mobile feature rows */
+    cards: { title: string; text: string; image: Art; mobileImage?: string }[];
   };
   exploded?: boolean;
+  /** Pre-labelled exploded render used on mobile (391×545) */
+  mobileExploded?: string;
 };
 
 export type GamingProduct = {
@@ -439,6 +444,7 @@ const m997Description =
 
 const P = `${IMG}/products`;
 const RIO = `${P}/rio-k771bgp`;
+const M997 = `${P}/prism-pro-m997`;
 
 export const gamingProducts: GamingProduct[] = [
   /* ---------------- Keyboards ---------------- */
@@ -590,6 +596,16 @@ export const gamingProducts: GamingProduct[] = [
     description: m997Description,
     image: { src: "/images/home/m997-main.png", width: 1600, height: 1600 },
     tags: ["Wireless", "Tri-Mode", "2.4GHz", "Bluetooth"],
+    // Mobile special page reuses the product overview (Figma "Spice detal" screen 1)
+    gallery: [
+      { src: `${M997}/mobile-gallery-1.png`, width: 688, height: 640, alt: "PRISM PRO M997 with its 2.4GHz dongle" },
+      { src: "/images/home/m997-main.png", width: 1600, height: 1600, alt: "PRISM PRO M997", bg: "#f6f6f6" },
+    ],
+    colors: [
+      { name: "Graphite", hex: "#676c6e" },
+      { name: "Black", hex: "#1a1a1a" },
+    ],
+    details: defaultDetails("PRISM PRO M997"),
     featured: {
       hero: {
         eyebrow: "Precision Meets Performance",
@@ -608,10 +624,12 @@ export const gamingProducts: GamingProduct[] = [
         title: ["Designed for Gamers", "Built for Performance"],
         description:
           "High-performance magnesium alloy construction combined with precision tracking and flexible connectivity.",
+        mobileBanners: { top: `${M997}/banner-top.jpg`, bottom: `${M997}/banner-bottom.jpg` },
         cards: [
           {
             title: "MAGNESIUM ALLOY",
             text: "Lightweight. Strong. Premium.",
+            mobileImage: `${M997}/card-mouse.png`,
             image: {
               src: "/images/home/m997-thumb-1.png",
               alt: "PRISM PRO M997 magnesium alloy shell",
@@ -623,6 +641,7 @@ export const gamingProducts: GamingProduct[] = [
           {
             title: "55g ±5g",
             text: "Ultra-light body for faster movement.",
+            mobileImage: `${M997}/card-mouse.png`,
             image: {
               src: "/images/home/m997-thumb-2.png",
               alt: "PRISM PRO M997 side profile",
@@ -634,6 +653,7 @@ export const gamingProducts: GamingProduct[] = [
           {
             title: "3-MODE CONNECTIVITY",
             text: "2.4GHz Wireless / Bluetooth / USB Type-C",
+            mobileImage: `${M997}/card-connectivity.png`,
             image: {
               src: "/images/home/m997-thumb-3.png",
               alt: "PRISM PRO M997 rear view",
@@ -645,6 +665,7 @@ export const gamingProducts: GamingProduct[] = [
         ],
       },
       exploded: true,
+      mobileExploded: `${M997}/exploded-mobile.png`,
     },
   },
   {
@@ -688,7 +709,7 @@ export const productHref = (p: Pick<GamingProduct, "range" | "category" | "slug"
    ------------------------------------------------------------------ */
 
 export const gamingHero = {
-  title: ["Gaming", "Produce"] as [string, string],
+  title: ["Gaming", "Products"] as [string, string],
   description:
     "Explore Red Dragon gaming gear built for performance — from gaming headsets and keyboards to mice, microphones, and more. Find the right gear to level up your gaming setup.",
   /** The design shows 5 indicator dots but one backdrop – add slides here */
@@ -703,6 +724,8 @@ export type LatestItem = {
   side: Art;
   /** Exact pre-rendered art for a slot (overrides the generic `side` placement) */
   slots?: { left?: Art; right?: Art };
+  /** Visible product inside the centre image (fractions of the image), used to size it in the side slots */
+  centerBounds?: { l: number; t: number; r: number; b: number };
 };
 
 const latestCenterBox = { left: 566, top: 176, w: 309, h: 514 };
@@ -712,6 +735,8 @@ export const latestItems: LatestItem[] = [
   {
     name: "NUBULA  K769OFL-M",
     href: productHref({ category: "mice", slug: "prism-pro-m997" }),
+    // Mouse only – the render also has the dongles to its right, cropped out by the box
+    centerBounds: { l: 0.104, t: 0.106, r: 0.513, b: 0.908 },
     center: {
       src: `${IMG}/latest/mouse-m997.png`,
       alt: "Redragon lightweight gaming mouse",
@@ -733,12 +758,14 @@ export const latestItems: LatestItem[] = [
   {
     name: "Gaming Headset",
     href: "/gaming/headsets",
+    centerBounds: { l: 0.079, t: 0.034, r: 0.919, b: 0.941 },
     center: {
       src: `${IMG}/latest/headset.png`,
       alt: "Redragon white gaming headset",
       width: 1600,
       height: 1600,
-      box: latestCenterBox,
+      // Sized like the centre mouse: product ~420px tall, centred on the stage (720, 434)
+      box: { left: 489, top: 208, w: 463, h: 463 },
       fit: "contain",
       shadow: "drop-latest",
     },
@@ -754,12 +781,14 @@ export const latestItems: LatestItem[] = [
   {
     name: "Wireless Gamepad",
     href: "/gaming/gamepads",
+    centerBounds: { l: 0.204, t: 0.177, r: 0.774, b: 0.892 },
     center: {
       src: `${IMG}/latest/gamepad.png`,
       alt: "Redragon wireless gamepad",
       width: 1528,
       height: 848,
-      box: latestCenterBox,
+      // Sized like the centre mouse: product ~430px wide, centred on the stage (720, 434)
+      box: { left: 351, top: 211, w: 754, h: 418 },
       fit: "contain",
       shadow: "drop-latest",
     },

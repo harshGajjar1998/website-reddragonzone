@@ -66,6 +66,7 @@ export default function MobileProductHero({
             alt={image.alt}
             width={1600}
             height={1600}
+            sizes="(max-width: 640px) 92vw, 590px"
             preload={priority}
             draggable={false}
             className="absolute left-0 top-0 h-full w-[171.5%] max-w-none"

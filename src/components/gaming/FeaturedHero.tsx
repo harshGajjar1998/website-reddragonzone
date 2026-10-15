@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
-import MobileProductHero from "@/components/ui/MobileProductHero";
 import type { FeaturedHero as FeaturedHeroData } from "@/data/gaming";
 
 /**
@@ -9,24 +8,9 @@ import type { FeaturedHero as FeaturedHeroData } from "@/data/gaming";
  */
 export default function FeaturedHero({ hero, name }: { hero: FeaturedHeroData; name: string }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071] to-[78.646%]">
-      <MobileProductHero
-        as="h1"
-        eyebrow={hero.eyebrow}
-        title={
-          <>
-            <span className="sr-only">{name} – </span>
-            {hero.title}
-          </>
-        }
-        description={hero.description}
-        href="#features"
-        model={hero.model}
-        image={hero.image}
-        thumbnails={hero.thumbnails}
-        priority
-      />
-      <div className="page-frame hidden h-[688px] lg:block">
+    // Desktop only – on mobile the page opens with the product overview instead
+    <section className="relative hidden overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071] to-[78.646%] lg:block">
+      <div className="page-frame h-[688px]">
         {/* Spotlight panel – bleeds to the viewport edge above 1440px */}
         <div className="bg-hero-panel absolute left-[1025px] right-[min(0px,calc(720px-50vw))] top-0 h-[688px]" />
 

@@ -18,7 +18,7 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
   return (
     <Link
       href={href}
-      className={`inline-flex w-fit items-center gap-1 border border-[#111] px-4 py-2 font-lexend text-[16px] leading-[1.5] text-[#111] transition-colors hover:bg-[#111] hover:text-white ${
+      className={`inline-flex h-[45px] w-fit items-center gap-1 border border-[#111] px-6 font-lexend text-[16px] leading-[1.5] text-[#111] transition-colors hover:bg-[#111] hover:text-white lg:h-auto lg:px-4 lg:py-2 ${
         rounded === 4 ? "rounded-[4px]" : "rounded-[2px]"
       } group`}
     >
@@ -28,7 +28,7 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
         alt=""
         width={16}
         height={16}
-        className="transition group-hover:invert"
+        className="hidden transition group-hover:invert lg:block"
       />
     </Link>
   );
@@ -43,7 +43,7 @@ export default function BlogCard({ post }: { post: BlogPost }) {
         href={href}
         tabIndex={-1}
         aria-hidden
-        className="relative block h-[220px] w-full shrink-0 overflow-hidden lg:h-[300px] shadow-[inset_0_-1px_0_rgb(17_17_17/0.1)]"
+        className="relative block h-[248px] w-full shrink-0 overflow-hidden lg:h-[300px] shadow-[inset_0_-1px_0_rgb(17_17_17/0.1)]"
         style={{ background: post.image.bg }}
       >
         <Image
@@ -54,11 +54,11 @@ export default function BlogCard({ post }: { post: BlogPost }) {
           className="object-cover transition-transform duration-500 hover:scale-[1.03]"
         />
       </Link>
-      <div className="flex flex-1 flex-col gap-5 p-5 lg:gap-6 lg:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-5 lg:gap-6 lg:p-6">
         <div className="flex flex-col gap-4">
           <PostMeta post={post} />
-          <div className="flex flex-col gap-2">
-            <h3 className="font-lexend-deca text-[20px] leading-[1.39] text-[#111] lg:text-[24px]">
+          <div className="flex flex-col gap-4 lg:gap-2">
+            <h3 className="font-lexend-deca text-[24px] leading-[29px] text-[#111] lg:leading-[1.39]">
               <Link href={href} className="hover:text-dragon">
                 {post.title}
               </Link>

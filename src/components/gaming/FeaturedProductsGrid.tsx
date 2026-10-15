@@ -92,7 +92,7 @@ export default function FeaturedProductsGrid({ cards, mobileCards, light }: Feat
 
         <ul className="absolute left-20 top-[216px] flex gap-4">
           {cards.map((card) => (
-            <li key={card.name}>
+            <li key={productHref(card.product)}>
               <Link
                 href={productHref(card.product)}
                 className="group relative block h-[432px] w-[416px] border-[1.2px] border-white/50 bg-[#f6f6f6] transition-shadow hover:shadow-card-hover"
@@ -109,8 +109,9 @@ export default function FeaturedProductsGrid({ cards, mobileCards, light }: Feat
                 <p className="absolute left-6 top-[380px] w-[236px] font-lexend text-[12px] font-light capitalize leading-[1.2] tracking-[0.72px] text-balance text-ink/75">
                   {card.description}
                 </p>
-                {/* 56px diagonal arrow rotated 45° → points right (79.2px rotated box) */}
-                <span className="absolute left-[372px] top-[354.4px] flex size-[79.196px] items-center justify-center">
+                {/* 56px diagonal arrow rotated 45° → points right; 79.2px rotated bounds centred at (372, 394),
+                    inside the card's bottom-right corner, level with the description */}
+                <span className="absolute left-[332.4px] top-[354.4px] flex size-[79.196px] items-center justify-center">
                   <Image
                     src="/icons/arrow-circle-diag.svg"
                     alt=""

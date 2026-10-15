@@ -30,7 +30,7 @@ function SearchBox({
       }}
       className={`flex flex-col gap-3 sm:flex-row sm:items-center lg:gap-[18px] ${className ?? ""}`}
     >
-      <label className="flex h-12 w-full items-center justify-between rounded-[4px] border border-ink px-5 sm:w-[341px]">
+      <label className="flex h-[50px] w-full items-center justify-between rounded-[4px] border border-ink px-4 sm:w-[341px] lg:h-12 lg:px-5">
         <span className="sr-only">Search products</span>
         <input
           type="search"
@@ -67,6 +67,7 @@ function Tile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; 
           alt=""
           width={3000}
           height={2000}
+          sizes="720px"
           className="absolute left-0 top-[-50px] h-[300px] max-w-none object-cover opacity-20"
           style={{ width: tile.width + 16 }}
         />
@@ -118,42 +119,73 @@ function Tile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; 
   );
 }
 
-/** Mobile tile: label over the product art, two per row (no Figma frame for this state). */
+/** Mobile tile – Figma "Support — Mobile" categories: 173×154, pattern, watermark, art bottom-right. */
 function MobileTile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; onSelect: () => void }) {
   return (
     <button
       type="button"
       aria-pressed={active}
       onClick={onSelect}
-      className={`relative flex h-[132px] cursor-pointer flex-col justify-between overflow-hidden bg-white p-3 text-left outline outline-1 ${
-        active ? "outline-2 outline-dragon" : "outline-black"
+      className={`group relative h-[154px] cursor-pointer overflow-hidden bg-white text-left outline outline-1 ${
+        active ? "outline-2 outline-dragon" : "outline-[#6f6f6f]"
       }`}
     >
-      <span className="relative z-10 font-lexend-deca text-[16px] font-medium leading-[1.2] text-ink">{tile.label}</span>
-      <span className="pointer-events-none absolute right-1 bottom-1 h-[88px] w-[60%]">
-        <Image src={tile.art.src} alt="" fill sizes="30vw" className="object-contain object-right-bottom" />
+      <Image
+        src={TILE_BG}
+        alt=""
+        width={3000}
+        height={2000}
+        sizes="342px"
+        className="absolute left-0 top-0 h-[154px] w-[342px] max-w-none object-cover opacity-20"
+      />
+      <span
+        aria-hidden
+        className="absolute left-[-6px] top-2 font-gotham text-[29px] font-black uppercase leading-[35px] whitespace-nowrap text-[#bababa]/60"
+      >
+        {tile.ghost.replace(/s+/g, " ")}
       </span>
+      <span className="absolute left-3 top-3.5 z-10 font-lexend-deca text-[18px] font-medium leading-[22px] whitespace-nowrap text-ink">
+        {tile.label}
+      </span>
+      {/* Art is drawn 108px tall from the bottom-right corner; the tile clips any overflow */}
+      <Image
+        src={tile.art.src}
+        alt=""
+        width={tile.art.width}
+        height={tile.art.height}
+        sizes="180px"
+        className="pointer-events-none absolute right-0 bottom-0 h-[108px] w-auto max-w-none"
+      />
+      {/* Same 20% dim as the desktop tiles, lifted when selected */}
+      <span aria-hidden className={`absolute inset-0 bg-black/20 transition-opacity ${active ? "opacity-0" : ""}`} />
     </button>
   );
 }
 
-/** Mobile download card: name + keywords, the render, then Software / Manual links. */
+/** Mobile download card – Figma "Download product" (342×362): name + model, keywords, render, two outlined actions. */
 function MobileDownloadCard({ item }: { item: Download }) {
-  const link =
-    "flex items-center gap-1 font-lexend-deca text-[12px] font-medium uppercase tracking-[0.5px] text-[#e60012]";
+  const split = item.name.lastIndexOf(" ");
+  const action =
+    "flex h-12 flex-1 items-center justify-center gap-1.5 rounded-[4px] border border-[#e60012]/25 font-lexend-deca text-[15px] font-semibold uppercase tracking-[0.5px] text-[#e60012]";
   return (
-    <li className="flex flex-col bg-[#f6f6f6] p-3 lg:hidden">
-      <p className="font-lexend text-[13px] font-medium uppercase leading-[1.2] text-ink">{item.name}</p>
-      <div className="relative mt-2 aspect-[4/3] w-full">
-        <Image src={item.image.src} alt={item.name} fill sizes="45vw" className="object-contain" />
+    <li className="flex flex-col bg-[#f6f6f6] p-5 lg:hidden">
+      <div className="flex items-start justify-between gap-4">
+        <p className="font-lexend uppercase text-ink">
+          <span className="block text-[16px] font-semibold leading-5">{item.name.slice(0, split)}</span>
+          <span className="mt-1 block text-[14px] font-medium leading-[18px]">{item.name.slice(split + 1)}</span>
+        </p>
+        <p className="font-lexend text-[11px] uppercase leading-[13px] text-ink">{item.keywords}</p>
       </div>
-      <div className="mt-3 flex flex-col items-start gap-2">
-        <a href={item.software} className={link}>
-          <Image src="/icons/pages/download.svg" alt="" width={18} height={18} />
+      <div className="relative mt-4 h-[200px] w-full">
+        <Image src={item.image.src} alt={item.name} fill sizes="(max-width: 640px) 80vw, 302px" className="object-contain" />
+      </div>
+      <div className="mt-4 flex gap-3">
+        <a href={item.software} className={action}>
+          <Image src="/icons/pages/download.svg" alt="" width={20} height={20} />
           Software
         </a>
-        <a href={item.manual} className={link}>
-          <Image src="/icons/pages/download.svg" alt="" width={18} height={18} />
+        <a href={item.manual} className={action}>
+          <Image src="/icons/pages/download.svg" alt="" width={20} height={20} />
           Manual
         </a>
       </div>
@@ -225,12 +257,15 @@ export default function SupportCenter() {
           preload
           className="absolute left-1/2 top-0 h-[544px] w-[1440px] max-w-none -translate-x-1/2"
         />
-        <div className="relative px-4 pt-14 pb-14 lg:hidden">
-          {/* Wash over the photo so the copy stays legible on narrow screens */}
-          <div aria-hidden className="absolute inset-0 bg-white/75" />
-          <p className="relative font-lexend-deca text-[18px] text-[#e60012]">Support</p>
-          <h1 className="relative mt-2 font-lexend-exa text-[32px] font-black tracking-[-2.4px] text-ink">Manuals &amp; Software&apos;s</h1>
-          <p className="relative mt-3 font-lexend-deca text-[16px] font-light leading-[1.5] text-ink">
+        {/* Mobile – Figma "Support hero" (390×386) */}
+        <div className="relative px-6 pt-10 pb-10 lg:hidden">
+          {/* Light wash keeps the copy legible while the photo still shows through */}
+          <div aria-hidden className="absolute inset-0 bg-white/35" />
+          <p className="relative font-lexend-deca text-[18px] leading-5 text-[#e60012]">Support</p>
+          <h1 className="relative mt-[18px] font-lexend-exa text-[32px] font-black leading-[36px] tracking-[-2.4px] text-ink">
+            Manuals &amp; Software&apos;s
+          </h1>
+          <p className="relative mt-[18px] font-lexend-deca text-[16px] leading-6 text-ink">
             Get the latest software, drivers and manuals for your redragon products
           </p>
           <SearchBox
@@ -244,7 +279,7 @@ export default function SupportCenter() {
             }}
             placeholder="Search"
             button="Find"
-            className="relative mt-6"
+            className="relative mt-[18px]"
           />
         </div>
         <div className="page-frame relative hidden h-full lg:block">
@@ -273,7 +308,7 @@ export default function SupportCenter() {
 
       {/* Category tiles */}
       <section className="bg-white">
-        <div className="grid grid-cols-2 gap-3 px-4 py-8 lg:hidden">
+        <div className="grid grid-cols-2 gap-3 px-4 py-6 lg:hidden">
           {supportTiles.flat().map((tile) => (
             <MobileTile
               key={tile.slug}
@@ -309,12 +344,12 @@ export default function SupportCenter() {
 
       {/* Manuals & software list (Figma "Section 12") */}
       <section ref={listRef} className="bg-silver scroll-mt-4">
-        <div className="page-frame flex flex-col items-center px-4 pt-14 pb-10 lg:min-h-[1152px] lg:px-20 lg:pt-[72px]">
-          <div className="flex flex-col items-center text-center lg:hidden">
-            <h2 className="font-lexend-giga text-[28px] font-bold leading-[1.2] tracking-[-2px] text-[#e60012]/60">
+        <div className="page-frame flex flex-col items-center px-6 pt-12 pb-12 lg:min-h-[1152px] lg:px-20 lg:pt-[72px] lg:pb-10">
+          <div className="flex w-full flex-col gap-3 lg:hidden">
+            <h2 className="font-lexend-giga text-[22px] font-bold leading-7 tracking-[-1px] text-[#e60012]">
               Manuals &amp; Software&apos;s
             </h2>
-            <p className="font-lexend-exa text-[20px] font-medium leading-[1.2] text-ink">Features Products</p>
+            <p className="font-lexend-exa text-[26px] font-medium leading-[31px] text-ink">Features Products</p>
           </div>
           <div className="relative hidden h-[77px] w-[624px] lg:block">
             <h2 className="absolute left-0 top-0 font-lexend-giga text-[48px] font-bold leading-[1.2] tracking-[-3.84px] whitespace-nowrap text-[#e60012]/50 [text-shadow:0_4px_4px_rgb(0_0_0/0.15)]">
@@ -347,7 +382,7 @@ export default function SupportCenter() {
             </button>
           )}
 
-          <ul className="mt-7 grid w-full grid-cols-2 gap-3 lg:w-auto lg:grid-cols-[repeat(4,308px)] lg:gap-4">
+          <ul className="mt-6 grid w-full grid-cols-1 gap-4 lg:mt-7 lg:w-auto lg:grid-cols-[repeat(4,308px)]">
             {results.slice(0, shown).map((item, i) => (
               <DownloadCard key={item.name + i} item={item} />
             ))}
@@ -363,7 +398,7 @@ export default function SupportCenter() {
             <button
               type="button"
               onClick={() => setShown((n) => n + PAGE)}
-              className="mt-10 h-12 cursor-pointer rounded-[28px] bg-crimson px-7 font-lato text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
+              className="mt-6 h-[50px] w-full cursor-pointer rounded-[4px] bg-crimson px-7 font-lato lg:mt-10 lg:h-12 lg:w-auto lg:rounded-[28px] text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
             >
               Load More
             </button>

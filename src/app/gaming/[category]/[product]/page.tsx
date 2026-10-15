@@ -35,9 +35,11 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
     const { featured } = product;
     return (
       <>
+        {/* Mobile opens with the product overview (Figma "Spice detal"), desktop with the hero */}
+        <ProductOverview product={product} category={category} special={{ ghost: featured.hero.model }} />
         <FeaturedHero hero={featured.hero} name={product.name} />
         <FeaturedShowcase showcase={featured.showcase} />
-        {featured.exploded && <ExplodedBlueprint productName={product.name} />}
+        {featured.exploded && <ExplodedBlueprint productName={product.name} mobileImage={featured.mobileExploded} />}
         <CommunitySection />
       </>
     );

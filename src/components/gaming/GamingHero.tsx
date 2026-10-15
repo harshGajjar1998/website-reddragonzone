@@ -57,7 +57,8 @@ export default function GamingHero({ title, description, images }: GamingHeroPro
 
       {/* Mobile – Figma "Game Product" screen 1 (394×800 incl. 96px header) */}
       <div className="mobile-frame relative flex h-[704px] flex-col items-center px-4 pt-[159px] text-center text-white lg:hidden">
-        <h1 className="font-audiowide text-[64px] leading-[1.2]">
+        {/* 64px on a 390px frame, shrinking on narrower phones so "Products" stays on one line */}
+        <h1 className="font-audiowide text-[min(64px,17cqw)] leading-[1.2]">
           {title[0]}
           <br />
           <span className="text-dragon">{title[1]}</span>

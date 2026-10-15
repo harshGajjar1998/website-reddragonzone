@@ -113,7 +113,7 @@ function MobileSplit() {
               alt=""
               width={927}
               height={1024}
-              className="absolute bottom-0 left-0 object-cover opacity-5"
+              className="absolute bottom-0 left-0 object-cover"
               style={{ width: cq(112), height: cq(124) }}
             />
             <p
@@ -180,12 +180,13 @@ export default function CategorySplitSection() {
             height={608}
             className="absolute left-[317px] top-[96px] size-[608px] drop-office-mouse"
           />
+          {/* R watermark – the PNG already carries the 5% tint in its alpha, so no extra opacity */}
           <Image
             src="/images/home/r-logo-office.png"
             alt=""
             width={294}
             height={325}
-            className="absolute bottom-0 left-0 h-[325px] w-[294px] object-cover opacity-5"
+            className="absolute bottom-0 left-0 h-[325px] w-[294px] object-cover"
           />
           <PanelCopy
             title="Office"
