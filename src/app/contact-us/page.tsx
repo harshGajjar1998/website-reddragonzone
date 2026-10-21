@@ -33,6 +33,7 @@ export default function ContactPage() {
         <div className="page-frame flex flex-col items-center pt-14 pb-14 lg:pt-20 lg:pb-20">
           <CenteredHeading title="FAQS" subtitle="Frequently asked questions" />
           <div className="mt-10 w-full px-4 lg:mt-14 lg:w-auto lg:px-0">
+            {/* API: dynamic data – FAQs */}
             <FaqList faqs={faqs} />
           </div>
         </div>

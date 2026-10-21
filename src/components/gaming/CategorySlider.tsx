@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import TabSlider from "@/components/ui/TabSlider";
 import type { GamingCategory } from "@/data/gaming";
+import { piece } from "@/lib/motion";
 import ArtImage, { type Art } from "./ArtImage";
 import CenteredHeading from "./CenteredHeading";
 
@@ -22,12 +24,24 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
  * One 720×308 category tile. Left-column tiles inset their copy 96px, right-column
  * tiles 64px, and the right column's patterned background is mirrored vertically.
  */
-function CategoryTile({ category, column }: { category: GamingCategory; column: "left" | "right" }) {
+function CategoryTile({
+  category,
+  column,
+  delay,
+}: {
+  category: GamingCategory;
+  column: "left" | "right";
+  /** Start of this tile's entrance stagger (ms) */
+  delay: number;
+}) {
   const inset = column === "left" ? 96 : 64;
   const href = `/gaming/${category.slug}`;
   return (
-    <div className="relative h-[308px] w-[720px] overflow-clip">
-      <div className={`absolute inset-0 border border-black ${column === "right" ? "-scale-y-100" : ""}`}>
+    <div className="group/card relative h-[308px] w-[720px] overflow-clip">
+      <div
+        className={`piece absolute inset-0 border border-black ${column === "right" ? "-scale-y-100" : ""}`}
+        style={piece("bottom", delay)}
+      >
         <Image
           src="/images/gaming/categories/tile-bg.png"
           alt=""
@@ -39,17 +53,17 @@ function CategoryTile({ category, column }: { category: GamingCategory; column: 
 
       <p
         aria-hidden
-        className="absolute top-14 font-gotham text-[136px] font-black leading-[1.2] tracking-[4.08px] whitespace-nowrap text-[#bababa]"
-        style={{ left: column === "left" ? -16 : -20 }}
+        className="piece absolute top-14 font-gotham text-[136px] font-black leading-[1.2] tracking-[4.08px] whitespace-nowrap text-[#bababa]"
+        style={{ left: column === "left" ? -16 : -20, ...piece("left", delay + 100) }}
       >
         {category.ghost}
       </p>
 
-      <ArtImage art={category.tileArt} />
+      <ArtImage art={category.tileArt} className="piece card-art" style={piece("right", delay + 200)} />
 
       <h3
-        className="absolute font-lexend-deca text-[32px] font-medium leading-[1.2] whitespace-nowrap text-black"
-        style={{ left: inset, top: category.tileLabelTop ?? 119 }}
+        className="piece absolute font-lexend-deca text-[32px] font-medium leading-[1.2] whitespace-nowrap text-black"
+        style={{ left: inset, top: category.tileLabelTop ?? 119, ...piece("bottom", delay + 250) }}
       >
         {category.labelLines ? (
           <>
@@ -65,8 +79,8 @@ function CategoryTile({ category, column }: { category: GamingCategory; column: 
       <Link
         href={href}
         aria-label={`Browse ${category.label}`}
-        className="group absolute top-[220px] flex items-center gap-4 font-lexend-deca text-[24px] font-medium uppercase leading-normal text-dragon"
-        style={{ left: inset }}
+        className="piece group absolute top-[220px] flex items-center gap-4 font-lexend-deca text-[24px] font-medium uppercase leading-normal text-dragon"
+        style={{ left: inset, ...piece("bottom", delay + 320) }}
       >
         Browse
         <Image
@@ -82,7 +96,7 @@ function CategoryTile({ category, column }: { category: GamingCategory; column: 
 }
 
 /** 390×152 mobile tile (Figma "Game Product" screen 2); every other tile's pattern is turned 180°. */
-function MobileTile({ category, flip }: { category: GamingCategory; flip: boolean }) {
+function MobileTile({ category, flip, delay }: { category: GamingCategory; flip: boolean; delay: number }) {
   const art: Art = category.mobileTileArt ?? {
     ...category.tileArt,
     box: { right: 0, top: -10, w: 180, h: 172 },
@@ -92,24 +106,29 @@ function MobileTile({ category, flip }: { category: GamingCategory; flip: boolea
     fit: "contain",
   };
   return (
-    <li className="relative h-[152px] overflow-clip border border-[#696969]">
-      <div className={`absolute inset-0 bg-white ${flip ? "-scale-100" : ""}`}>
+    <li className="group/card relative h-[152px] overflow-clip border border-[#696969]">
+      <div className={`piece absolute inset-0 bg-white ${flip ? "-scale-100" : ""}`} style={piece("bottom", delay)}>
         <Image src="/images/home/office-pattern-bg.png" alt="" fill sizes="100vw" className="object-cover opacity-40" />
       </div>
       <p
         aria-hidden
-        className="absolute left-[-4px] top-1.5 font-gotham text-[72px] font-black leading-[1.2] tracking-[2.16px] whitespace-nowrap text-[#bababa]"
+        className="piece absolute left-[-4px] top-1.5 font-gotham text-[72px] font-black leading-[1.2] tracking-[2.16px] whitespace-nowrap text-[#bababa]"
+        style={piece("left", delay + 100)}
       >
         {category.ghost}
       </p>
-      <ArtImage art={{ ...art, sizes: "50vw" }} />
-      <h3 className="absolute left-4 top-[35px] font-lexend-deca text-[20px] font-medium leading-[1.2] text-ink">
+      <ArtImage art={{ ...art, sizes: "50vw" }} className="piece card-art" style={piece("right", delay + 200)} />
+      <h3
+        className="piece absolute left-4 top-[35px] font-lexend-deca text-[20px] font-medium leading-[1.2] text-ink"
+        style={piece("bottom", delay + 250)}
+      >
         {category.label}
       </h3>
       <Link
         href={`/gaming/${category.slug}`}
         aria-label={`Browse ${category.label}`}
-        className="group absolute left-4 top-[104px] flex items-center gap-4 font-lexend-deca text-[20px] font-semibold uppercase leading-[1.25] text-dragon"
+        className="piece group absolute left-4 top-[104px] flex items-center gap-4 font-lexend-deca text-[20px] font-semibold uppercase leading-[1.25] text-dragon"
+        style={piece("bottom", delay + 320)}
       >
         Browse
         <Image
@@ -124,7 +143,11 @@ function MobileTile({ category, flip }: { category: GamingCategory; flip: boolea
   );
 }
 
-/** Figma "Gaming categories" (1440×800) – 2×2 tiles per slide with a "1 / 3" pager. */
+// API: dynamic data – gaming categories (via props)
+/**
+ * Figma "Gaming categories" (1440×800) – 2×2 tiles per slide with a "1 / 3" pager. Tiles assemble like the
+ * home page's "Choose Your Gears" cards (on first view and on every page change) and their art zooms on hover.
+ */
 export default function CategorySlider({ categories }: { categories: GamingCategory[] }) {
   const slides: GamingCategory[][] = [];
   for (let i = 0; i < categories.length; i += PER_SLIDE) slides.push(categories.slice(i, i + PER_SLIDE));
@@ -160,12 +183,8 @@ export default function CategorySlider({ categories }: { categories: GamingCateg
       <div className="mobile-frame pt-10 lg:hidden">
         <CenteredHeading compact title="Gaming Category" subtitle="Which gear type are you looking for?" />
         <div className="mt-4 flex justify-center">{pager("h-11 w-[120px] justify-between border-[1.5px] border-ink")}</div>
-        <ul
-          key={index}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`${index + 1} of ${count}`}
-          className="mt-3 touch-pan-y motion-safe:animate-[fade-in_400ms_ease-out]"
+        <div
+          className="mt-3 touch-pan-y"
           onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
           onTouchEnd={(e) => {
             if (touchX.current === null) return;
@@ -174,10 +193,21 @@ export default function CategorySlider({ categories }: { categories: GamingCateg
             touchX.current = null;
           }}
         >
-          {slides[index].map((category, j) => (
-            <MobileTile key={category.slug} category={category} flip={j % 2 === 1} />
-          ))}
-        </ul>
+          <TabSlider
+            role="group"
+            active={String(index)}
+            panels={slides.map((slide, i) => ({
+              key: String(i),
+              content: (
+                <ul role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`}>
+                  {slide.map((category, j) => (
+                    <MobileTile key={category.slug} category={category} flip={j % 2 === 1} delay={j * 100} />
+                  ))}
+                </ul>
+              ),
+            }))}
+          />
+        </div>
       </div>
 
       <div className="page-frame relative hidden h-[800px] lg:block">
@@ -190,26 +220,30 @@ export default function CategorySlider({ categories }: { categories: GamingCateg
         {pager("absolute right-20 top-[88px] w-[140px] gap-4 border-[1.5px] border-ink/50 py-[10.5px]")}
 
         <div className="absolute inset-x-0 top-[184px] h-[616px] overflow-hidden">
-          <div
-            className="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none"
-            style={{ transform: `translateX(${-index * 100}%)` }}
-          >
-            {slides.map((slide, i) => (
-              <div
-                key={i}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${i + 1} of ${count}`}
-                aria-hidden={i !== index}
-                inert={i !== index}
-                className="grid w-full shrink-0 grid-cols-[720px_720px] grid-rows-[308px_308px]"
-              >
-                {slide.map((category, j) => (
-                  <CategoryTile key={category.slug} category={category} column={j % 2 === 0 ? "left" : "right"} />
-                ))}
-              </div>
-            ))}
-          </div>
+          <TabSlider
+            role="group"
+            active={String(index)}
+            panels={slides.map((slide, i) => ({
+              key: String(i),
+              content: (
+                <div
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`${i + 1} of ${count}`}
+                  className="grid grid-cols-[720px_720px] grid-rows-[308px_308px]"
+                >
+                  {slide.map((category, j) => (
+                    <CategoryTile
+                      key={category.slug}
+                      category={category}
+                      column={j % 2 === 0 ? "left" : "right"}
+                      delay={j * 120}
+                    />
+                  ))}
+                </div>
+              ),
+            }))}
+          />
         </div>
       </div>
     </section>

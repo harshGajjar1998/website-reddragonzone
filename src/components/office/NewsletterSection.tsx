@@ -11,6 +11,7 @@ type NewsletterSectionProps = {
   images: { src: string; alt: string }[];
 };
 
+// API: dynamic data – newsletter block content (via props)
 /** Office "Section 9" (top half) – newsletter sign-up on #bebebe (375px). */
 export default function NewsletterSection({ eyebrow, title, description, images }: NewsletterSectionProps) {
   const [submitted, setSubmitted] = useState(false);

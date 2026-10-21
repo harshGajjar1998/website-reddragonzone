@@ -9,10 +9,12 @@ import { gamingCategories, getCategory, productsInCategory } from "@/data/gaming
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  // API: dynamic data – gaming category slugs
   return gamingCategories.map((c) => ({ category: c.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/gaming/[category]">): Promise<Metadata> {
+  // API: dynamic data – gaming category (page metadata)
   const category = getCategory((await params).category);
   if (!category) return {};
   return { title: `${category.listing.title} | Redragon`, description: category.hero.description };
@@ -20,9 +22,11 @@ export async function generateMetadata({ params }: PageProps<"/gaming/[category]
 
 /** Figma "kEYBOARD PAGE" – shared by every gaming category. `?page=2` shows the next grid. */
 export default async function GamingCategoryPage({ params }: PageProps<"/gaming/[category]">) {
+  // API: dynamic data – gaming category
   const category = getCategory((await params).category);
   if (!category) notFound();
 
+  // API: dynamic data – products in this category
   const products = productsInCategory(category.slug);
 
   return (

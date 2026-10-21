@@ -61,6 +61,7 @@ export default function ContactForm() {
               <option value="" disabled>
                 Select
               </option>
+              {/* API: dynamic data – enquiry types */}
               {enquiryTypes.map((t) => (
                 <option key={t}>{t}</option>
               ))}

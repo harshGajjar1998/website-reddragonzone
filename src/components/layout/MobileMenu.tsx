@@ -40,6 +40,7 @@ export default function MobileMenu({ onClose, logo }: { onClose: () => void; log
 
       <nav aria-label="Mobile" className="flex-1 px-6 pb-10">
         <ul className="border-t border-white/10">
+          {/* API: dynamic data – main navigation + mega menus */}
           {mainNav.map((item) => {
             const menu = item.hasDropdown ? megaMenus[item.label] : undefined;
             const open = expanded === item.label;
@@ -109,6 +110,7 @@ export default function MobileMenu({ onClose, logo }: { onClose: () => void; log
         </ul>
 
         <ul className="mt-10 flex items-center justify-center gap-4">
+          {/* API: dynamic data – social links */}
           {socialLinks.map((s) => (
             <li key={s.label}>
               <a

@@ -78,6 +78,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
           <section className="flex flex-col gap-4">
             <p className="font-lexend-giga text-[20px] leading-[1.2] text-white">Suggestions</p>
             <ul className="flex flex-col gap-4">
+              {/* API: dynamic data – search suggestions */}
               {searchSuggestions.map((s) => (
                 <li key={s}>
                   <Link href={`/search?q=${encodeURIComponent(s)}`} onClick={onClose} className={`${listLink} text-[18px]`}>
@@ -91,6 +92,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
           <section className="flex flex-col gap-4">
             <p className="font-lexend-giga text-[20px] leading-[1.2] text-white">Products</p>
             <ul className="flex flex-col gap-3">
+              {/* API: dynamic data – search results – products */}
               {searchProducts.map((p, i) => (
                 <li key={`${p.href}-${i}`}>
                   <Link
@@ -122,6 +124,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
           <section className="flex flex-col gap-4">
             <p className="font-lexend-giga text-[20px] leading-[1.2] text-white">Pages</p>
             <ul className="flex flex-col gap-4">
+              {/* API: dynamic data – search results – pages */}
               {searchPages.map((p) => (
                 <li key={p.href}>
                   <Link href={p.href} onClick={onClose} className={`${listLink} text-[18px] whitespace-normal`}>
@@ -209,6 +212,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
             {/* Suggestions */}
             <p className={`${heading} left-[120px] top-6`}>Suggestions</p>
             <ul className="absolute left-[120px] top-[84px] flex flex-col gap-6">
+              {/* API: dynamic data – search suggestions */}
               {searchSuggestions.map((s) => (
                 <li key={s}>
                   <Link href={`/search?q=${encodeURIComponent(s)}`} onClick={onClose} className={listLink}>
@@ -221,6 +225,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
             {/* Pages */}
             <p className={`${heading} left-[120px] top-[300px]`}>Pages</p>
             <ul className="absolute left-[120px] top-[360px] flex flex-col gap-6">
+              {/* API: dynamic data – search results – pages */}
               {searchPages.map((p) => (
                 <li key={p.href}>
                   <Link href={p.href} onClick={onClose} className={listLink}>
@@ -251,6 +256,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
             {/* Products */}
             <p className={`${heading} left-[525px] top-6`}>Products</p>
             <ul className="absolute left-[525px] top-[84px] grid grid-cols-[390px_390px] gap-4">
+              {/* API: dynamic data – search results – products */}
               {searchProducts.map((p, i) => (
                 <li key={`${p.href}-${i}`}>
                   <Link

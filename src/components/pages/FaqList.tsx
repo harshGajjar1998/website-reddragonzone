@@ -11,6 +11,7 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
 
   return (
     <ul className="flex w-full flex-col gap-4 lg:w-[720px] lg:gap-6">
+      {/* API: dynamic data – FAQs */}
       {faqs.map((f, i) => {
         const isOpen = open === i;
         return (

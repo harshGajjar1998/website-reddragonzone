@@ -39,6 +39,7 @@ export default function BlogPage() {
         </header>
 
         {/* Page 1 is pre-rendered; ?page=N is applied in the browser */}
+        {/* API: dynamic data – blog posts */}
         <Suspense fallback={<BlogListing posts={blogPosts} page={1} />}>
           <BlogListingFromUrl posts={blogPosts} />
         </Suspense>

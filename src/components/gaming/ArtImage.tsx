@@ -35,7 +35,16 @@ export type Art = {
   preload?: boolean;
 };
 
-export default function ArtImage({ art, className = "" }: { art: Art; className?: string }) {
+export default function ArtImage({
+  art,
+  className = "",
+  style,
+}: {
+  art: Art;
+  className?: string;
+  /** Extra styles on the outer frame (e.g. `piece()` motion variables) */
+  style?: CSSProperties;
+}) {
   const { box, outer } = art;
   const transforms = [
     art.rotate ? `rotate(${art.rotate}deg)` : "",
@@ -54,6 +63,7 @@ export default function ArtImage({ art, className = "" }: { art: Art; className?
     height: outer?.h ?? box.h,
     opacity: art.opacity,
     filter: art.blur ? `blur(${art.blur}px)` : undefined,
+    ...style,
   };
 
   const image = art.crop ? (

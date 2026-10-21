@@ -88,6 +88,7 @@ export default function MainNav() {
   // Last opened menu stays mounted after closing so it can fade out
   const [shownMenu, setShownMenu] = useState<string | null>(null);
   if (openMenu && openMenu !== shownMenu) setShownMenu(openMenu);
+  // API: dynamic data – mega menu content
   const panel = shownMenu ? megaMenus[shownMenu] : undefined;
 
   return (
@@ -156,6 +157,7 @@ export default function MainNav() {
           </Link>
 
           <ul className="absolute left-[calc(50%+0.5px)] top-[26.5px] flex -translate-x-1/2 items-center gap-6">
+            {/* API: dynamic data – main navigation + mega menus */}
             {mainNav.map((item) => {
               const hasMenu = item.hasDropdown && megaMenus[item.label];
               const active = openMenu === item.label;

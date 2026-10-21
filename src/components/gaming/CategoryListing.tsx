@@ -222,6 +222,7 @@ type CategoryListingProps = {
   page: number;
 };
 
+// API: dynamic data – category + its products (via props)
 /** Figma "Desktop - 15" (category page) – filters, toolbar, product grid and pagination. */
 export default function CategoryListing({ category, products, page }: CategoryListingProps) {
   const router = useRouter();

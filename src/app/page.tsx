@@ -13,6 +13,7 @@ export default function Home() {
       <CategorySplitSection />
       <ExplodedViewSection />
       <ProductCategoriesSection />
+      {/* API: dynamic data – "New Gears" featured products */}
       <FeaturedProductsSection products={featuredProducts} />
       <CommunitySection />
     </>

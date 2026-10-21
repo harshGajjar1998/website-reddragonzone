@@ -84,6 +84,7 @@ function officeCategory(c: {
   };
 }
 
+// API: dynamic data – office categories (listing pages, filters)
 export const officeCategories: OfficeCategory[] = [
   officeCategory({
     slug: "mice",
@@ -147,6 +148,7 @@ export const officeCategories: OfficeCategory[] = [
   }),
 ];
 
+// API: dynamic data – single office category look-up
 export const getOfficeCategory = (slug: string) => officeCategories.find((c) => c.slug === slug);
 
 /* ------------------------------------------------------------------
@@ -180,6 +182,7 @@ const rendered = (src: string, width: number, height: number, left: number, top:
   box: { left, top, w: width / 2, h: height / 2 },
 });
 
+// API: dynamic data – office product catalogue
 export const officeProducts: GamingProduct[] = [
   /* ---------------- Mice ---------------- */
   {
@@ -375,9 +378,11 @@ export const officeProducts: GamingProduct[] = [
   },
 ];
 
+// API: dynamic data – single office product look-up (product page)
 export const getOfficeProduct = (category: string, slug: string) =>
   officeProducts.find((p) => p.category === category && p.slug === slug);
 
+// API: dynamic data – office products in a category (listing page)
 export const officeProductsInCategory = (category: string) =>
   officeProducts.filter((p) => p.category === category);
 
@@ -396,6 +401,7 @@ export type OfficeTile = {
   artOnTop: boolean;
 };
 
+// API: dynamic data – office landing category tiles
 export const officeTiles: { tall: OfficeTile; short: [OfficeTile, OfficeTile] } = {
   tall: {
     slug: "mice",
@@ -435,6 +441,7 @@ export const officeLatestStage: LatestStage = {
 };
 
 
+// API: dynamic data – office "The Latest" products
 export const officeLatestItems: LatestItem[] = [
   {
     name: "NUBULA  K769OFL-M ",
@@ -489,6 +496,7 @@ export const officeLatestItems: LatestItem[] = [
   },
 ];
 
+// API: dynamic data – office featured product cards
 export const officeFeaturedCards: FeaturedCard[] = [
   {
     product: { range: "office", category: "mice", slug: "bm-2659" },
@@ -521,6 +529,7 @@ export const officeFeaturedCards: FeaturedCard[] = [
   },
 ];
 
+// API: dynamic data – office newsletter block content
 export const officeNewsletter = {
   eyebrow: "Office Peripherals",
   title: "Premium Office Accessories",

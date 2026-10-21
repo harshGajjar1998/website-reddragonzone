@@ -16,6 +16,7 @@ function TitleLine({ text }: { text: string }) {
   );
 }
 
+// API: dynamic data – office product showcase (via props)
 /**
  * Office SPECIAL PAGE "Desktop - 17" – two-tone title, 1280×600 lead image,
  * three 416×384 rounded feature cards and a 1280×512 closing image.

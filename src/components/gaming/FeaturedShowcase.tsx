@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { FeaturedDetail } from "@/data/gaming";
 import ArtImage from "./ArtImage";
 
+// API: dynamic data – featured product showcase (via props)
 /**
  * SPECIAL PAGE "Desktop - 17" – "Designed for Gamers / Built for Performance":
  * lead banner (1280×600), three 416×384 feature cards, closing banner (1280×512).

@@ -24,6 +24,7 @@ export default function MobileFooter() {
         </div>
 
         <ul className="mt-8 border-t border-[#8d8d8d]">
+          {/* API: dynamic data – footer link columns */}
           {footerColumns.map((col) => {
             const expanded = open === col.title;
             const id = `footer-${col.title.toLowerCase().replace(/\W+/g, "-")}`;
@@ -64,6 +65,7 @@ export default function MobileFooter() {
         </ul>
 
         <ul className="mt-20 flex items-center justify-center gap-4">
+          {/* API: dynamic data – social links */}
           {socialLinks.map((s) => (
             <li key={s.label}>
               <a

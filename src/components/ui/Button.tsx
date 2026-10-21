@@ -4,13 +4,15 @@ import type { ComponentProps, ReactNode } from "react";
 
 type Variant = "solid" | "outline";
 
+// btn-sweep (globals.css): the --sweep fill grows from the bottom-left corner on hover/press/selection
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-[4px] uppercase whitespace-nowrap transition-colors cursor-pointer";
+  "btn-sweep inline-flex items-center justify-center gap-2 rounded-[4px] uppercase whitespace-nowrap transition-colors duration-300 cursor-pointer";
 
 const variants: Record<Variant, string> = {
-  solid: "bg-crimson text-white hover:bg-[#c3151c]",
-  // inset ring = Figma "inside" stroke, so the border adds no size
-  outline: "shadow-[inset_0_0_0_1px_#000] text-ink hover:bg-black/5",
+  solid: "bg-crimson text-white [--sweep:#a3121a]",
+  // inset ring = Figma "inside" stroke, so the border adds no size; the crimson fill covers it
+  outline:
+    "shadow-[inset_0_0_0_1px_#000] text-ink [--sweep:var(--color-crimson)] hover:text-white focus-visible:text-white active:text-white aria-selected:text-white",
 };
 
 type CommonProps = {

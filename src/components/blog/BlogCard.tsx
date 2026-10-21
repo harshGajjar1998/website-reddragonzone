@@ -34,6 +34,7 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
   );
 }
 
+// API: dynamic data – blog post (via props)
 /** 416px blog card – 300px image + tag, title, excerpt and button. */
 export default function BlogCard({ post }: { post: BlogPost }) {
   const href = `/blog/${post.slug}`;

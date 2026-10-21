@@ -4,6 +4,7 @@ export type NavItem = {
   hasDropdown?: boolean;
 };
 
+// API: dynamic data – main navigation menu
 export const mainNav: NavItem[] = [
   { label: "Gaming", href: "/gaming", hasDropdown: true },
   { label: "Office", href: "/office", hasDropdown: true },
@@ -53,6 +54,7 @@ export type MegaMenu = {
 
 const GAMING_TILE_H = 146.667;
 
+// API: dynamic data – mega menu content (links, product tiles)
 export const megaMenus: Record<string, MegaMenu> = {
   Gaming: {
     height: 592,
@@ -232,8 +234,10 @@ export const megaMenus: Record<string, MegaMenu> = {
 /* ------------------------------------------------------------------
    Search overlay (Figma frame "Search")
    ------------------------------------------------------------------ */
+// API: dynamic data – search suggestions
 export const searchSuggestions = ["keyboard", "wireless keyboard", "mechanical keyboard", "Tactile Keyboards"];
 
+// API: dynamic data – search results – pages
 export const searchPages = [
   { label: "Keyboard Tester Online", href: "/keyboard-tester" },
   { label: "Differences Among Redragon Keyboards", href: "/news/redragon-keyboards-compared" },
@@ -249,6 +253,7 @@ export type SearchProduct = {
   imageHeight: number;
 };
 
+// API: dynamic data – search results – products
 export const searchProducts: SearchProduct[] = [
   {
     name: "RIO K771BGP",
@@ -300,6 +305,7 @@ export const searchProducts: SearchProduct[] = [
   },
 ];
 
+// API: dynamic data – hello bar announcement
 export const helloBar = {
   tag: "[ HARDWARE LAUNCH ]",
   message: "THE NEW K617 PRO COMPACT 60% KEYBOARD IS NOW LIVE.",
@@ -311,6 +317,7 @@ export type FooterColumn = {
   links: { label: string; href: string }[];
 };
 
+// API: dynamic data – footer link columns
 export const footerColumns: FooterColumn[] = [
   {
     title: "Where to buy",
@@ -349,6 +356,7 @@ export const footerColumns: FooterColumn[] = [
   },
 ];
 
+// API: dynamic data – social media links
 export const socialLinks = [
   { label: "Twitter", href: "https://twitter.com/", icon: "/icons/social-twitter.svg" },
   { label: "YouTube", href: "https://youtube.com/", icon: "/icons/social-youtube.svg" },

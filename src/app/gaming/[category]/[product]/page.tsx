@@ -11,11 +11,13 @@ import { gamingProducts, getCategory, getProduct } from "@/data/gaming";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  // API: dynamic data – gaming product slugs
   return gamingProducts.map((p) => ({ category: p.category, product: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/gaming/[category]/[product]">): Promise<Metadata> {
   const { category, product: slug } = await params;
+  // API: dynamic data – gaming product (page metadata)
   const product = getProduct(category, slug);
   if (!product) return {};
   return { title: `${product.name} | Redragon`, description: product.description ?? product.tagline };
@@ -27,6 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/gaming/[category]
  */
 export default async function GamingProductPage({ params }: PageProps<"/gaming/[category]/[product]">) {
   const { category: categorySlug, product: slug } = await params;
+  // API: dynamic data – gaming category + product
   const category = getCategory(categorySlug);
   const product = getProduct(categorySlug, slug);
   if (!category || !product) notFound();

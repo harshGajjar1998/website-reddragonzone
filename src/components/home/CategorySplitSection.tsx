@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import BrowseLink from "@/components/ui/BrowseLink";
+import RevealOnView from "@/components/ui/RevealOnView";
 import { cq } from "@/lib/mobile";
+
+/** Entrance stagger for `.enter-*` pieces (globals.css) */
+const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 type PanelCopyProps = {
   title: string;
@@ -61,22 +66,29 @@ function MobilePanelCopy({ title, description, href }: { title: string; descript
 
 const mobileGhost = "absolute font-gotham font-bold leading-[1.2] tracking-[0.03em] whitespace-nowrap";
 
+// API: dynamic data – Gaming / Office panels, mobile (hard-coded here for now)
 /** Mobile – the two panels stacked (Figma "Home Mobile version" screen 2, 390×800). */
 function MobileSplit() {
   return (
     <div className="overflow-hidden bg-silver-mobile lg:hidden">
       {/* ---------- Gaming ---------- */}
       <div className="mobile-frame">
-        <div className="relative min-h-[330px]" style={{ height: cq(400) }}>
-          <Image
-            src="/images/home/dragon-head-logo.png"
-            alt=""
-            width={1024}
-            height={676}
-            className="absolute object-cover opacity-40 mix-blend-screen"
-            style={{ left: cq(1), top: cq(277), width: cq(186), height: cq(123) }}
-          />
-          <p aria-hidden className={`${mobileGhost} text-white/50`} style={{ left: cq(-23), top: cq(40), fontSize: cq(96) }}>
+        <RevealOnView className="relative min-h-[330px]" style={{ height: cq(400) }}>
+          {/* Wrapped: the image's opacity utility would override the entrance's hidden state */}
+          <div className="enter-bottom absolute" style={{ left: cq(1), top: cq(277), width: cq(186), height: cq(123) }}>
+            <Image
+              src="/images/home/dragon-head-logo.png"
+              alt=""
+              width={1024}
+              height={676}
+              className="size-full object-cover opacity-40 mix-blend-screen"
+            />
+          </div>
+          <p
+            aria-hidden
+            className={`${mobileGhost} enter-left text-white/50`}
+            style={{ left: cq(8), top: cq(40), fontSize: cq(96), ...delay(100) }}
+          >
             Game
           </p>
           <Image
@@ -84,22 +96,21 @@ function MobileSplit() {
             alt="Redragon PRISM PRO M997 gaming mouse"
             width={1600}
             height={1600}
-            className="absolute max-w-none drop-gaming-mouse"
-            style={{ left: cq(195), top: cq(34), width: cq(341), height: cq(341) }}
+            className="enter-right absolute max-w-none drop-gaming-mouse"
+            style={{ left: cq(195), top: cq(34), width: cq(341), height: cq(341), ...delay(250) }}
           />
           <MobilePanelCopy
             title="Game"
             description="High performance gaming gear built for pro-level precision"
             href="/gaming"
           />
-        </div>
-
+        </RevealOnView>
       </div>
 
       {/* ---------- Office (its backdrop spans the full width on tablets) ---------- */}
       <div className="overflow-hidden bg-[linear-gradient(202.93deg,#f0f0f0_4.6171%,#ffffff_86.213%)]">
         <div className="mobile-frame">
-          <div className="relative min-h-[330px]" style={{ height: cq(400) }}>
+          <RevealOnView className="relative min-h-[330px]" style={{ height: cq(400) }}>
             <Image
               src="/images/home/office-pattern-bg.png"
               alt=""
@@ -113,13 +124,13 @@ function MobileSplit() {
               alt=""
               width={927}
               height={1024}
-              className="absolute bottom-0 left-0 object-cover"
+              className="enter-bottom absolute bottom-0 left-0 object-cover"
               style={{ width: cq(112), height: cq(124) }}
             />
             <p
               aria-hidden
-              className={`${mobileGhost} text-[rgba(182,182,182,0.5)]`}
-              style={{ left: cq(-23), top: cq(40), fontSize: cq(96) }}
+              className={`${mobileGhost} enter-left text-[rgba(182,182,182,0.5)]`}
+              style={{ left: cq(8), top: cq(40), fontSize: cq(96), ...delay(100) }}
             >
               Office
             </p>
@@ -128,35 +139,41 @@ function MobileSplit() {
               alt="Redragon BM-4235 ergonomic office mouse"
               width={1600}
               height={1600}
-              className="absolute max-w-none drop-office-mouse"
-              style={{ left: cq(153), top: cq(29), width: cq(341), height: cq(341) }}
+              className="enter-right absolute max-w-none drop-office-mouse"
+              style={{ left: cq(153), top: cq(29), width: cq(341), height: cq(341), ...delay(250) }}
             />
             <MobilePanelCopy
               title="Office"
               description="Reliable and comfortable gear for work and everyday use."
               href="/office"
             />
-          </div>
+          </RevealOnView>
         </div>
       </div>
     </div>
   );
 }
 
-/** Figma "Section 9" – Gaming / Office split (1440×800). */
+// API: dynamic data – Gaming / Office panels – titles, descriptions, links, images (hard-coded here for now)
+/**
+ * Figma "Section 9" – Gaming / Office split (1440×800). On first view the ghost words slide in
+ * from the left, the mice from the right and the watermark logos rise from the bottom.
+ */
 export default function CategorySplitSection() {
   return (
     <section className="overflow-hidden lg:bg-silver">
       <MobileSplit />
-      <div className="page-frame hidden h-[800px] lg:block">
-        {/* Dragon watermark behind the gaming panel */}
-        <Image
-          src="/images/home/dragon-head-logo.png"
-          alt=""
-          width={524}
-          height={345}
-          className="absolute left-[5px] top-[455px] h-[345px] w-[524px] object-cover opacity-35 mix-blend-screen"
-        />
+      <RevealOnView className="page-frame hidden h-[800px] lg:block">
+        {/* Dragon watermark behind the gaming panel (wrapped: its opacity utility would override the entrance) */}
+        <div className="enter-bottom absolute left-[5px] top-[455px] h-[345px] w-[524px]">
+          <Image
+            src="/images/home/dragon-head-logo.png"
+            alt=""
+            width={524}
+            height={345}
+            className="size-full object-cover opacity-35 mix-blend-screen"
+          />
+        </div>
 
         {/* ---------- Office (right) ---------- */}
         <div className="absolute left-1/2 right-[min(0px,calc(720px-50vw))] top-0 h-[800px] overflow-clip bg-[linear-gradient(202.93deg,#f0f0f0_4.6171%,#ffffff_86.213%)]">
@@ -169,7 +186,8 @@ export default function CategorySplitSection() {
           />
           <p
             aria-hidden
-            className="absolute left-[-39px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-[rgba(182,182,182,0.5)]"
+            className="enter-left absolute left-[24px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-[rgba(182,182,182,0.5)]"
+            style={delay(250)}
           >
             Office
           </p>
@@ -178,7 +196,8 @@ export default function CategorySplitSection() {
             alt="Redragon BM-4235 ergonomic office mouse"
             width={608}
             height={608}
-            className="absolute left-[317px] top-[96px] size-[608px] drop-office-mouse"
+            className="enter-right absolute left-[317px] top-[96px] size-[608px] drop-office-mouse"
+            style={delay(400)}
           />
           {/* R watermark – the PNG already carries the 5% tint in its alpha, so no extra opacity */}
           <Image
@@ -186,7 +205,8 @@ export default function CategorySplitSection() {
             alt=""
             width={294}
             height={325}
-            className="absolute bottom-0 left-0 h-[325px] w-[294px] object-cover"
+            className="enter-bottom absolute bottom-0 left-0 h-[325px] w-[294px] object-cover"
+            style={delay(150)}
           />
           <PanelCopy
             title="Office"
@@ -201,7 +221,8 @@ export default function CategorySplitSection() {
         <div className="absolute left-0 top-0 h-[800px] w-[720px] overflow-clip">
           <p
             aria-hidden
-            className="absolute left-[-34px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-white/50"
+            className="enter-left absolute left-[24px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-white/50"
+            style={delay(100)}
           >
             Game
           </p>
@@ -210,7 +231,8 @@ export default function CategorySplitSection() {
             alt="Redragon PRISM PRO M997 gaming mouse"
             width={554}
             height={554}
-            className="absolute left-[386px] top-[123px] size-[554px] drop-gaming-mouse"
+            className="enter-right absolute left-[386px] top-[123px] size-[554px] drop-gaming-mouse"
+            style={delay(250)}
           />
           <PanelCopy
             title="GAMING"
@@ -233,7 +255,7 @@ export default function CategorySplitSection() {
             />
           </div>
         </div>
-      </div>
+      </RevealOnView>
     </section>
   );
 }

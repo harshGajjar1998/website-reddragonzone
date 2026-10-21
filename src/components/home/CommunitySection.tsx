@@ -45,6 +45,7 @@ export default function CommunitySection() {
             {submitted ? "Thanks" : "Sign Up"}
           </Button>
         </form>
+        {/* API: dynamic data – community images (mobile) */}
         <ul className="mt-6 grid grid-cols-3 gap-4">
           <li className="relative col-span-3 h-[181.5px] overflow-hidden rounded-[6px]">
             <Image
@@ -98,6 +99,7 @@ export default function CommunitySection() {
         </div>
 
         <ul className="flex gap-4">
+          {/* API: dynamic data – community images */}
           {communityImages.map((img) => (
             <li key={img.src} className="relative h-[236px] w-[233.33px] overflow-hidden rounded-[6px]">
               <Image src={img.src} alt={img.alt} fill sizes="234px" className="object-cover" />

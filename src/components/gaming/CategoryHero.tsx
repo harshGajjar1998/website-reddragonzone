@@ -5,6 +5,7 @@ import ArtImage from "./ArtImage";
 
 const crumb = "font-lexend-giga text-[24px] leading-[1.2] whitespace-nowrap";
 
+// API: dynamic data – category banner (via props)
 /** Figma "Frame 3" of the category page – breadcrumb, title, copy and hero render (688px). */
 export default function CategoryHero({ category }: { category: GamingCategory }) {
   const { hero } = category;

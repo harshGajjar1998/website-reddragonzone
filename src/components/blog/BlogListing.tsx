@@ -80,6 +80,7 @@ function Pagination({ page, total, href }: { page: number; total: number; href: 
   );
 }
 
+// API: dynamic data – blog posts (via props)
 /** Category tabs, featured post, 3-column grid and pagination (Figma "Content" + "Pagination"). */
 export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: number }) {
   const router = useRouter();
@@ -141,6 +142,7 @@ export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: 
         className="mt-7 flex flex-wrap gap-1 rounded-[6px] bg-white p-2 shadow-[0_4px_10px_rgb(17_17_17/0.02),inset_0_0_0_1px_rgb(17_17_17/0.08)] lg:hidden"
       >
         {chip("Browse all", category === null, () => choose(null))}
+        {/* API: dynamic data – blog categories */}
         {blogCategories.map((c) => chip(c, category === c, () => choose(c)))}
       </div>
 
@@ -151,6 +153,7 @@ export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: 
           className="flex h-14 shrink-0 items-center rounded-[6px] whitespace-nowrap bg-white p-2 shadow-[0_4px_10px_rgb(17_17_17/0.02),inset_0_0_0_1px_rgb(17_17_17/0.08)]"
         >
           {tab("Browse all", category === null, () => choose(null))}
+          {/* API: dynamic data – blog categories */}
           {blogCategories.map((c) => tab(c, category === c, () => choose(c)))}
         </div>
       </div>

@@ -3,6 +3,7 @@ import type { GamingProduct } from "@/data/gaming";
 
 type KeyFeaturesData = NonNullable<GamingProduct["keyFeatures"]>;
 
+// API: dynamic data – product key features (via props)
 /**
  * KEWBOARD DETAIL PAGE "Desktop - 17" – heading, 1280×744 lifestyle shot and a
  * horizontally scrolling strip of 740/524×440 feature cards that bleeds off the right edge.

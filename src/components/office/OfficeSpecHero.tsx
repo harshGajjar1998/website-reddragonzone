@@ -133,6 +133,7 @@ function MobileSpecHero({
   );
 }
 
+// API: dynamic data – office product + category (via props)
 /**
  * Office featured product hero (Figma "TECHNICAL SPECIFICATIONS", 1440×688):
  * spec column on the left, spotlight panel with outlined model name, render and thumbnails.

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
+// API: dynamic data – exploded view part labels, mobile (hard-coded here for now)
 /** Hotspots on the mobile exploded view: x/y are the "+" icon's top-left in the 390×408 image (Figma). */
 const hotspots = [
   { label: "Magnesium alloy", x: 154, y: 28 },
@@ -23,7 +24,11 @@ export default function ExplodedHotspots() {
         const open = active === i;
         const right = h.x > 195;
         return (
-          <li key={h.label} className="absolute" style={{ left: `${(h.x / 390) * 100}%`, top: `${(h.y / 408) * 100}%` }}>
+          <li
+            key={h.label}
+            className="exploded-callout absolute"
+            style={{ left: `${(h.x / 390) * 100}%`, top: `${(h.y / 408) * 100}%`, "--i": i } as CSSProperties}
+          >
             <button
               type="button"
               aria-label={h.label}

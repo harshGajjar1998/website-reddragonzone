@@ -10,6 +10,7 @@ type Callout = {
   connector: { src: string; x: number; y: number; w: number; h: number };
 };
 
+// API: dynamic data – exploded view part labels (hard-coded here for now)
 /** SPECIAL PAGE "Section 3" coordinates (centred heading variant, 1440×1000) */
 const callouts: Callout[] = [
   {
@@ -73,6 +74,7 @@ function MobileLabelledView({ productName, src }: { productName: string; src: st
   );
 }
 
+// API: dynamic data – product name + exploded view image (via props)
 /** Exploded architectural blueprint of a featured product (SPECIAL PAGE "Section 3"). */
 export default function ExplodedBlueprint({ productName, mobileImage }: { productName: string; mobileImage?: string }) {
   return (

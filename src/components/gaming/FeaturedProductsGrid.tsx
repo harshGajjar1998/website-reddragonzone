@@ -64,6 +64,7 @@ type FeaturedProductsGridProps = {
   light?: boolean;
 };
 
+// API: dynamic data – featured product cards (via props)
 /** Figma "Desktop - 15" on the gaming landing page – three 416×432 product cards. */
 export default function FeaturedProductsGrid({ cards, mobileCards, light }: FeaturedProductsGridProps) {
   const mobile = mobileCards ?? cards.map(toMobileCard);
@@ -93,31 +94,35 @@ export default function FeaturedProductsGrid({ cards, mobileCards, light }: Feat
         <ul className="absolute left-20 top-[216px] flex gap-4">
           {cards.map((card) => (
             <li key={productHref(card.product)}>
+              {/* Hover: Codrops "Lily" (globals.css) – the render glides in from the left and brightens, the
+                  title rises and the description rises into view – plus a shadow, and the arrow turns to
+                  point up-right as it moves toward that corner */}
               <Link
                 href={productHref(card.product)}
-                className="group relative block h-[432px] w-[416px] border-[1.2px] border-white/50 bg-[#f6f6f6] transition-shadow hover:shadow-card-hover"
+                className="group group/lily relative block h-[432px] w-[416px] overflow-hidden border-[1.2px] border-white/50 bg-[#f6f6f6] transition-shadow duration-500 hover:shadow-card-hover"
               >
                 {card.art.map((art, i) => (
-                  <ArtImage key={i} art={art} />
+                  <ArtImage key={i} art={art} className="lily-art" />
                 ))}
-                <h3 className="absolute left-6 top-6 w-[236px] font-lexend text-[20px] font-medium uppercase leading-[1.2] tracking-[-0.2px] text-ink">
+                <h3 className="lily-title absolute left-6 top-6 w-[236px] font-lexend text-[20px] font-medium uppercase leading-[1.2] tracking-[-0.2px] text-ink">
                   {card.name}
                 </h3>
-                <p className="absolute right-6 top-6 font-lexend text-[12px] uppercase leading-[1.2] text-ink">
+                <p className="lily-title absolute right-6 top-6 font-lexend text-[12px] uppercase leading-[1.2] text-ink">
                   {card.label}
                 </p>
-                <p className="absolute left-6 top-[380px] w-[236px] font-lexend text-[12px] font-light capitalize leading-[1.2] tracking-[0.72px] text-balance text-ink/75">
+                <p className="lily-text absolute left-6 top-[380px] w-[236px] font-lexend text-[12px] font-light capitalize leading-[1.2] tracking-[0.72px] text-balance text-ink/75">
                   {card.description}
                 </p>
-                {/* 56px diagonal arrow rotated 45° → points right; 79.2px rotated bounds centred at (372, 394),
-                    inside the card's bottom-right corner, level with the description */}
+                {/* 56px diagonal arrow (the SVG points up-right) rotated 45° → points right; 79.2px rotated
+                    bounds centred at (372, 394), inside the card's bottom-right corner, level with the description.
+                    On hover it turns back to up-right and moves toward that corner. */}
                 <span className="absolute left-[332.4px] top-[354.4px] flex size-[79.196px] items-center justify-center">
                   <Image
                     src="/icons/arrow-circle-diag.svg"
                     alt=""
                     width={56}
                     height={56}
-                    className="rotate-45 transition-transform group-hover:translate-x-1"
+                    className="rotate-45 transition-[rotate,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:rotate-0 motion-reduce:transition-none"
                   />
                 </span>
               </Link>

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import type { FeaturedHero as FeaturedHeroData } from "@/data/gaming";
 
+// API: dynamic data – featured product banner (via props)
 /**
  * Featured product hero ("TECHNICAL SPECIFICATIONS", 1440×688 below the header):
  * dark gradient, spotlight panel, outlined model name, product render + thumbnails.

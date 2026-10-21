@@ -4,6 +4,7 @@
 
 const B = "/images/pages/blog";
 
+// API: dynamic data – blog categories
 export const blogCategories = [
   "Gaming Keyboards",
   "Gaming Mice",
@@ -28,6 +29,7 @@ export type BlogPost = {
 
 const author = { name: "Name Last-name", position: "Position @ Company", avatar: `${B}/author.png` };
 
+// API: dynamic data – blog posts
 /** First post is the featured card on page 1 */
 export const blogPosts: BlogPost[] = [
   {
@@ -104,8 +106,10 @@ export const blogPosts: BlogPost[] = [
   },
 ];
 
+// API: dynamic data – single blog post look-up
 export const getPost = (slug: string) => blogPosts.find((p) => p.slug === slug);
 
+// API: dynamic data – blog article body
 /** Article body from the design (placeholder copy until the CMS is connected) */
 export const articleBody = {
   lead: "Lorem ipsum dolor sit amet. Et voluptatem reiciendis ex ipsam sapiente et porro sunt qui fugiat voluptas et corporis fugit est sint Quis ut maiores omnis. Sit minima sunt et corrupti quia non voluptates tempore cum quisquam quod? Qui molestiae repellendus in reprehenderit aliquam est ipsa animi qui error placeat et ipsa unde aut aperiam animi.",

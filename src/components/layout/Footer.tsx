@@ -20,6 +20,7 @@ export default function Footer() {
               </p>
             </div>
 
+            {/* API: dynamic data – footer link columns */}
             {footerColumns.map((col) => (
               <div key={col.title} className="flex w-[162px] shrink-0 flex-col gap-4">
                 <h3 className="font-lato text-[14px] font-extrabold uppercase leading-normal tracking-[1px] text-ink">
@@ -47,6 +48,7 @@ export default function Footer() {
           <div className="flex items-center justify-between">
             <p className="font-lexend text-[12px] leading-normal text-ink/80">© 2026 REDRAGON</p>
             <ul className="flex items-center gap-4">
+              {/* API: dynamic data – social links */}
               {socialLinks.map((s) => (
                 <li key={s.label}>
                   <a

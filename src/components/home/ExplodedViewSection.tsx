@@ -1,5 +1,7 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { ExplodedParts, ExplodedStage } from "./ExplodedMouse";
 import MobileExplodedView from "./MobileExplodedView";
 
 type Callout = {
@@ -12,6 +14,7 @@ type Callout = {
   connector: { src: string; x: number; y: number; w: number; h: number };
 };
 
+// API: dynamic data – exploded view part labels (hard-coded here for now)
 const callouts: Callout[] = [
   {
     label: "Magnesium alloy",
@@ -52,29 +55,28 @@ const callouts: Callout[] = [
   },
 ];
 
-/** Figma "Section 3" – exploded architectural blueprint (1440×1000). */
+/** Figma "Section 3" – exploded architectural blueprint (1440×1000). The mouse comes apart as it scrolls in. */
 export default function ExplodedViewSection() {
   return (
     <section className="bg-silver-mobile overflow-hidden lg:bg-silver-tall">
+      {/* API: dynamic data – featured product name (hard-coded here for now) */}
       <MobileExplodedView productName="Prism Pro M997" />
 
-      <div className="page-frame hidden h-[1000px] lg:block">
+      <ExplodedStage className="page-frame hidden h-[1000px] lg:block">
         <SectionHeading
           eyebrow="Exploded Architectural Blueprint"
+          // API: dynamic data – featured product name (hard-coded here for now)
           title="Unrivaled Internal Assembly of Prism Pro M997"
           className="absolute left-[120px] top-[80px] gap-2"
         />
 
-        <Image
-          src="/images/home/m997-exploded.png"
+        <ExplodedParts
           alt="Exploded view of the PRISM PRO M997 internal components"
-          width={742}
-          height={776}
-          className="absolute left-[317px] top-[215px] h-[776px] w-[742px] object-cover"
+          className="absolute left-[317px] top-[215px] h-[776px] w-[742px]"
         />
 
-        {callouts.map(({ label, x, y, width, connector: c }) => (
-          <div key={label}>
+        {callouts.map(({ label, x, y, width, connector: c }, i) => (
+          <div key={label} className="exploded-callout" style={{ "--i": i } as CSSProperties}>
             <Image
               src={c.src}
               alt=""
@@ -91,7 +93,7 @@ export default function ExplodedViewSection() {
             </p>
           </div>
         ))}
-      </div>
+      </ExplodedStage>
     </section>
   );
 }

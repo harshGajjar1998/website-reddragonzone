@@ -114,6 +114,7 @@ function category(
   };
 }
 
+// API: dynamic data – gaming categories (category slider, listing pages, filters)
 /** Order = slider order: each slide is [top-left, top-right, bottom-left, bottom-right] */
 export const gamingCategories: GamingCategory[] = [
   category({
@@ -333,6 +334,7 @@ export const gamingCategories: GamingCategory[] = [
   }),
 ];
 
+// API: dynamic data – single gaming category look-up
 export const getCategory = (slug: string) => gamingCategories.find((c) => c.slug === slug);
 
 /* ------------------------------------------------------------------
@@ -446,6 +448,7 @@ const P = `${IMG}/products`;
 const RIO = `${P}/rio-k771bgp`;
 const M997 = `${P}/prism-pro-m997`;
 
+// API: dynamic data – gaming product catalogue
 export const gamingProducts: GamingProduct[] = [
   /* ---------------- Keyboards ---------------- */
   {
@@ -691,9 +694,11 @@ export const gamingProducts: GamingProduct[] = [
   },
 ];
 
+// API: dynamic data – single gaming product look-up (product page)
 export const getProduct = (category: string, slug: string) =>
   gamingProducts.find((p) => p.category === category && p.slug === slug);
 
+// API: dynamic data – gaming products in a category (listing page)
 export const productsInCategory = (category: string) =>
   gamingProducts.filter((p) => p.category === category);
 
@@ -708,12 +713,12 @@ export const productHref = (p: Pick<GamingProduct, "range" | "category" | "slug"
    Gaming landing page
    ------------------------------------------------------------------ */
 
+// API: dynamic data – gaming landing banner content
 export const gamingHero = {
   title: ["Gaming", "Products"] as [string, string],
   description:
     "Explore Red Dragon gaming gear built for performance — from gaming headsets and keyboards to mice, microphones, and more. Find the right gear to level up your gaming setup.",
-  /** The design shows 5 indicator dots but one backdrop – add slides here */
-  images: Array.from({ length: 5 }, () => `${IMG}/hero-setup.png`),
+  image: `${IMG}/hero-setup.png`,
 };
 
 export type LatestItem = {
@@ -731,6 +736,7 @@ export type LatestItem = {
 const latestCenterBox = { left: 566, top: 176, w: 309, h: 514 };
 const latestSideBox = (side: "left" | "right") => ({ left: side === "left" ? 335 : 874, top: 333, w: 231, h: 194 });
 
+// API: dynamic data – gaming "The Latest" products
 export const latestItems: LatestItem[] = [
   {
     name: "NUBULA  K769OFL-M",
@@ -812,6 +818,7 @@ export type FeaturedCard = {
   art: Art[];
 };
 
+// API: dynamic data – gaming featured product cards
 export const featuredCards: FeaturedCard[] = [
   {
     product: { category: "keyboards", slug: "k732mc-rgb-pro" },
@@ -884,6 +891,7 @@ const M = `${IMG}/featured/mobile`;
 const cardBox = (left: number, top: number, size: number) => ({ left, top, w: size, h: size });
 const SIM_CROP = { w: 150.6, h: 100, left: -25.31, top: 0 };
 
+// API: dynamic data – gaming featured products (mobile grid)
 export const featuredGrid: MobileFeaturedCard[] = [
   {
     name: "URANUS PRO 82 K732MC-RGB-PRO",

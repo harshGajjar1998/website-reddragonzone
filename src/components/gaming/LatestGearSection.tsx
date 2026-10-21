@@ -187,6 +187,7 @@ type LatestGearSectionProps = {
   light?: boolean;
 };
 
+// API: dynamic data – "The Latest" products (via props)
 /** Figma "The Latest gaming" (1440×800) – centre stage carousel with the neighbours peeking. */
 export default function LatestGearSection({ items, stage = gamingStage, light }: LatestGearSectionProps) {
   const count = items.length;

@@ -38,6 +38,7 @@ function ThumbsUp() {
   );
 }
 
+// API: dynamic data – product (via props)
 /**
  * Category listing card. Gaming cards rest white and turn #eee on hover/focus with the
  * dragon watermark (bottom-right); office cards rest #f6f6f6 and show the faint R mark

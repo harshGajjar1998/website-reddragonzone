@@ -56,6 +56,7 @@ function Accordion({ title, body }: { title: string; body: string }) {
   );
 }
 
+// API: dynamic data – product details, gallery, specs (via props)
 /**
  * KEWBOARD DETAIL PAGE "Desktop - 16" – breadcrumb, 2-column gallery (337×368 cells)
  * and the product info column (module switch, colour, description, accordions).

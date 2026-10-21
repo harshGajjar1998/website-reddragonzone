@@ -16,6 +16,7 @@ export type AboutSection = {
   tinted?: boolean;
 };
 
+// API: dynamic data – About Us page sections
 export const aboutSections: AboutSection[] = [
   {
     eyebrow: "WHO WE ARE",
@@ -48,6 +49,7 @@ export const aboutSections: AboutSection[] = [
   },
 ];
 
+// API: dynamic data – About Us values
 export const aboutValues = [
   {
     title: "Quality Products",
@@ -65,6 +67,7 @@ export const aboutValues = [
 
 /* ---------------- Contact ---------------- */
 
+// API: dynamic data – contact form enquiry types
 export const enquiryTypes = [
   "Product support",
   "Warranty & returns",
@@ -74,6 +77,7 @@ export const enquiryTypes = [
   "Other",
 ];
 
+// API: dynamic data – FAQs
 export const faqs = [
   {
     q: "What sets Red Dragon Zone apart from other eCommerce platforms for  accessories?",
@@ -114,6 +118,7 @@ export const faqs = [
 
 export type Store = { name: string; type: "Official store" | "Online retailer" | "Retail store"; url: string };
 
+// API: dynamic data – Where to Buy store list
 export const storesByCountry: Record<string, Store[]> = {
   India: [
     { name: "Redragon India Official Store", type: "Official store", url: "https://redragon.in" },
@@ -147,6 +152,7 @@ export type SupportTile = {
   inset: 88 | 40;
 };
 
+// API: dynamic data – support centre topics
 export const supportTiles: SupportTile[][] = [
   [
     { slug: "mice", label: "Mice", ghost: "MICE", width: 464, inset: 88, art: { src: `${S}/mice.png`, width: 812, height: 500, left: 58, top: 0 } },
@@ -191,6 +197,7 @@ const k769 = {
   crop: { w: 100, h: 307.87, left: 0, top: -85.39 },
 };
 
+// API: dynamic data – support downloads (drivers, manuals)
 /** Downloads list – the design repeats these four keyboards; add real entries here */
 export const downloads: Download[] = [
   { name: "EISA 100 PRO  K768VI-PRO", category: "keyboards", keywords: "Keywords", image: k768, software: "#", manual: "#" },

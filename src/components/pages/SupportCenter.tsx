@@ -237,6 +237,7 @@ export default function SupportCenter() {
   const [shown, setShown] = useState(PAGE);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // API: dynamic data – support downloads
   const results = downloads.filter(
     (d) =>
       (!category || d.category === category) &&
@@ -309,6 +310,7 @@ export default function SupportCenter() {
       {/* Category tiles */}
       <section className="bg-white">
         <div className="grid grid-cols-2 gap-3 px-4 py-6 lg:hidden">
+          {/* API: dynamic data – support topics */}
           {supportTiles.flat().map((tile) => (
             <MobileTile
               key={tile.slug}
@@ -323,6 +325,7 @@ export default function SupportCenter() {
           ))}
         </div>
         <div className="page-frame hidden h-[800px] flex-col gap-6 lg:flex">
+          {/* API: dynamic data – support topics */}
           {supportTiles.map((row, i) => (
             <div key={i} className="flex justify-between">
               {row.map((tile) => (

@@ -11,11 +11,13 @@ import { getOfficeCategory, getOfficeProduct, officeNewsletter, officeProducts }
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  // API: dynamic data – office product slugs
   return officeProducts.map((p) => ({ category: p.category, product: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/office/[category]/[product]">): Promise<Metadata> {
   const { category, product: slug } = await params;
+  // API: dynamic data – office product (page metadata)
   const product = getOfficeProduct(category, slug);
   if (!product) return {};
   return { title: `${product.name} | Redragon`, description: product.description ?? product.tagline };
@@ -27,6 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/office/[category]
  */
 export default async function OfficeProductPage({ params }: PageProps<"/office/[category]/[product]">) {
   const { category: categorySlug, product: slug } = await params;
+  // API: dynamic data – office category + product
   const category = getOfficeCategory(categorySlug);
   const product = getOfficeProduct(categorySlug, slug);
   if (!category || !product) notFound();
@@ -45,6 +48,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
             subtitle: `Unrivaled Internal Assembly of ${product.name}`,
           }}
         />
+        {/* API: dynamic data – office newsletter content */}
         <NewsletterSection {...officeNewsletter} />
       </>
     );
@@ -54,6 +58,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
     <>
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} light />}
+      {/* API: dynamic data – office newsletter content */}
       <NewsletterSection {...officeNewsletter} />
     </>
   );

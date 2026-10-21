@@ -9,10 +9,12 @@ import { articleBody, blogPosts, getPost } from "@/data/blog";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  // API: dynamic data – blog post slugs
   return blogPosts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
+  // API: dynamic data – blog post (page metadata)
   const post = getPost((await params).slug);
   if (!post) return {};
   return { title: `${post.title} | Redragon Blog`, description: post.excerpt };
@@ -22,9 +24,11 @@ const body = "font-merriweather text-[16px] font-bold leading-[1.5]";
 
 /** Figma blog detail ("Main Auto layout") */
 export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">) {
+  // API: dynamic data – blog post
   const post = getPost((await params).slug);
   if (!post) notFound();
 
+  // API: dynamic data – related blog posts
   const related = blogPosts.filter((p) => p.slug !== post.slug).slice(-3);
 
   return (
@@ -82,6 +86,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
                 className="object-cover"
               />
             </div>
+            {/* API: dynamic data – blog article body */}
             <p className={`${body} text-black`}>{articleBody.lead}</p>
             {articleBody.paragraphs.map((p, i) => (
               <p key={i} className={`${body} text-black/60`}>

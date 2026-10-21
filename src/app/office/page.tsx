@@ -14,6 +14,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Office Products | Redragon",
+  // API: dynamic data – office page description
   description: officeNewsletter.description,
 };
 
@@ -22,9 +23,13 @@ export default function OfficePage() {
   return (
     <>
       <OfficeHero />
+      {/* API: dynamic data – office category tiles */}
       <OfficeCategoryGrid {...officeTiles} />
+      {/* API: dynamic data – office "The Latest" products */}
       <LatestGearSection items={officeLatestItems} stage={officeLatestStage} light />
+      {/* API: dynamic data – office featured products */}
       <FeaturedProductsGrid cards={officeFeaturedCards} light />
+      {/* API: dynamic data – office newsletter content */}
       <NewsletterSection {...officeNewsletter} />
     </>
   );

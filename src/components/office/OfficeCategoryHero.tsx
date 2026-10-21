@@ -95,6 +95,7 @@ function MobileSpotlights({ slides }: { slides: Spotlight[] }) {
   );
 }
 
+// API: dynamic data – office category spotlight slides (via props)
 /** Figma "Frame 4" (office category page) – product spotlight carousel, 688px. */
 export default function OfficeCategoryHero({ slides }: { slides: Spotlight[] }) {
   const count = slides.length;

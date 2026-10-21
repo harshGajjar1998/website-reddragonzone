@@ -7,6 +7,7 @@ type BlueprintSectionProps = {
   heading?: { lead: string; accent: string; subtitle: string };
 };
 
+// API: dynamic data – product blueprint image + heading (via props)
 /** Office SPECIAL PAGE "Section 3" – full-bleed exploded-view artwork (labels are part of the image). */
 export default function BlueprintSection({ src, alt, heading }: BlueprintSectionProps) {
   return (

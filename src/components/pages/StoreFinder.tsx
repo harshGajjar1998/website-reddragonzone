@@ -11,6 +11,7 @@ export default function StoreFinder() {
   const [results, setResults] = useState<{ country: string; stores: Store[] } | null>(null);
   const [locating, setLocating] = useState(false);
 
+  // API: dynamic data – stores for the chosen country
   const show = (c: string) => setResults({ country: c, stores: storesByCountry[c] ?? [] });
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -46,6 +47,7 @@ export default function StoreFinder() {
             <option value="" disabled>
               Select Country
             </option>
+            {/* API: dynamic data – countries with stores */}
             {Object.keys(storesByCountry).map((c) => (
               <option key={c}>{c}</option>
             ))}

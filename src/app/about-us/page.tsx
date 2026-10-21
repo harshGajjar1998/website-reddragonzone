@@ -61,6 +61,7 @@ export default function AboutPage() {
       </section>
 
       {/* Brand story / philosophy / inspiration */}
+      {/* API: dynamic data – About Us sections */}
       {aboutSections.map((s) => (
         <section key={s.title} className={s.tinted ? "bg-[#f6f6f6]" : "bg-white"}>
           <div
@@ -158,6 +159,7 @@ export default function AboutPage() {
         <div className="page-frame flex flex-col gap-8 px-4 py-14 lg:gap-12 lg:px-[120px] lg:py-24">
           <SectionIntro eyebrow="WHY REDRAGON" title="Built Different" />
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+            {/* API: dynamic data – About Us values */}
             {aboutValues.map((v) => (
               <div
                 key={v.title}

@@ -58,6 +58,7 @@ function Tile({
   );
 }
 
+// API: dynamic data – mega menu content (via props)
 /** Dark "By category" panel shown under the header (Figma frames Gaming / Office / Support). */
 export default function MegaMenu({
   menu,

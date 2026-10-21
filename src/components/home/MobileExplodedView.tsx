@@ -1,9 +1,10 @@
-import Image from "next/image";
+import { ExplodedParts, ExplodedStage } from "./ExplodedMouse";
 import ExplodedHotspots from "./ExplodedHotspots";
 
 /**
  * Mobile exploded view – Figma "Home Mobile version" screen 3 (390×800): heading, then the
- * M997 exploded render with tappable part hotspots. Also used on the gaming featured page.
+ * M997 exploded render (comes apart as it scrolls in) with tappable part hotspots.
+ * Also used on the gaming featured page.
  */
 export default function MobileExplodedView({ productName }: { productName: string }) {
   return (
@@ -16,16 +17,13 @@ export default function MobileExplodedView({ productName }: { productName: strin
           Unrivaled Internal Assembly of {productName}
         </h2>
       </div>
-      <div className="relative mt-[79px] aspect-[390/408] w-full">
-        <Image
-          src="/images/home/m997-exploded.png"
+      <ExplodedStage className="relative mt-[79px] aspect-[390/408] w-full">
+        <ExplodedParts
           alt={`Exploded view of the ${productName} internal components`}
-          fill
-          sizes="(max-width: 640px) 100vw, 640px"
-          className="object-cover"
+          className="absolute inset-0"
         />
         <ExplodedHotspots />
-      </div>
+      </ExplodedStage>
     </div>
   );
 }

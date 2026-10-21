@@ -7,6 +7,7 @@ import { helloBar } from "@/data/navigation";
 function Announcement({ hidden }: { hidden?: boolean }) {
   return (
     <span aria-hidden={hidden} className="flex shrink-0 items-center gap-2 pr-8 whitespace-nowrap">
+      {/* API: dynamic data – hello bar announcement */}
       <span className="font-jetbrains text-[11px] font-bold uppercase leading-normal">{helloBar.tag}</span>
       <span className="font-geist text-[12px] font-medium leading-normal">{helloBar.message}</span>
       <a
@@ -52,6 +53,7 @@ export default function HelloBar() {
 
       <div className="page-frame hidden h-10 items-center justify-between px-10 lg:flex">
         <p className="flex min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap">
+          {/* API: dynamic data – hello bar announcement */}
           <span className="font-jetbrains text-[11px] font-bold uppercase leading-normal">{helloBar.tag}</span>
           <span className="font-geist text-[12px] font-medium leading-normal">{helloBar.message}</span>
           <a
