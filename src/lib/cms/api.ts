@@ -147,7 +147,7 @@ export type CmsBundle = {
  * build stamp (next.config.ts) keeps a later build from reusing it.
  */
 /**
- * Draft preview: the server started by `npm run preview:cms`, or built with `npm run build:preview` (CMS_PREVIEW=1), renders unpublished
+ * Draft preview: the server started by `npm run preview:cms`, or built with `npm run build` (CMS_PREVIEW=1), renders unpublished
  * content for the CMS visual editor, authenticated with the key it shares with the CMS.
  */
 export const isCmsPreview = () => process.env.CMS_PREVIEW === "1";

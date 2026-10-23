@@ -16,7 +16,7 @@ const preview = process.env.CMS_PREVIEW === "1";
  *   afresh: Netlify keeps .next/cache between builds, and a cached response would hide new content.
  *
  * CMS_PREVIEW=1 is the draft-preview server for the CMS visual editor (`npm run preview:cms` locally,
- * `npm run build:preview` + `npm start` on Hostinger): a Node server that renders drafts on every
+ * `npm run build` + `npm start` on Hostinger): a Node server that renders drafts on every
  * request, locked by src/proxy.ts.
  * @type {import("next").NextConfig}
  */
