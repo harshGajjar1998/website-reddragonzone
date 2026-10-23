@@ -67,9 +67,14 @@ jobs:
           sudo apt-get install -y -qq lftp > /dev/null
           export LFTP_PASSWORD="$FTP_PASSWORD"   # read by --env-password: any character is safe, and it stays off the command line
           ftp() { lftp --env-password -u "$FTP_USER" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; set net:max-retries 3; $1; quit" "$FTP_HOST"; }
-          # The account may open in the website's folder or in public_html itself
+          # Hostinger FTP accounts open in the website's folder (next to public_html) or inside public_html.
+          # `cls -1 /` prints entries with their path ("/public_html/"), hence the loose match.
           listing=$(ftp "cls -1 /") || { echo "::error::FTP login failed – check the FTP_USER variable and FTP_PASSWORD secret"; exit 1; }
-          dir=/; echo "$listing" | grep -qx 'public_html/\?' && dir=/public_html
+          if echo "$listing" | grep -Eq '(^|/)public_html/?$'; then dir=/public_html
+          elif echo "$listing" | grep -Eq '(^|/)DO_NOT_UPLOAD_HERE$'; then echo "::error::In the domain folder but no public_html – refusing to upload"; exit 1
+          else dir=/; fi
+          # Never mirror (with --delete) into a folder that holds the website's own folders
+          [ "$(ftp "cls -1 $dir" | grep -Ec '(^|/)(public_html/?|DO_NOT_UPLOAD_HERE)$')" = 0 ] || { echo "::error::$dir is not a web root – refusing to upload"; exit 1; }
           echo "Uploading to $dir"
           keep="--exclude-glob .well-known/ --exclude-glob .well-known/*"
           # 1. new/resized files (fresh builds touch every file, so compare sizes, not times) – old pages keep working
