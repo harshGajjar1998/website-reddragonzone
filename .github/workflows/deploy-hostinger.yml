@@ -1,0 +1,78 @@
+# Builds the static site and uploads it to a plain Hostinger website (LiteSpeed) over FTPS.
+# Runs on pushes to this branch, by hand (Actions → Run workflow), and when the CMS publishes
+# (it calls the workflow_dispatch API with its GitHub token; see CMS_GITHUB_* in the CMS .env).
+#
+# Repository settings → Secrets and variables → Actions:
+#   variables  CMS_API_URL (the CMS), FTP_HOST, FTP_USER (an FTP account limited to the website's folder)
+#   secret     FTP_PASSWORD
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [feature/cms-integration]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why (shown in the run title)
+        required: false
+        default: Manual deploy
+
+run-name: ${{ github.event_name == 'workflow_dispatch' && inputs.reason || github.event.head_commit.message }}
+
+# One deploy at a time; a publish during a deploy queues (only the newest waits), never cuts an upload short
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build (static export → out/)
+        run: pnpm build
+        env:
+          CMS_API_URL: ${{ vars.CMS_API_URL }}
+
+      - name: Long-cache Next's hashed assets
+        run: |
+          cat > out/_next/static/.htaccess <<'HT'
+          <IfModule mod_headers.c>
+              Header set Cache-Control "public, max-age=31536000, immutable"
+          </IfModule>
+          HT
+
+      - name: Upload over FTPS
+        env:
+          FTP_HOST: ${{ vars.FTP_HOST }}
+          FTP_USER: ${{ vars.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          sudo apt-get install -y -qq lftp > /dev/null
+          ftp() { lftp -u "$FTP_USER,$FTP_PASSWORD" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; set net:max-retries 3; $1; quit" "$FTP_HOST"; }
+          # The account may open in the website's folder or in public_html itself
+          dir=/; ftp "cls -1 /" | grep -qx 'public_html/\?' && dir=/public_html
+          echo "Uploading to $dir"
+          keep="--exclude-glob .well-known/ --exclude-glob .well-known/*"
+          # 1. new/resized files (fresh builds touch every file, so compare sizes, not times) – old pages keep working
+          ftp "mirror -R --ignore-time --parallel=8 $keep out/ $dir"
+          # 2. every page/data file, whatever its size (a text edit can keep the size)
+          ftp "mirror -R --parallel=8 --include-glob *.html --include-glob *.txt --include-glob .htaccess $keep out/ $dir"
+          # 3. remove what the new build no longer has
+          ftp "mirror -R --ignore-time --delete --parallel=8 $keep out/ $dir"

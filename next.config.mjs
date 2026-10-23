@@ -11,7 +11,7 @@ const preview = process.env.CMS_PREVIEW === "1";
  *   or deep-linking any page finds a real file (no "Page not found").
  * - There is no image server, so `scripts/optimize-images.mjs` pre-builds resized WebP
  *   copies and `image-loader.ts` points next/image's srcset at them (widths below).
- * - Redirects live in `public/_redirects` (Netlify reads it from the deploy root).
+ * - Redirects live in `public/_redirects` (Netlify) and `public/.htaccess` (Hostinger); keep them in step.
  * - Content comes from the CMS at build time (src/lib/cms). CMS_BUILD_STAMP makes each build fetch it
  *   afresh: Netlify keeps .next/cache between builds, and a cached response would hide new content.
  *

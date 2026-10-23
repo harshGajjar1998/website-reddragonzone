@@ -1,0 +1,21 @@
+# Hostinger (LiteSpeed) – the static export from `next build` (Netlify ignores this file and uses _redirects)
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Same as public/_redirects
+    RewriteRule ^support/download/?$ /support/ [R=302,L]
+    RewriteRule ^news/?$ /blog/ [R=302,L]
+    RewriteRule ^where-to-buy/.+ /where-to-buy/ [R=302,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # Pages change on every CMS publish: always re-check them
+    <FilesMatch "\.(html|txt)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
