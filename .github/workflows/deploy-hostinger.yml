@@ -65,9 +65,11 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           sudo apt-get install -y -qq lftp > /dev/null
-          ftp() { lftp -u "$FTP_USER,$FTP_PASSWORD" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; set net:max-retries 3; $1; quit" "$FTP_HOST"; }
+          export LFTP_PASSWORD="$FTP_PASSWORD"   # read by --env-password: any character is safe, and it stays off the command line
+          ftp() { lftp --env-password -u "$FTP_USER" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; set net:max-retries 3; $1; quit" "$FTP_HOST"; }
           # The account may open in the website's folder or in public_html itself
-          dir=/; ftp "cls -1 /" | grep -qx 'public_html/\?' && dir=/public_html
+          listing=$(ftp "cls -1 /") || { echo "::error::FTP login failed – check the FTP_USER variable and FTP_PASSWORD secret"; exit 1; }
+          dir=/; echo "$listing" | grep -qx 'public_html/\?' && dir=/public_html
           echo "Uploading to $dir"
           keep="--exclude-glob .well-known/ --exclude-glob .well-known/*"
           # 1. new/resized files (fresh builds touch every file, so compare sizes, not times) – old pages keep working
