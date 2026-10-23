@@ -7,6 +7,7 @@ import BrowseLink from "@/components/ui/BrowseLink";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TabSlider from "@/components/ui/TabSlider";
 import { piece } from "@/lib/motion";
+import type { GearCard, HomeGears } from "@/data/home";
 import CategoryCard from "./CategoryCard";
 
 type Tab = "game" | "office";
@@ -52,17 +53,17 @@ function FloorShadow({
   );
 }
 
-// API: dynamic data – gaming category cards (hard-coded here for now)
+// API: dynamic data – gaming category cards (CMS homepage "Category cards" section; art placement is per slot)
 /** Game tab – 2×2 grid of 592×176 cards. */
-function GameGears() {
+function GameGears({ cards }: { cards: GearCard[] }) {
   return (
     <div className="grid grid-cols-[592px_592px] gap-x-4 gap-y-[104px]">
       {/* Mice */}
-      <CategoryCard title="Mice" ghost="Mice" href="/gaming/mice" ghostLeft={-7}>
+      <CategoryCard title={cards[0].title} ghost={cards[0].ghost} href={cards[0].href} ghostLeft={-7}>
         <FloorShadow src="/images/home/shadow-ellipse-1.svg" w={223.2} h={81.2} x={343.4} y={101.4} delay={200} />
         <Image
-          src="/images/home/mouse-m919.png"
-          alt="Redragon M919 gaming mouse"
+          src={cards[0].image.src}
+          alt={cards[0].image.alt}
           width={257}
           height={257}
           className={`piece card-art absolute left-[335px] top-[-117px] size-[257px] ${dropShadow}`}
@@ -71,11 +72,11 @@ function GameGears() {
       </CategoryCard>
 
       {/* Headsets */}
-      <CategoryCard title="Headsets" ghost="Headset" href="/gaming/headsets" delay={120}>
+      <CategoryCard title={cards[1].title} ghost={cards[1].ghost} href={cards[1].href} delay={120}>
         <FloorShadow src="/images/home/shadow-ellipse-2.svg" w={175.2} h={73.2} x={405.4} y={109.4} delay={320} />
         <Image
-          src="/images/home/headset-h894.png"
-          alt="Redragon H894 gaming headset"
+          src={cards[1].image.src}
+          alt={cards[1].image.alt}
           width={236}
           height={236}
           className={`piece card-art absolute left-[371px] top-[-89px] size-[236px] ${dropShadow}`}
@@ -85,16 +86,16 @@ function GameGears() {
 
       {/* Keyboards – one copy clipped inside the card, one rounded copy breaking out */}
       <CategoryCard
-        title="Keyboards"
-        ghost="Keyboard"
-        href="/gaming/keyboards"
+        title={cards[2].title}
+        ghost={cards[2].ghost}
+        href={cards[2].href}
         ghostLeft={-7}
         titleTop={69}
         browseTop={132}
         delay={240}
         clippedArt={
           <Image
-            src="/images/home/keyboard-k754.png"
+            src={cards[2].image.src}
             alt=""
             width={262}
             height={262}
@@ -108,8 +109,8 @@ function GameGears() {
           style={{ ...flip, ...piece("right", 440) }}
         >
           <Image
-            src="/images/home/keyboard-k754.png"
-            alt="Redragon K754 mechanical keyboard"
+            src={cards[2].image.src}
+            alt={cards[2].image.alt}
             width={264}
             height={263}
             className="absolute left-[-2.05%] top-[-0.2%] h-[100.41%] w-[102.05%] max-w-none"
@@ -118,10 +119,10 @@ function GameGears() {
       </CategoryCard>
 
       {/* Gamepads */}
-      <CategoryCard title="Gamepads" ghost="Gamepads" href="/gaming/gamepads" titleTop={65} delay={360}>
+      <CategoryCard title={cards[3].title} ghost={cards[3].ghost} href={cards[3].href} titleTop={65} delay={360}>
         <Image
-          src="/images/home/gamepad-ig09.png"
-          alt="Redragon gamepad"
+          src={cards[3].image.src}
+          alt={cards[3].image.alt}
           width={390}
           height={270}
           className={`piece card-art absolute left-[277px] top-[-102px] h-[270px] w-[390px] object-cover ${dropShadow}`}
@@ -149,13 +150,13 @@ const cardTitle = "piece absolute font-lexend-deca font-medium leading-[1.2] whi
  */
 const cardLayer = "group/card pointer-events-none absolute inset-0";
 
-// API: dynamic data – office category cards (hard-coded here for now)
+// API: dynamic data – office category cards (CMS homepage "Category cards" section; art placement is per slot)
 /**
  * Office tab – Figma "Section 4" (node 2529:6739): one tall Mice card on the left,
  * Keyboards + Combo cards stacked on the right. Coordinates are relative to the
  * 1200×456 card area (Figma section x − 120, y − 264).
  */
-function OfficeGears() {
+function OfficeGears({ cards }: { cards: GearCard[] }) {
   return (
     <div className="relative h-[456px] w-[1200px]">
       {/* ---------- Mice (tall card) ---------- */}
@@ -166,21 +167,21 @@ function OfficeGears() {
         />
         <FloorShadow src="/images/home/shadow-ellipse-1.svg" w={223.2} h={81.2} x={313.4} y={365.4} delay={200} />
         <p aria-hidden className={`${ghostWord} left-[-7px] top-[48px] text-[96px] font-bold`} style={piece("left", 100)}>
-          MICE
+          {cards[0].ghost}
         </p>
         <h3 className={`${cardTitle} left-10 top-[86px] text-[32px]`} style={piece("bottom", 250)}>
-          Mice
+          {cards[0].title}
         </h3>
         <div className="piece pointer-events-auto absolute left-10 top-[396px]" style={piece("bottom", 320)}>
-          <BrowseLink href="/office/mice" size="sm" />
+          <BrowseLink href={cards[0].href} size="sm" />
         </div>
         <div
           className="piece card-art absolute left-[229px] top-[-72px] h-[473px] w-[358px] overflow-hidden drop-office-gear"
           style={piece("right", 200)}
         >
           <Image
-            src="/images/home/office/mouse.png"
-            alt="Redragon office mouse"
+            src={cards[0].image.src}
+            alt={cards[0].image.alt}
             width={1600}
             height={1600}
             className="absolute left-0 top-0 h-full w-[132.12%] max-w-none"
@@ -200,7 +201,7 @@ function OfficeGears() {
           >
             <div className="relative h-[144.073px] w-[361.05px] flex-none rotate-[29deg] overflow-hidden drop-office-gear">
               <Image
-                src="/images/home/office/keyboard.png"
+                src={cards[1].image.src}
                 alt=""
                 width={482}
                 height={320}
@@ -213,13 +214,13 @@ function OfficeGears() {
             className={`${ghostWord} left-[-8px] top-[27px] text-[88px] font-medium uppercase`}
             style={piece("left", 220)}
           >
-            keyboards
+            {cards[1].ghost}
           </p>
           <h3 className={`${cardTitle} left-8 top-[66px] text-[24px]`} style={piece("bottom", 370)}>
-            keyboards
+            {cards[1].title}
           </h3>
           <div className="piece absolute left-8 top-[129px]" style={piece("bottom", 440)}>
-            <BrowseLink href="/office/keyboards" size="sm" />
+            <BrowseLink href={cards[1].href} size="sm" />
           </div>
         </div>
 
@@ -230,8 +231,8 @@ function OfficeGears() {
         >
           <div className="relative h-[144.073px] w-[275.952px] flex-none rotate-[29deg] overflow-hidden">
             <Image
-              src="/images/home/office/keyboard.png"
-              alt="Redragon office keyboard"
+              src={cards[1].image.src}
+              alt={cards[1].image.alt}
               width={482}
               height={320}
               className="absolute left-[-10.38%] top-[-46.39%] h-[192.77%] w-[151.6%] max-w-none"
@@ -247,10 +248,10 @@ function OfficeGears() {
           style={piece("bottom", 240)}
         />
         <p aria-hidden className={`${ghostWord} left-[600px] top-[307px] text-[88px] font-medium`} style={piece("left", 340)}>
-          COMBO
+          {cards[2].ghost}
         </p>
         <h3 className={`${cardTitle} left-[640px] top-[345px] text-[24px]`} style={piece("bottom", 490)}>
-          Combo
+          {cards[2].title}
         </h3>
         <div
           className="piece card-art absolute left-[811px] top-[240px] flex h-[214.6px] w-[397.838px] items-center justify-center"
@@ -258,8 +259,8 @@ function OfficeGears() {
         >
           <div className="relative h-[173.781px] w-[381.05px] flex-none rotate-[6.31deg] overflow-hidden drop-office-gear">
             <Image
-              src="/images/home/office/combo.png"
-              alt="Redragon office keyboard and mouse combo"
+              src={cards[2].image.src}
+              alt={cards[2].image.alt}
               width={1600}
               height={1600}
               className="absolute left-[-1.9%] top-[-65.63%] h-[231.25%] w-[105.46%] max-w-none"
@@ -267,7 +268,7 @@ function OfficeGears() {
           </div>
         </div>
         <div className="piece pointer-events-auto absolute left-[640px] top-[409px]" style={piece("bottom", 560)}>
-          <BrowseLink href="/office/combo" size="sm" />
+          <BrowseLink href={cards[2].href} size="sm" />
         </div>
       </div>
     </div>
@@ -339,26 +340,26 @@ function MobileShadow({ right, top, w, h, delay }: { right: number; top: number;
 /** Mobile product art: slides in from the right after its card, zooms on hover */
 const mobileArt = (index: number) => piece("right", index * MOBILE_STEP + 200);
 
-// API: dynamic data – gaming category cards, mobile (hard-coded here for now)
-function MobileGameGears() {
+// API: dynamic data – gaming category cards, mobile (via props)
+function MobileGameGears({ cards }: { cards: GearCard[] }) {
   return (
     <ul className="flex flex-col gap-8">
-      <MobileGearCard title="Mice" ghost="MICE" href="/gaming/mice" index={0}>
+      <MobileGearCard title={cards[0].title} ghost={cards[0].ghost} href={cards[0].href} index={0}>
         <MobileShadow right={61} top={99} w={80} h={14} delay={200} />
         <Image
-          src="/images/home/mouse-m919.png"
-          alt="Redragon M919 gaming mouse"
+          src={cards[0].image.src}
+          alt={cards[0].image.alt}
           width={159}
           height={159}
           className={`piece card-art absolute right-0 top-[-51px] size-[159px] ${dropShadow}`}
           style={mobileArt(0)}
         />
       </MobileGearCard>
-      <MobileGearCard title="Headsets" ghost="Headsets" href="/gaming/headsets" index={1}>
+      <MobileGearCard title={cards[1].title} ghost={cards[1].ghost} href={cards[1].href} index={1}>
         <MobileShadow right={29} top={103} w={70} h={12} delay={300} />
         <Image
-          src="/images/home/headset-h894.png"
-          alt="Redragon H894 gaming headset"
+          src={cards[1].image.src}
+          alt={cards[1].image.alt}
           width={131}
           height={131}
           className={`piece card-art absolute right-0 top-[-32px] size-[131px] ${dropShadow}`}
@@ -366,13 +367,13 @@ function MobileGameGears() {
         />
       </MobileGearCard>
       <MobileGearCard
-        title="Keyboards"
-        ghost="Keyboards"
-        href="/gaming/keyboards"
+        title={cards[2].title}
+        ghost={cards[2].ghost}
+        href={cards[2].href}
         index={2}
         clippedArt={
           <Image
-            src="/images/home/keyboard-k754.png"
+            src={cards[2].image.src}
             alt=""
             width={170}
             height={170}
@@ -387,18 +388,18 @@ function MobileGameGears() {
           style={{ ...flip, ...mobileArt(2) }}
         >
           <Image
-            src="/images/home/keyboard-k754.png"
-            alt="Redragon K754 mechanical keyboard"
+            src={cards[2].image.src}
+            alt={cards[2].image.alt}
             width={170}
             height={170}
             className="absolute left-[-15px] top-0 size-[170px] max-w-none"
           />
         </div>
       </MobileGearCard>
-      <MobileGearCard title="Gamepads" ghost="Gamepads" href="/gaming/gamepads" index={3}>
+      <MobileGearCard title={cards[3].title} ghost={cards[3].ghost} href={cards[3].href} index={3}>
         <Image
-          src="/images/home/gamepad-ig09.png"
-          alt="Redragon gamepad"
+          src={cards[3].image.src}
+          alt={cards[3].image.alt}
           width={244}
           height={170}
           className={`piece card-art absolute right-[-51px] top-[-48px] h-[170px] w-[244px] max-w-none object-cover ${dropShadow}`}
@@ -410,20 +411,20 @@ function MobileGameGears() {
   );
 }
 
-// API: dynamic data – office category cards, mobile (hard-coded here for now)
+// API: dynamic data – office category cards, mobile (via props)
 /** Office tab has no mobile frame – same card pattern with the office renders. */
-function MobileOfficeGears() {
+function MobileOfficeGears({ cards }: { cards: GearCard[] }) {
   return (
     <ul className="flex flex-col gap-8">
-      <MobileGearCard title="Mice" ghost="MICE" href="/office/mice" index={0}>
+      <MobileGearCard title={cards[0].title} ghost={cards[0].ghost} href={cards[0].href} index={0}>
         <MobileShadow right={45} top={101} w={80} h={14} delay={200} />
         <div
           className="piece card-art pointer-events-none absolute right-0 top-[-60px] h-[174px] w-[150px] overflow-hidden drop-office-gear"
           style={mobileArt(0)}
         >
           <Image
-            src="/images/home/office/mouse.png"
-            alt="Redragon office mouse"
+            src={cards[0].image.src}
+            alt={cards[0].image.alt}
             width={1600}
             height={1600}
             className="absolute left-0 top-0 h-full w-[132.12%] max-w-none"
@@ -431,9 +432,9 @@ function MobileOfficeGears() {
         </div>
       </MobileGearCard>
       <MobileGearCard
-        title="Keyboards"
-        ghost="Keyboards"
-        href="/office/keyboards"
+        title={cards[1].title}
+        ghost={cards[1].ghost}
+        href={cards[1].href}
         index={1}
         clippedArt={
           <div
@@ -441,8 +442,8 @@ function MobileOfficeGears() {
             style={mobileArt(1)}
           >
             <Image
-              src="/images/home/office/keyboard.png"
-              alt="Redragon office keyboard"
+              src={cards[1].image.src}
+              alt={cards[1].image.alt}
               width={482}
               height={320}
               className="absolute left-[-7.93%] top-[-46.39%] h-[192.77%] w-[115.87%] max-w-none"
@@ -450,14 +451,14 @@ function MobileOfficeGears() {
           </div>
         }
       />
-      <MobileGearCard title="Combo" ghost="COMBO" href="/office/combo" index={2}>
+      <MobileGearCard title={cards[2].title} ghost={cards[2].ghost} href={cards[2].href} index={2}>
         <div
           className="piece card-art pointer-events-none absolute right-[-12px] top-[-40px] h-[108px] w-[238px] rotate-[6.31deg] overflow-hidden drop-office-gear"
           style={mobileArt(2)}
         >
           <Image
-            src="/images/home/office/combo.png"
-            alt="Redragon office keyboard and mouse combo"
+            src={cards[2].image.src}
+            alt={cards[2].image.alt}
             width={1600}
             height={1600}
             className="absolute left-[-1.9%] top-[-65.63%] h-[231.25%] w-[105.46%] max-w-none"
@@ -469,7 +470,8 @@ function MobileOfficeGears() {
 }
 
 /** Figma "Section 4" – Discover Our Products / Choose Your Gears (1440×800). */
-export default function ProductCategoriesSection() {
+// API: dynamic data – headings and cards (via props)
+export default function ProductCategoriesSection({ gears }: { gears: HomeGears }) {
   const [tab, setTab] = useState<Tab>("game");
 
   const tabButton = (value: Tab, label: string) => (
@@ -501,8 +503,8 @@ export default function ProductCategoriesSection() {
   return (
     <section className="bg-silver-mobile overflow-hidden lg:bg-silver">
       <div className="mobile-frame px-4 pt-8 pb-6 lg:hidden">
-        <p className="font-lexend-giga text-[20px] font-semibold leading-[1.2] text-dragon">Discover Our Products</p>
-        <h2 className="mt-1.5 font-lexend-exa text-[28px] font-medium leading-[1.2] text-ink">Choose Your Gears</h2>
+        <p className="font-lexend-giga text-[20px] font-semibold leading-[1.2] text-dragon">{gears.eyebrow}</p>
+        <h2 className="mt-1.5 font-lexend-exa text-[28px] font-medium leading-[1.2] text-ink">{gears.title}</h2>
         <div role="tablist" aria-label="Product line" className="mt-[14px] flex gap-3">
           {mobileTab("game", "Game")}
           {mobileTab("office", "Office")}
@@ -512,15 +514,15 @@ export default function ProductCategoriesSection() {
           active={tab}
           className="mt-[50px]"
           panels={[
-            { key: "game", content: <MobileGameGears /> },
-            { key: "office", content: <MobileOfficeGears /> },
+            { key: "game", content: <MobileGameGears cards={gears.gaming} /> },
+            { key: "office", content: <MobileOfficeGears cards={gears.office} /> },
           ]}
         />
       </div>
 
       <div className="page-frame hidden h-[800px] px-[120px] pt-20 lg:block">
         <div className="flex items-end justify-between">
-          <SectionHeading eyebrow="Discover Our Products" title="Choose Your Gears" />
+          <SectionHeading eyebrow={gears.eyebrow} title={gears.title} />
           <div role="tablist" aria-label="Product line" className="flex gap-6">
             {tabButton("game", "Game")}
             {tabButton("office", "Office")}
@@ -532,8 +534,8 @@ export default function ProductCategoriesSection() {
           active={tab}
           className="mt-[109px]"
           panels={[
-            { key: "game", content: <GameGears /> },
-            { key: "office", content: <OfficeGears /> },
+            { key: "game", content: <GameGears cards={gears.gaming} /> },
+            { key: "office", content: <OfficeGears cards={gears.office} /> },
           ]}
         />
       </div>

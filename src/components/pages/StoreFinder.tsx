@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { storesByCountry, type Store } from "@/data/pages";
+import type { Store } from "@/data/pages";
 
 const control = "flex h-[54px] items-center rounded-[4px] font-lexend-deca text-[16px] leading-none lg:text-[20px]";
 
 /** Country select + "Find stores near me" + Submit (Figma "Desktop - 8" on Where to buy). */
-export default function StoreFinder() {
+// API: dynamic data – countries and their stores (CMS Stores, via props)
+export default function StoreFinder({ storesByCountry }: { storesByCountry: Record<string, Store[]> }) {
   const [country, setCountry] = useState("");
   const [results, setResults] = useState<{ country: string; stores: Store[] } | null>(null);
   const [locating, setLocating] = useState(false);

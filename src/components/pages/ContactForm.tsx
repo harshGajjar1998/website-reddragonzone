@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
-import { enquiryTypes } from "@/data/pages";
 
 const label = "font-lexend-deca text-[14px] font-medium leading-[1.6] text-ink";
 const input =
@@ -21,7 +20,8 @@ function Field({ id, title, required, ...props }: { id: string; title: string; r
 }
 
 /** Figma "Contact Us" card (632×509, white, r16) */
-export default function ContactForm() {
+// API: dynamic data – enquiry types (CMS Contact page, via props)
+export default function ContactForm({ enquiryTypes }: { enquiryTypes: string[] }) {
   const [sent, setSent] = useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {

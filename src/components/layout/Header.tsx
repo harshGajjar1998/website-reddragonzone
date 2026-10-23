@@ -1,3 +1,4 @@
+import CmsSection from "@/components/cms/CmsSection";
 import HelloBar from "./HelloBar";
 import MainNav from "./MainNav";
 
@@ -5,8 +6,12 @@ import MainNav from "./MainNav";
 export default function Header() {
   return (
     <header className="relative z-20">
-      <HelloBar />
-      <MainNav />
+      <CmsSection ids={["type:announce"]}>
+        <HelloBar />
+      </CmsSection>
+      <CmsSection ids={["type:header"]}>
+        <MainNav />
+      </CmsSection>
     </header>
   );
 }

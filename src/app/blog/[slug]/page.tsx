@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
+import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import BlogCard from "@/components/blog/BlogCard";
 import NewsletterCard from "@/components/blog/NewsletterCard";
-import { articleBody, blogPosts, getPost } from "@/data/blog";
+import { getContent } from "@/lib/cms";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
+const getPost = async (slug: string) => (await getContent()).blog.posts.find((p) => p.slug === slug);
+
+export async function generateStaticParams() {
   // API: dynamic data – blog post slugs
-  return blogPosts.map((p) => ({ slug: p.slug }));
+  return (await getContent()).blog.posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   // API: dynamic data – blog post (page metadata)
-  const post = getPost((await params).slug);
+  const post = await getPost((await params).slug);
   if (!post) return {};
   return { title: `${post.title} | Redragon Blog`, description: post.excerpt };
 }
@@ -25,11 +28,12 @@ const body = "font-merriweather text-[16px] font-bold leading-[1.5]";
 /** Figma blog detail ("Main Auto layout") */
 export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">) {
   // API: dynamic data – blog post
-  const post = getPost((await params).slug);
+  const post = await getPost((await params).slug);
   if (!post) notFound();
+  const articleBody = post.body;
 
   // API: dynamic data – related blog posts
-  const related = blogPosts.filter((p) => p.slug !== post.slug).slice(-3);
+  const related = (await getContent()).blog.posts.filter((p) => p.slug !== post.slug).slice(-3);
 
   return (
     <div className="bg-white">
@@ -42,6 +46,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
           className="pointer-events-none absolute left-1/2 top-0 h-[884px] w-[1440px] max-w-none -translate-x-1/2"
         />
 
+        <CmsSection ids={entryIds([post])}>
         <article className="relative mx-auto flex w-full flex-col gap-8 px-4 lg:w-[688px] lg:gap-12 lg:px-0">
           <Link
             href="/blog"
@@ -105,16 +110,19 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
             <p className={`${body} text-black/60`}>{articleBody.closing}</p>
           </div>
         </article>
+        </CmsSection>
       </section>
 
       <section className="bg-[#f5f5f5] py-14 lg:py-24">
         <div className="page-frame flex flex-col items-center gap-8 px-4 lg:gap-10 lg:px-16">
           <h2 className="font-lexend-deca text-[28px] leading-[1.05] text-black lg:text-[38px]">Read More Blogs</h2>
+          <CmsSection ids={entryIds(related)}>
           <div className="flex w-full flex-col gap-6 lg:w-auto lg:flex-row lg:gap-8">
             {related.map((p) => (
               <BlogCard key={p.slug} post={p} />
             ))}
           </div>
+          </CmsSection>
         </div>
       </section>
 

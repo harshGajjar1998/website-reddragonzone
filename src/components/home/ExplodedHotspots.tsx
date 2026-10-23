@@ -3,24 +3,28 @@
 import Image from "next/image";
 import { useState, type CSSProperties } from "react";
 
-// API: dynamic data – exploded view part labels, mobile (hard-coded here for now)
-/** Hotspots on the mobile exploded view: x/y are the "+" icon's top-left in the 390×408 image (Figma). */
+/**
+ * Hotspots on the mobile exploded view: x/y are the "+" icon's top-left in the 390×408 image (Figma).
+ * `part` is the index of the label in the CMS list (same order as the desktop callouts).
+ */
 const hotspots = [
-  { label: "Magnesium alloy", x: 154, y: 28 },
-  { label: "Iceflow", x: 218, y: 148 },
-  { label: "PAW 3395 optical sensor", x: 183, y: 223 },
-  { label: "More efficient battery", x: 317, y: 267 },
-  { label: "F-switch encoder", x: 62, y: 293 },
-  { label: "Foot pad", x: 78, y: 342 },
+  { part: 0, x: 154, y: 28 },
+  { part: 1, x: 218, y: 148 },
+  { part: 2, x: 183, y: 223 },
+  { part: 5, x: 317, y: 267 },
+  { part: 3, x: 62, y: 293 },
+  { part: 4, x: 78, y: 342 },
 ];
 
 /** Tappable "+" markers that reveal the part name (the desktop shows these as callout lines). */
-export default function ExplodedHotspots() {
+// API: dynamic data – exploded view part labels (via props)
+export default function ExplodedHotspots({ parts }: { parts: string[] }) {
   const [active, setActive] = useState<number | null>(null);
+  const labelled = hotspots.filter((h) => parts[h.part]).map((h) => ({ ...h, label: parts[h.part] }));
 
   return (
     <ul>
-      {hotspots.map((h, i) => {
+      {labelled.map((h, i) => {
         const open = active === i;
         const right = h.x > 195;
         return (

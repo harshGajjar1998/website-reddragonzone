@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { footerColumns, socialLinks } from "@/data/navigation";
+import { useChrome } from "./ChromeProvider";
 import { useProductRange } from "@/lib/useProductRange";
 import FooterLogo from "./FooterLogo";
+import Collapse from "@/components/ui/Collapse";
 
 /** Mobile footer (Figma "iPhone 13 & 14 - 7"): logo + blurb, link columns as an accordion, socials. */
 export default function MobileFooter() {
+  const { footerColumns, footerBlurb, socialLinks } = useChrome();
   const range = useProductRange();
   const [open, setOpen] = useState<string | null>(null);
 
@@ -18,8 +20,7 @@ export default function MobileFooter() {
         <div className="flex flex-col gap-4">
           <FooterLogo />
           <p className="font-archivo text-[13px] leading-[20px] text-ink/75">
-            Engineering mechanical excellence for the global elite. Built for raw reactive triggers, structured matrix
-            custom designs, and long-form combat stability.
+            {footerBlurb}
           </p>
         </div>
 
@@ -48,8 +49,8 @@ export default function MobileFooter() {
                     className={`transition-transform ${expanded ? "rotate-45" : ""}`}
                   />
                 </button>
-                {expanded && (
-                  <ul id={id} className="-mt-3 flex flex-col gap-4 pb-8">
+                <Collapse open={expanded} id={id} className={expanded ? "-mt-3" : ""}>
+                  <ul className="flex flex-col gap-4 pb-8">
                     {col.links.map((link) => (
                       <li key={link.label}>
                         <Link href={link.href} className="font-archivo text-[14px] leading-none text-ink/75 hover:text-ink">
@@ -58,7 +59,7 @@ export default function MobileFooter() {
                       </li>
                     ))}
                   </ul>
-                )}
+                </Collapse>
               </li>
             );
           })}

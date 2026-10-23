@@ -2,30 +2,33 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { helloBar } from "@/data/navigation";
+import type { HelloBarContent } from "@/data/navigation";
+import { useChrome } from "./ChromeProvider";
 
-function Announcement({ hidden }: { hidden?: boolean }) {
+function Announcement({ bar, hidden }: { bar: HelloBarContent; hidden?: boolean }) {
   return (
     <span aria-hidden={hidden} className="flex shrink-0 items-center gap-2 pr-8 whitespace-nowrap">
       {/* API: dynamic data – hello bar announcement */}
-      <span className="font-jetbrains text-[11px] font-bold uppercase leading-normal">{helloBar.tag}</span>
-      <span className="font-geist text-[12px] font-medium leading-normal">{helloBar.message}</span>
+      <span className="font-jetbrains text-[11px] font-bold uppercase leading-normal">{bar.tag}</span>
+      <span className="font-geist text-[12px] font-medium leading-normal">{bar.message}</span>
       <a
-        href={helloBar.cta.href}
+        href={bar.cta.href}
         target="_blank"
         rel="noopener noreferrer"
         tabIndex={hidden ? -1 : undefined}
         className="font-geist text-[12px] font-bold leading-normal underline"
       >
-        {helloBar.cta.label}
+        {bar.cta.label}
       </a>
     </span>
   );
 }
 
 export default function HelloBar() {
+  const { helloBar } = useChrome();
   const [open, setOpen] = useState(true);
-  if (!open) return null;
+  // Switched off in the CMS (or outside its start/stop dates)
+  if (!open || !helloBar) return null;
 
   const dismiss = (
     <button
@@ -44,8 +47,8 @@ export default function HelloBar() {
       <div className="flex h-8 items-center gap-2 px-8 lg:hidden">
         <p className="min-w-0 flex-1 overflow-hidden">
           <span className="animate-marquee flex w-max">
-            <Announcement />
-            <Announcement hidden />
+            <Announcement bar={helloBar} />
+            <Announcement bar={helloBar} hidden />
           </span>
         </p>
         {dismiss}

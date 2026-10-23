@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import { notFound } from "next/navigation";
 import KeyFeatures from "@/components/gaming/KeyFeatures";
 import ProductOverview from "@/components/gaming/ProductOverview";
@@ -6,19 +7,19 @@ import BlueprintSection from "@/components/office/BlueprintSection";
 import NewsletterSection from "@/components/office/NewsletterSection";
 import OfficeShowcase from "@/components/office/OfficeShowcase";
 import OfficeSpecHero from "@/components/office/OfficeSpecHero";
-import { getOfficeCategory, getOfficeProduct, officeNewsletter, officeProducts } from "@/data/office";
+import { findCategory, findProduct, getContent } from "@/lib/cms";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   // API: dynamic data – office product slugs
-  return officeProducts.map((p) => ({ category: p.category, product: p.slug }));
+  return (await getContent()).office.products.map((p) => ({ category: p.category, product: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/office/[category]/[product]">): Promise<Metadata> {
   const { category, product: slug } = await params;
   // API: dynamic data – office product (page metadata)
-  const product = getOfficeProduct(category, slug);
+  const product = findProduct((await getContent()).office.products, category, slug);
   if (!product) return {};
   return { title: `${product.name} | Redragon`, description: product.description ?? product.tagline };
 }
@@ -29,14 +30,15 @@ export async function generateMetadata({ params }: PageProps<"/office/[category]
  */
 export default async function OfficeProductPage({ params }: PageProps<"/office/[category]/[product]">) {
   const { category: categorySlug, product: slug } = await params;
+  const { office } = await getContent();
   // API: dynamic data – office category + product
-  const category = getOfficeCategory(categorySlug);
-  const product = getOfficeProduct(categorySlug, slug);
+  const category = findCategory(office.categories, categorySlug);
+  const product = findProduct(office.products, categorySlug, slug);
   if (!category || !product) notFound();
 
   if (product.featured) {
     return (
-      <>
+      <CmsSection ids={entryIds([product], "product")}>
         <OfficeSpecHero product={product} category={category} />
         <OfficeShowcase showcase={product.featured.showcase} />
         <BlueprintSection
@@ -49,17 +51,21 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
           }}
         />
         {/* API: dynamic data – office newsletter content */}
-        <NewsletterSection {...officeNewsletter} />
-      </>
+        <CmsSection ids={["singleton:office_page"]}>
+          <NewsletterSection {...office.newsletter} />
+        </CmsSection>
+      </CmsSection>
     );
   }
 
   return (
-    <>
+    <CmsSection ids={entryIds([product], "product")}>
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} light />}
       {/* API: dynamic data – office newsletter content */}
-      <NewsletterSection {...officeNewsletter} />
-    </>
+      <CmsSection ids={["singleton:office_page"]}>
+          <NewsletterSection {...office.newsletter} />
+        </CmsSection>
+    </CmsSection>
   );
 }

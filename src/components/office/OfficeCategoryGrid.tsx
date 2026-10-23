@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import ArtImage, { type Art } from "@/components/gaming/ArtImage";
+import ArtImage from "@/components/gaming/ArtImage";
 import CenteredHeading from "@/components/gaming/CenteredHeading";
 import RevealOnView from "@/components/ui/RevealOnView";
 import type { OfficeTile } from "@/data/office";
@@ -86,37 +86,10 @@ function ShortTile({ tile, bg, delay }: { tile: OfficeTile; bg: string; delay: n
   );
 }
 
-// API: dynamic data – office category tile images, mobile (hard-coded here for now)
-/** Mobile tile art (Figma "Office Produce" screen 2), anchored to the tile's right edge. */
-const MOBILE_ART: Record<string, Art> = {
-  mice: {
-    src: "/images/home/office/mouse.png",
-    width: 1600,
-    height: 1600,
-    box: { right: 0, top: 1, w: 168, h: 207 },
-    crop: { w: 130.88, h: 106.22, left: 0.18, top: -0.06 },
-  },
-  keyboards: {
-    src: "/images/office/products/bk-7111wg-alt.png",
-    width: 482,
-    height: 320,
-    box: { right: 21, top: 24, w: 355, h: 141 },
-    outer: { w: 141, h: 355 },
-    rotate: 90,
-    crop: { w: 115.87, h: 192.77, left: -7.93, top: -46.39 },
-  },
-  combo: {
-    src: "/images/office/products/combo-k-alt.png",
-    width: 1600,
-    height: 1600,
-    box: { right: -73, top: 35, w: 303, h: 138 },
-    crop: { w: 105.46, h: 231.25, left: -1.9, top: -65.63 },
-  },
-};
-
 /** 394×208 mobile tile – the pattern is turned 180° on every tile after the first. */
 function MobileTile({ tile, flip, delay }: { tile: OfficeTile; flip: boolean; delay: number }) {
-  const art = MOBILE_ART[tile.slug];
+  // API: dynamic data – office category tile image, mobile (via props)
+  const art = tile.mobileArt;
   return (
     <li className="group/card relative h-[208px] overflow-clip border border-[#696969]">
       <div className={`piece absolute inset-0 bg-white ${flip ? "-scale-100" : ""}`} style={piece("bottom", delay)}>

@@ -5,6 +5,7 @@
   "scripts": {
     "images": "node scripts/optimize-images.mjs",
     "dev": "node scripts/optimize-images.mjs && next dev -p 3001",
+    "preview:cms": "node scripts/optimize-images.mjs && node scripts/cms-preview.mjs",
     "build": "node scripts/optimize-images.mjs && next build",
     "start": "next start -p 3001",
     "lint": "eslint"

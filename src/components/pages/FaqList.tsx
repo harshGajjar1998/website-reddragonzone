@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import Collapse from "@/components/ui/Collapse";
 
 type Faq = { q: string; a: string[] };
 
@@ -34,15 +35,15 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
                 className="shrink-0"
               />
             </button>
-            {isOpen && (
-              <div id={`faq-${i}`} className="-mt-3 px-5 pb-5 lg:-mt-6 lg:px-8 lg:pb-8">
+            <Collapse open={isOpen} id={`faq-${i}`} className={isOpen ? "-mt-3 lg:-mt-6" : ""}>
+              <div className="px-5 pb-5 lg:px-8 lg:pb-8">
                 {f.a.map((line) => (
                   <p key={line} className="font-lexend-deca text-[15px] font-light leading-7 tracking-[-0.18px] text-[#626466] lg:text-[16px] lg:leading-8">
                     {line}
                   </p>
                 ))}
               </div>
-            )}
+            </Collapse>
           </li>
         );
       })}

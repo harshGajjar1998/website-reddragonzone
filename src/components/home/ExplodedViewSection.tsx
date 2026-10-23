@@ -1,11 +1,11 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import type { Blueprint } from "@/data/home";
 import { ExplodedParts, ExplodedStage } from "./ExplodedMouse";
 import MobileExplodedView from "./MobileExplodedView";
 
 type Callout = {
-  label: string;
   /** label position */
   x: number;
   y: number;
@@ -14,41 +14,35 @@ type Callout = {
   connector: { src: string; x: number; y: number; w: number; h: number };
 };
 
-// API: dynamic data – exploded view part labels (hard-coded here for now)
+/** Callout positions, in the order of the CMS part labels */
 const callouts: Callout[] = [
   {
-    label: "Magnesium alloy",
     x: 120,
     y: 197,
     connector: { src: "/images/home/connectors/magnesium.svg", x: 311.5, y: 214, w: 237, h: 42 },
   },
   {
-    label: "Iceflow",
     x: 1238,
     y: 510,
     connector: { src: "/images/home/connectors/iceflow.svg", x: 973.8, y: 521.1, w: 262, h: 15 },
   },
   {
-    label: "PAW 3395 optical sensor",
     x: 1038,
     y: 644,
     width: 282,
     connector: { src: "/images/home/connectors/sensor.svg", x: 746.9, y: 654.9, w: 289, h: 15 },
   },
   {
-    label: "F-switch encoder",
     x: 120,
     y: 617,
     connector: { src: "/images/home/connectors/f-switch.svg", x: 218, y: 655.5, w: 205, h: 129 },
   },
   {
-    label: "Foot pad",
     x: 165,
     y: 904,
     connector: { src: "/images/home/connectors/foot-pad.svg", x: 213.5, y: 871.2, w: 155, h: 31 },
   },
   {
-    label: "More efficient battery",
     x: 1075,
     y: 825,
     connector: { src: "/images/home/connectors/battery.svg", x: 1044.4, y: 750.2, w: 155, h: 73 },
@@ -56,26 +50,28 @@ const callouts: Callout[] = [
 ];
 
 /** Figma "Section 3" – exploded architectural blueprint (1440×1000). The mouse comes apart as it scrolls in. */
-export default function ExplodedViewSection() {
+// API: dynamic data – eyebrow, product name and part labels (CMS homepage "Exploded blueprint" section)
+export default function ExplodedViewSection({ blueprint }: { blueprint: Blueprint }) {
+  const { eyebrow, product, parts } = blueprint;
+  // One callout per label; the artwork has six positions.
+  const labelled = callouts.slice(0, parts.length).map((c, i) => ({ ...c, label: parts[i] }));
   return (
     <section className="bg-silver-mobile overflow-hidden lg:bg-silver-tall">
-      {/* API: dynamic data – featured product name (hard-coded here for now) */}
-      <MobileExplodedView productName="Prism Pro M997" />
+      <MobileExplodedView eyebrow={eyebrow} productName={product} parts={parts} />
 
       <ExplodedStage className="page-frame hidden h-[1000px] lg:block">
         <SectionHeading
-          eyebrow="Exploded Architectural Blueprint"
-          // API: dynamic data – featured product name (hard-coded here for now)
-          title="Unrivaled Internal Assembly of Prism Pro M997"
+          eyebrow={eyebrow}
+          title={`Unrivaled Internal Assembly of ${product}`}
           className="absolute left-[120px] top-[80px] gap-2"
         />
 
         <ExplodedParts
-          alt="Exploded view of the PRISM PRO M997 internal components"
+          alt={`Exploded view of the ${product.toUpperCase()} internal components`}
           className="absolute left-[317px] top-[215px] h-[776px] w-[742px]"
         />
 
-        {callouts.map(({ label, x, y, width, connector: c }, i) => (
+        {labelled.map(({ label, x, y, width, connector: c }, i) => (
           <div key={label} className="exploded-callout" style={{ "--i": i } as CSSProperties}>
             <Image
               src={c.src}

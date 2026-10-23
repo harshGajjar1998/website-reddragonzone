@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import MobileProductHero from "@/components/ui/MobileProductHero";
-import { heroSlides, type HeroSlide } from "@/data/home";
+import type { HeroSlide } from "@/data/home";
 
 const AUTOPLAY_MS = 5000;
 /** Horizontal drag distance (px) that counts as a swipe */
@@ -104,7 +104,7 @@ function Slide({ slide, priority }: { slide: HeroSlide; priority: boolean }) {
             chevron
             className="px-7 py-[14.5px] font-lato text-[16px] font-semibold leading-normal"
           >
-            More details
+            {slide.cta}
           </ButtonLink>
         </div>
       </div>
@@ -116,7 +116,8 @@ function Slide({ slide, priority }: { slide: HeroSlide; priority: boolean }) {
  * Hero carousel: autoplays every 5s, dot/arrow-key navigation, swipe/drag.
  * The background stays fixed; slides are stacked and swap their content in place.
  */
-export default function HeroSection() {
+// API: dynamic data – hero slides (CMS homepage "Hero slide" sections, via props)
+export default function HeroSection({ slides: heroSlides }: { slides: HeroSlide[] }) {
   const count = heroSlides.length;
   // `prev` is the slide currently animating out; `dir` is the direction of travel (1 next, -1 previous)
   const [{ index, prev, dir }, setNav] = useState({ index: 0, prev: -1, dir: 1 });
@@ -141,6 +142,18 @@ export default function HeroSection() {
     const id = window.setTimeout(() => goTo(index + 1, 1), AUTOPLAY_MS);
     return () => window.clearTimeout(id);
   }, [index, paused, drag, count, goTo]);
+
+  // CMS editor preview: selecting a slide in the editor shows it and stops the rotation (CmsPreviewBridge).
+  useEffect(() => {
+    const onFocus = (e: Event) => {
+      const i = heroSlides.findIndex((s) => s.id === (e as CustomEvent<{ id: string }>).detail.id);
+      if (i < 0) return;
+      setPaused(true);
+      goTo(i, 1);
+    };
+    window.addEventListener("cms:focus", onFocus);
+    return () => window.removeEventListener("cms:focus", onFocus);
+  }, [heroSlides, goTo]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     // Let links/buttons inside the slide receive their clicks

@@ -102,6 +102,28 @@
   container-type: inline-size;
 }
 
+/* Smooth in-page scrolling (anchor links, scrollIntoView). Route changes still jump
+   straight to the top: data-scroll-behavior="smooth" on <html> tells Next.js to
+   switch it off for the duration of a navigation. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Section content fading up into view – driven by components/layout/ScrollReveal.tsx.
+   Only the reveal is animated; hiding (done off screen, before first sight) is instant. */
+[data-reveal="shown"] {
+  transition:
+    opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  translate: 0 40px;
+}
+
 body {
   background: #ffffff;
   color: #1a1a1a;

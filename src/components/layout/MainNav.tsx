@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { mainNav, megaMenus } from "@/data/navigation";
+import { useChrome } from "./ChromeProvider";
+import { usePresence } from "@/lib/usePresence";
 import { useProductRange } from "@/lib/useProductRange";
 import MegaMenu from "./MegaMenu";
 import MobileMenu from "./MobileMenu";
@@ -14,6 +15,7 @@ import SearchOverlay from "./SearchOverlay";
 const CLOSE_DELAY_MS = 150;
 
 export default function MainNav() {
+  const { mainNav, megaMenus } = useChrome();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,6 +34,9 @@ export default function MainNav() {
   };
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  // Overlays stay mounted briefly after closing so they can animate out
+  const menuMounted = usePresence(menuOpen);
+  const searchMounted = usePresence(searchOpen);
 
   // Close the mega menu as soon as a navigation lands, even if the pointer never leaves the panel
   const [lastPath, setLastPath] = useState(pathname);
@@ -117,7 +122,7 @@ export default function MainNav() {
           </button>
         </div>
       </div>
-      {menuOpen && <MobileMenu onClose={closeMenu} logo={mobileLogo} />}
+      {menuMounted && <MobileMenu open={menuOpen} onClose={closeMenu} logo={mobileLogo} />}
 
       <nav aria-label="Main" className="relative hidden bg-charcoal lg:block" onMouseLeave={scheduleClose} onMouseEnter={cancelClose}>
         <div className="page-frame flex items-center justify-between px-[120px] py-4">
@@ -223,7 +228,7 @@ export default function MainNav() {
         )}
       </nav>
 
-      {searchOpen && <SearchOverlay onClose={closeSearch} />}
+      {searchMounted && <SearchOverlay open={searchOpen} onClose={closeSearch} />}
     </>
   );
 }

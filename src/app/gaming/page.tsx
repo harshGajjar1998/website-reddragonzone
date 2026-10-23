@@ -1,30 +1,42 @@
 import type { Metadata } from "next";
+import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import CommunitySection from "@/components/home/CommunitySection";
 import CategorySlider from "@/components/gaming/CategorySlider";
 import FeaturedProductsGrid from "@/components/gaming/FeaturedProductsGrid";
 import GamingHero from "@/components/gaming/GamingHero";
 import LatestGearSection from "@/components/gaming/LatestGearSection";
-import { featuredCards, featuredGrid, gamingCategories, gamingHero, latestItems } from "@/data/gaming";
+import { getContent } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "Gaming Products | Redragon",
+export async function generateMetadata(): Promise<Metadata> {
+  const { gaming } = await getContent();
   // API: dynamic data – gaming page description
-  description: gamingHero.description,
-};
+  return { title: "Gaming Products | Redragon", description: gaming.hero.description };
+}
 
 /** Figma "Gaming Landing page" */
-export default function GamingPage() {
+export default async function GamingPage() {
+  const { hero, categories, latest, featuredCards, featuredGrid } = (await getContent()).gaming;
   return (
     <>
       {/* API: dynamic data – gaming banner */}
-      <GamingHero {...gamingHero} />
+      <CmsSection ids={["singleton:gaming_page"]}>
+        <GamingHero {...hero} />
+      </CmsSection>
       {/* API: dynamic data – gaming categories */}
-      <CategorySlider categories={gamingCategories} />
+      <CmsSection ids={entryIds(categories)}>
+        <CategorySlider categories={categories} />
+      </CmsSection>
       {/* API: dynamic data – gaming "The Latest" products */}
-      <LatestGearSection items={latestItems} />
+      <CmsSection ids={["singleton:gaming_page"]}>
+        <LatestGearSection items={latest} />
+      </CmsSection>
       {/* API: dynamic data – gaming featured products */}
-      <FeaturedProductsGrid cards={featuredCards} mobileCards={featuredGrid} />
-      <CommunitySection />
+      <CmsSection ids={["singleton:gaming_page"]}>
+        <FeaturedProductsGrid cards={featuredCards} mobileCards={featuredGrid} />
+      </CmsSection>
+      <CmsSection ids={["shared:community"]}>
+        <CommunitySection />
+      </CmsSection>
     </>
   );
 }

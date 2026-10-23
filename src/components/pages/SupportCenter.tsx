@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState, type FormEvent } from "react";
-import { downloads, supportTiles, type Download, type SupportTile } from "@/data/pages";
+import type { Download, SupportTile } from "@/data/pages";
 
 const PAGE = 8;
 const TILE_BG = "/images/gaming/categories/tile-bg.png";
@@ -229,7 +229,8 @@ function DownloadCard({ item }: { item: Download }) {
 }
 
 /** Support page body: hero search, category tiles and the manuals/software grid. */
-export default function SupportCenter() {
+// API: dynamic data – support topics + downloads (CMS Support topics / Downloads, via props)
+export default function SupportCenter({ supportTiles, downloads }: { supportTiles: SupportTile[][]; downloads: Download[] }) {
   const [heroQuery, setHeroQuery] = useState("");
   const [query, setQuery] = useState("");
   const [applied, setApplied] = useState("");

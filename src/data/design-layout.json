@@ -1,0 +1,1900 @@
+{
+ "category.tile": {
+  "/images/gaming/categories/mice.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 403,
+    "top": -23,
+    "w": 451,
+    "h": 451
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/headsets.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 352,
+    "top": 0,
+    "w": 380,
+    "h": 380
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/keyboards.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 474,
+    "top": -9,
+    "w": 541,
+    "h": 194
+   },
+   "outer": {
+    "w": 194,
+    "h": 541
+   },
+   "rotate": 90,
+   "crop": {
+    "w": 100,
+    "h": 278.26,
+    "left": 0,
+    "top": -77.91
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/gamepads.png": {
+   "width": 3000,
+   "height": 2081,
+   "box": {
+    "right": -250,
+    "top": -48,
+    "w": 674,
+    "h": 467
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/combo.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 293,
+    "top": -59,
+    "w": 462,
+    "h": 462
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/speakers.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 369,
+    "top": -19,
+    "w": 380,
+    "h": 380
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/content-creation.png": {
+   "width": 1500,
+   "height": 1500,
+   "box": {
+    "left": 365,
+    "top": -64,
+    "w": 391,
+    "h": 467
+   },
+   "fit": "contain",
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/gamer-room.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "right": -80,
+    "top": -28,
+    "w": 557,
+    "h": 387
+   },
+   "flipX": true,
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/laptop-accessories.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 413,
+    "top": -31,
+    "w": 413,
+    "h": 413
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/mice-pads.png": {
+   "width": 1500,
+   "height": 1500,
+   "box": {
+    "left": 327,
+    "top": -33,
+    "w": 380,
+    "h": 380
+   },
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/pc-components.png": {
+   "width": 3840,
+   "height": 2880,
+   "box": {
+    "left": 421,
+    "top": -59,
+    "w": 351,
+    "h": 419
+   },
+   "fit": "contain",
+   "shadow": "drop-bento"
+  },
+  "/images/gaming/categories/diy-accessories.png": {
+   "width": 2000,
+   "height": 2000,
+   "box": {
+    "right": -44,
+    "top": -3,
+    "w": 485,
+    "h": 336
+   },
+   "flipX": true,
+   "shadow": "drop-bento"
+  },
+  "/images/office/mice/hero-bm-4131.png": {
+   "width": 1820,
+   "height": 1332,
+   "box": {
+    "left": 475,
+    "top": 22,
+    "w": 910,
+    "h": 666
+   },
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg.png": {
+   "width": 4096,
+   "height": 2786,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg-combo.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  }
+ },
+ "category.mobileTile": {
+  "/images/gaming/categories/mice.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 188,
+    "top": 0,
+    "w": 274,
+    "h": 274
+   }
+  },
+  "/images/home/headset-h894.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 208,
+    "top": -18,
+    "w": 170,
+    "h": 170
+   }
+  },
+  "/images/gaming/categories/keyboards.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 236,
+    "top": 0,
+    "w": 345,
+    "h": 124
+   },
+   "outer": {
+    "w": 124,
+    "h": 345
+   },
+   "rotate": 90,
+   "crop": {
+    "w": 100,
+    "h": 278.26,
+    "left": 0,
+    "top": -77.91
+   }
+  },
+  "/images/home/gamepad-ig09.png": {
+   "width": 3000,
+   "height": 2081,
+   "box": {
+    "left": 136,
+    "top": -31,
+    "w": 365,
+    "h": 253
+   }
+  }
+ },
+ "category.hero": {
+  "/images/gaming/categories/mice.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/headsets.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/keyboards/hero-keyboard.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/gamepads.png": {
+   "width": 3000,
+   "height": 2081,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/combo.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/speakers.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/content-creation.png": {
+   "width": 1500,
+   "height": 1500,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/gamer-room.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/laptop-accessories.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/mice-pads.png": {
+   "width": 1500,
+   "height": 1500,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/pc-components.png": {
+   "width": 3840,
+   "height": 2880,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/gaming/categories/diy-accessories.png": {
+   "width": 2000,
+   "height": 2000,
+   "box": {
+    "left": 796,
+    "top": 162,
+    "w": 564,
+    "h": 564
+   },
+   "fit": "contain",
+   "preload": true
+  },
+  "/images/office/mice/hero-bm-4131.png": {
+   "width": 1820,
+   "height": 1332,
+   "box": {
+    "left": 475,
+    "top": 22,
+    "w": 910,
+    "h": 666
+   },
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg.png": {
+   "width": 4096,
+   "height": 2786,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg-combo.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  }
+ },
+ "category.tileLabelTop": {
+  "content-creation": 118,
+  "laptop-accessories": 107,
+  "pc-components": 118
+ },
+ "category.spotlight": {
+  "/images/office/mice/hero-bm-4131.png": {
+   "width": 1820,
+   "height": 1332,
+   "box": {
+    "left": 475,
+    "top": 22,
+    "w": 910,
+    "h": 666
+   },
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg.png": {
+   "width": 4096,
+   "height": 2786,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  },
+  "/images/office/products/bk-7111wg-combo.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 766,
+    "top": 47,
+    "w": 594,
+    "h": 594
+   },
+   "fit": "contain",
+   "shadow": "drop-office-spotlight",
+   "preload": true
+  }
+ },
+ "product.image": {
+  "/images/gaming/products/k681mg-rgb-pro.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/gaming/products/k526wb-pro.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/k768vi-pro.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/k668wbo-wl.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/k769bam-m.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-2.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/gaming/featured/k732.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/home/m997-main.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/featured/m686.png": {
+   "width": 844,
+   "height": 560
+  },
+  "/images/gaming/featured/k552.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4186g.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm-4131.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4209.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4186g-wireless.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-2775.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm4195.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm-2659.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bk-7111wg.png": {
+   "width": 4096,
+   "height": 2786
+  },
+  "/images/office/products/bk-7111wg-combo.png": {
+   "width": 1600,
+   "height": 1600
+  }
+ },
+ "product.small": {
+  "/images/gaming/products/k681mg-rgb-pro.png": {
+   "box": {
+    "left": 17,
+    "top": 122,
+    "w": 274,
+    "h": 182
+   },
+   "fit": "cover"
+  },
+  "/images/gaming/products/k768vi-pro.png": {
+   "box": {
+    "left": 17,
+    "top": 122,
+    "w": 274,
+    "h": 182
+   },
+   "fit": "cover"
+  },
+  "/images/gaming/products/k668wbo-wl.png": {
+   "box": {
+    "left": 17,
+    "top": 122,
+    "w": 274,
+    "h": 182
+   },
+   "crop": {
+    "w": 103.65,
+    "h": 156.04,
+    "left": -1.82,
+    "top": -28.02
+   }
+  },
+  "/images/gaming/products/k769bam-m.png": {
+   "box": {
+    "left": 17,
+    "top": 154,
+    "w": 274,
+    "h": 89
+   },
+   "crop": {
+    "w": 100,
+    "h": 307.87,
+    "left": 0,
+    "top": -85.39
+   }
+  },
+  "/images/office/products/bm-4209.png": {
+   "src": "/images/office/products/card-bm-4209.png",
+   "width": 506,
+   "height": 710,
+   "box": {
+    "left": 15,
+    "top": 88,
+    "w": 253,
+    "h": 355
+   }
+  },
+  "/images/office/products/bm-4186g-wireless.png": {
+   "src": "/images/office/products/card-bm-4186g-wireless.png",
+   "width": 506,
+   "height": 710,
+   "box": {
+    "left": 28,
+    "top": 88,
+    "w": 253,
+    "h": 355
+   }
+  },
+  "/images/office/products/bm-2775.png": {
+   "src": "/images/office/products/card-bm-2775.png",
+   "width": 552,
+   "height": 766,
+   "box": {
+    "left": 16,
+    "top": 74,
+    "w": 276,
+    "h": 383
+   }
+  }
+ },
+ "product.large": {
+  "/images/gaming/products/k681mg-rgb-pro.png": {
+   "box": {
+    "left": 27,
+    "top": 0,
+    "w": 416,
+    "h": 416
+   },
+   "fit": "cover",
+   "shadow": "drop-product"
+  },
+  "/images/gaming/products/k526wb-pro.png": {
+   "box": {
+    "left": 24,
+    "top": 142,
+    "w": 422,
+    "h": 132
+   },
+   "crop": {
+    "w": 100,
+    "h": 320,
+    "left": 0,
+    "top": -82.31
+   }
+  },
+  "/images/office/products/bm-4186g.png": {
+   "src": "/images/office/products/card-bm-4186g.png",
+   "width": 972,
+   "height": 1090,
+   "box": {
+    "left": -8,
+    "top": -6,
+    "w": 486,
+    "h": 545
+   }
+  },
+  "/images/office/products/bm-4131.png": {
+   "src": "/images/office/products/card-bm-4131.png",
+   "width": 574,
+   "height": 794,
+   "box": {
+    "left": 80,
+    "top": 86,
+    "w": 287,
+    "h": 397
+   }
+  }
+ },
+ "product.gallery": {
+  "/images/gaming/products/rio-k771bgp/gallery-1.png": {
+   "width": 1920,
+   "height": 603
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-4.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-2.png": {
+   "width": 482,
+   "height": 320,
+   "crop": {
+    "w": 146.29,
+    "h": 88.94,
+    "left": -23.14,
+    "top": 5.53
+   }
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-5.png": {
+   "width": 482,
+   "height": 320,
+   "crop": {
+    "w": 139.45,
+    "h": 84.78,
+    "left": -19.73,
+    "top": 7.61
+   }
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-3.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/rio-k771bgp/gallery-6.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/prism-pro-m997/mobile-gallery-1.png": {
+   "width": 688,
+   "height": 640
+  },
+  "/images/home/m997-main.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4131/gallery-1.png": {
+   "width": 1920,
+   "height": 515,
+   "crop": {
+    "w": 407.11,
+    "h": 100,
+    "left": -167.24,
+    "top": 0
+   }
+  },
+  "/images/office/products/bm-4131/gallery-2.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm-4131/gallery-3.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm-4131/gallery-4.png": {
+   "width": 482,
+   "height": 320
+  },
+  "/images/office/products/bm-4131/gallery-5.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4131/gallery-6.png": {
+   "width": 1600,
+   "height": 1600
+  }
+ },
+ "product.featuresHero": {
+  "/images/gaming/products/rio-k771bgp/feature-hero.png": {
+   "width": 2048,
+   "height": 2048,
+   "crop": {
+    "w": 100,
+    "h": 172.04,
+    "left": 0.02,
+    "top": -52.05
+   }
+  },
+  "/images/office/products/bm-4131/feature-hero.png": {
+   "width": 1600,
+   "height": 1600
+  }
+ },
+ "product.feature": {
+  "/images/gaming/products/rio-k771bgp/feature-1.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/rio-k771bgp/feature-2.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/gaming/products/rio-k771bgp/feature-3.png": {
+   "width": 1600,
+   "height": 1600
+  },
+  "/images/office/products/bm-4131/feature-1.png": {
+   "width": 2690,
+   "height": 1600
+  },
+  "/images/office/products/bm-4131/feature-2.png": {
+   "width": 888,
+   "height": 1024
+  },
+  "/images/office/products/bm-4131/feature-3.png": {
+   "width": 1600,
+   "height": 1600
+  }
+ },
+ "showcase.card": {
+  "/images/home/m997-thumb-1.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": -204,
+    "top": -17,
+    "w": 694,
+    "h": 694
+   }
+  },
+  "/images/home/m997-thumb-2.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": -13,
+    "top": 31,
+    "w": 442,
+    "h": 442
+   }
+  },
+  "/images/home/m997-thumb-3.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 33,
+    "top": 68,
+    "w": 350,
+    "h": 350
+   }
+  },
+  "/images/office/products/bm4195/card-1.png": {
+   "width": 1431,
+   "height": 950,
+   "box": {
+    "left": -30,
+    "top": 32,
+    "w": 475,
+    "h": 475
+   }
+  },
+  "/images/office/products/bm4195/card-2.png": {
+   "width": 1835,
+   "height": 1218,
+   "box": {
+    "left": -45,
+    "top": 53,
+    "w": 609,
+    "h": 609
+   }
+  },
+  "/images/office/products/bm4195/card-3.png": {
+   "width": 1024,
+   "height": 1024,
+   "box": {
+    "left": -25,
+    "top": -9,
+    "w": 466,
+    "h": 466
+   }
+  }
+ },
+ "latest": {
+  "/images/gaming/latest/mouse-m997.png": {
+   "center": {
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 566,
+     "top": 176,
+     "w": 309,
+     "h": 514
+    },
+    "crop": {
+     "w": 192.57,
+     "h": 115.81,
+     "left": -7.71,
+     "top": -7.9
+    },
+    "shadow": "drop-latest"
+   },
+   "side": {
+    "src": "/images/gaming/latest/mouse-m997.png",
+    "alt": "",
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 874,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "fit": "contain"
+   },
+   "centerBounds": {
+    "l": 0.104,
+    "t": 0.106,
+    "r": 0.513,
+    "b": 0.908
+   }
+  },
+  "/images/gaming/latest/headset.png": {
+   "center": {
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 489,
+     "top": 208,
+     "w": 463,
+     "h": 463
+    },
+    "fit": "contain",
+    "shadow": "drop-latest"
+   },
+   "side": {
+    "src": "/images/gaming/latest/headset.png",
+    "alt": "",
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 874,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "crop": {
+     "w": 83.98,
+     "h": 100,
+     "left": 5.64,
+     "top": 0
+    }
+   },
+   "centerBounds": {
+    "l": 0.079,
+    "t": 0.034,
+    "r": 0.919,
+    "b": 0.941
+   }
+  },
+  "/images/gaming/latest/gamepad.png": {
+   "center": {
+    "width": 1528,
+    "height": 848,
+    "box": {
+     "left": 351,
+     "top": 211,
+     "w": 754,
+     "h": 418
+    },
+    "fit": "contain",
+    "shadow": "drop-latest"
+   },
+   "side": {
+    "src": "/images/gaming/latest/gamepad.png",
+    "alt": "",
+    "width": 1528,
+    "height": 848,
+    "box": {
+     "left": 335,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "crop": {
+     "w": 151.29,
+     "h": 100,
+     "left": -25.64,
+     "top": 0
+    }
+   },
+   "centerBounds": {
+    "l": 0.204,
+    "t": 0.177,
+    "r": 0.774,
+    "b": 0.892
+   }
+  },
+  "/images/office/latest/mouse-center.png": {
+   "center": {
+    "width": 1176,
+    "height": 1292,
+    "box": {
+     "left": 310,
+     "top": 154,
+     "w": 588,
+     "h": 646
+    }
+   },
+   "side": {
+    "src": "/images/office/products/bm-4131.png",
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 335,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "fit": "contain"
+   },
+   "centerBounds": {
+    "l": 0.463,
+    "t": 0.143,
+    "r": 0.935,
+    "b": 0.724
+   }
+  },
+  "/images/office/products/combo-k-alt.png": {
+   "center": {
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 424,
+     "top": 128,
+     "w": 600,
+     "h": 600
+    },
+    "fit": "contain",
+    "shadow": "drop-latest"
+   },
+   "side": {
+    "src": "/images/office/products/combo-k-alt.png",
+    "width": 1600,
+    "height": 1600,
+    "box": {
+     "left": 874,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "fit": "contain"
+   },
+   "slots": {
+    "right": {
+     "src": "/images/office/latest/combo-side.png",
+     "alt": "",
+     "width": 660,
+     "height": 410,
+     "box": {
+      "left": 830,
+      "top": 360,
+      "w": 330,
+      "h": 205
+     }
+    }
+   },
+   "centerBounds": {
+    "l": 0.026,
+    "t": 0.319,
+    "r": 0.96,
+    "b": 0.701
+   }
+  },
+  "/images/office/products/bk-7111wg-alt.png": {
+   "center": {
+    "width": 482,
+    "height": 320,
+    "box": {
+     "left": 367,
+     "top": 198.5,
+     "w": 709,
+     "h": 471
+    },
+    "fit": "contain",
+    "shadow": "drop-latest"
+   },
+   "side": {
+    "src": "/images/office/products/bk-7111wg-alt.png",
+    "width": 482,
+    "height": 320,
+    "box": {
+     "left": 335,
+     "top": 333,
+     "w": 231,
+     "h": 194
+    },
+    "fit": "contain"
+   },
+   "slots": {
+    "left": {
+     "src": "/images/office/latest/keyboard-side.png",
+     "alt": "",
+     "width": 666,
+     "height": 384,
+     "box": {
+      "left": 213,
+      "top": 367,
+      "w": 333,
+      "h": 192
+     }
+    }
+   },
+   "centerBounds": {
+    "l": 0.075,
+    "t": 0.275,
+    "r": 0.921,
+    "b": 0.725
+   }
+  }
+ },
+ "featuredCard": {
+  "/images/gaming/featured/k732.png": {
+   "layers": [
+    {
+     "width": 1600,
+     "height": 1600,
+     "box": {
+      "left": 16,
+      "top": 68,
+      "w": 384,
+      "h": 296
+     },
+     "fit": "contain",
+     "content": true
+    }
+   ]
+  },
+  "/images/gaming/featured/m686.png": {
+   "layers": [
+    {
+     "src": "/images/gaming/featured/m686-base.png",
+     "width": 482,
+     "height": 320,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     }
+    },
+    {
+     "width": 844,
+     "height": 560,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     },
+     "crop": {
+      "w": 242.31,
+      "h": 160.87,
+      "left": -71.15,
+      "top": -30.43
+     },
+     "content": true
+    }
+   ]
+  },
+  "/images/gaming/featured/k552.png": {
+   "layers": [
+    {
+     "width": 1600,
+     "height": 1600,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     },
+     "content": true
+    }
+   ]
+  },
+  "/images/office/featured/bm-2659.png": {
+   "layers": [
+    {
+     "width": 832,
+     "height": 640,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     },
+     "content": true
+    }
+   ]
+  },
+  "/images/office/featured/bk-7111wg.png": {
+   "layers": [
+    {
+     "width": 832,
+     "height": 640,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     },
+     "content": true
+    }
+   ]
+  },
+  "/images/office/featured/bk-7111wg-combo.png": {
+   "layers": [
+    {
+     "width": 832,
+     "height": 640,
+     "box": {
+      "left": 0,
+      "top": 56,
+      "w": 416,
+      "h": 320
+     },
+     "content": true
+    }
+   ]
+  }
+ },
+ "featuredGrid": {
+  "/images/gaming/featured/k732.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 10.69,
+    "top": 27.79,
+    "w": 149.63,
+    "h": 149.63
+   }
+  },
+  "/images/gaming/featured/m686.png": {
+   "width": 844,
+   "height": 560,
+   "box": {
+    "left": 10.69,
+    "top": 27.79,
+    "w": 149.63,
+    "h": 149.63
+   },
+   "crop": {
+    "w": 278.66,
+    "h": 185,
+    "left": -89.33,
+    "top": -42.5
+   }
+  },
+  "/images/gaming/featured/mobile/titan-h894.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 10.69,
+    "top": 27.79,
+    "w": 149.63,
+    "h": 149.63
+   },
+   "crop": {
+    "w": 137.71,
+    "h": 91.43,
+    "left": -18.86,
+    "top": 4.29
+   }
+  },
+  "/images/gaming/featured/k552.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "left": 10.69,
+    "top": 11.79,
+    "w": 149.63,
+    "h": 149.63
+   }
+  },
+  "/images/gaming/featured/mobile/anvil-gs520.png": {
+   "width": 512,
+   "height": 512,
+   "box": {
+    "left": 11,
+    "top": 21,
+    "w": 149.63,
+    "h": 149.63
+   }
+  },
+  "/images/gaming/featured/mobile/gw800.png": {
+   "width": 512,
+   "height": 512,
+   "box": {
+    "left": 21,
+    "top": 29,
+    "w": 129,
+    "h": 129
+   }
+  },
+  "/images/nav/gaming-gamer-room.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 19,
+    "top": 27,
+    "w": 134,
+    "h": 134
+   },
+   "crop": {
+    "w": 150.6,
+    "h": 100,
+    "left": -25.31,
+    "top": 0
+   }
+  },
+  "/images/gaming/featured/mobile/gb-127.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 18,
+    "top": 31,
+    "w": 135,
+    "h": 135
+   },
+   "crop": {
+    "w": 150.6,
+    "h": 100,
+    "left": -25.31,
+    "top": 0
+   }
+  },
+  "/images/gaming/featured/mobile/ca-632b.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "left": 11,
+    "top": 28,
+    "w": 149.63,
+    "h": 149.63
+   },
+   "crop": {
+    "w": 114.05,
+    "h": 75.71,
+    "left": -7.02,
+    "top": 8.72
+   }
+  },
+  "/images/gaming/featured/mobile/sleeved-cable.png": {
+   "width": 512,
+   "height": 512,
+   "box": {
+    "left": 21,
+    "top": 31,
+    "w": 129,
+    "h": 129
+   }
+  },
+  "/images/gaming/featured/mobile/pg1m.png": {
+   "width": 512,
+   "height": 512,
+   "box": {
+    "left": 19,
+    "top": 32,
+    "w": 134,
+    "h": 134
+   }
+  },
+  "/images/gaming/featured/mobile/bm-2659.png": {
+   "width": 512,
+   "height": 288,
+   "box": {
+    "left": 14,
+    "top": 27,
+    "w": 143,
+    "h": 143
+   },
+   "crop": {
+    "w": 136.69,
+    "h": 76.89,
+    "left": -24.34,
+    "top": 9.18
+   }
+  }
+ },
+ "officeTile": {
+  "/images/office/categories/mice.png": {
+   "width": 1146,
+   "height": 1024,
+   "left": 59,
+   "top": 0,
+   "artOnTop": false
+  },
+  "/images/office/categories/keyboards.png": {
+   "width": 1133,
+   "height": 496,
+   "left": 66,
+   "top": 0,
+   "artOnTop": true
+  },
+  "/images/office/categories/combo.png": {
+   "width": 1200,
+   "height": 464,
+   "left": 32,
+   "top": 16,
+   "artOnTop": false
+  }
+ },
+ "officeMobileTile": {
+  "/images/home/office/mouse.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "right": 0,
+    "top": 1,
+    "w": 168,
+    "h": 207
+   },
+   "crop": {
+    "w": 130.88,
+    "h": 106.22,
+    "left": 0.18,
+    "top": -0.06
+   }
+  },
+  "/images/office/products/bk-7111wg-alt.png": {
+   "width": 482,
+   "height": 320,
+   "box": {
+    "right": 21,
+    "top": 24,
+    "w": 355,
+    "h": 141
+   },
+   "outer": {
+    "w": 141,
+    "h": 355
+   },
+   "rotate": 90,
+   "crop": {
+    "w": 115.87,
+    "h": 192.77,
+    "left": -7.93,
+    "top": -46.39
+   }
+  },
+  "/images/office/products/combo-k-alt.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "right": -73,
+    "top": 35,
+    "w": 303,
+    "h": 138
+   },
+   "crop": {
+    "w": 105.46,
+    "h": 231.25,
+    "left": -1.9,
+    "top": -65.63
+   }
+  }
+ },
+ "megaPanel": {
+  "Gaming": {
+   "height": 592,
+   "headingTop": 19,
+   "gridTop": 64,
+   "tileWidth": 288,
+   "tileHeight": 146.667,
+   "columns": 4
+  },
+  "Office": {
+   "height": 292,
+   "headingTop": 24,
+   "gridTop": 84,
+   "tileWidth": [
+    389,
+    390,
+    389
+   ],
+   "tileHeight": 152,
+   "columns": 3
+  },
+  "Support": {
+   "height": 292,
+   "headingTop": 24,
+   "gridTop": 84,
+   "tileWidth": 390,
+   "tileHeight": 152,
+   "columns": 2
+  }
+ },
+ "megaTile": {
+  "/images/home/mouse-m919.png": {
+   "labelX": 239.5,
+   "labelY": 61,
+   "images": [
+    {
+     "src": "/images/home/mouse-m919.png",
+     "x": 16,
+     "y": -2,
+     "w": 152,
+     "h": 152
+    }
+   ]
+  },
+  "/images/home/keyboard-k754.png": {
+   "labelX": 211,
+   "labelY": 61,
+   "images": [
+    {
+     "src": "/images/home/keyboard-k754.png",
+     "x": 0,
+     "y": -4,
+     "w": 154,
+     "h": 154,
+     "rounded": true
+    }
+   ]
+  },
+  "/images/home/headset-h894.png": {
+   "labelX": 217,
+   "labelY": 61,
+   "images": [
+    {
+     "src": "/images/home/headset-h894.png",
+     "x": 15,
+     "y": 6,
+     "w": 135,
+     "h": 135
+    }
+   ]
+  },
+  "/images/nav/gaming-combo.png": {
+   "labelX": 227.5,
+   "labelY": 61,
+   "images": [
+    {
+     "src": "/images/nav/gaming-combo.png",
+     "x": -51,
+     "y": -17,
+     "w": 272,
+     "h": 180
+    }
+   ]
+  },
+  "/images/nav/gaming-speakers.png": {
+   "labelX": 218.5,
+   "labelY": 61.33,
+   "images": [
+    {
+     "src": "/images/nav/gaming-speakers.png",
+     "x": 14,
+     "y": -2.67,
+     "w": 152,
+     "h": 152
+    }
+   ]
+  },
+  "/images/nav/gaming-content-creation.png": {
+   "labelX": 221.5,
+   "labelY": 49,
+   "twoLines": true,
+   "images": [
+    {
+     "src": "/images/nav/gaming-content-creation.png",
+     "x": 19,
+     "y": -3,
+     "w": 152,
+     "h": 152
+    }
+   ]
+  },
+  "/images/nav/gaming-gamer-room.png": {
+   "labelX": 226.5,
+   "labelY": 49.33,
+   "twoLines": true,
+   "images": [
+    {
+     "src": "/images/nav/gaming-gamer-room.png",
+     "x": 24,
+     "y": 4.33,
+     "w": 138,
+     "h": 138
+    }
+   ]
+  },
+  "/images/nav/gaming-laptop-accessories.png": {
+   "labelX": 206.5,
+   "labelY": 49,
+   "twoLines": true,
+   "images": [
+    {
+     "src": "/images/nav/gaming-laptop-accessories.png",
+     "x": 12,
+     "y": 9,
+     "w": 128,
+     "h": 128
+    }
+   ]
+  },
+  "/images/nav/gaming-mice-pads.png": {
+   "labelX": 213.5,
+   "labelY": 60.67,
+   "images": [
+    {
+     "src": "/images/nav/gaming-mice-pads.png",
+     "x": 7,
+     "y": -2.33,
+     "w": 152,
+     "h": 152
+    },
+    {
+     "src": "/images/nav/gaming-mice-pads.png",
+     "x": 12,
+     "y": -2.33,
+     "w": 152,
+     "h": 152
+    }
+   ]
+  },
+  "/images/nav/gaming-pc-components.png": {
+   "labelX": 201.5,
+   "labelY": 48.67,
+   "twoLines": true,
+   "images": [
+    {
+     "src": "/images/nav/gaming-pc-components.png",
+     "x": 8,
+     "y": 5.67,
+     "w": 136,
+     "h": 136
+    }
+   ]
+  },
+  "/images/nav/gaming-diy-accessories.png": {
+   "labelX": 206.5,
+   "labelY": 48.67,
+   "twoLines": true,
+   "images": [
+    {
+     "src": "/images/nav/gaming-diy-accessories.png",
+     "x": 4,
+     "y": 5.67,
+     "w": 136,
+     "h": 136
+    }
+   ]
+  },
+  "/images/nav/gaming-gamepads.png": {
+   "labelX": 210,
+   "labelY": 61,
+   "images": [
+    {
+     "src": "/images/nav/gaming-gamepads.png",
+     "x": 6,
+     "y": 0,
+     "w": 148,
+     "h": 148
+    }
+   ]
+  },
+  "/images/nav/office-mice.png": {
+   "labelX": 326.5,
+   "labelY": 64,
+   "images": [
+    {
+     "src": "/images/nav/office-mice.png",
+     "x": 0,
+     "y": -56,
+     "w": 260,
+     "h": 260
+    }
+   ]
+  },
+  "/images/nav/office-keyboards.png": {
+   "labelX": 299,
+   "labelY": 64,
+   "images": [
+    {
+     "src": "/images/nav/office-keyboards.png",
+     "x": -4,
+     "y": -39,
+     "w": 240,
+     "h": 240,
+     "fit": "contain",
+     "rounded": true
+    }
+   ]
+  },
+  "/images/nav/office-combo.png": {
+   "labelX": 328.5,
+   "labelY": 64,
+   "images": [
+    {
+     "src": "/images/nav/office-combo.png",
+     "x": 3,
+     "y": -5,
+     "w": 272,
+     "h": 180
+    }
+   ]
+  },
+  "/images/nav/support-manuals.png": {
+   "labelX": 265,
+   "labelY": 50,
+   "labelAlign": "left",
+   "labelWidth": 100,
+   "images": [
+    {
+     "src": "/images/nav/support-manuals.png",
+     "x": 23,
+     "y": 11,
+     "w": 186,
+     "h": 130
+    }
+   ]
+  },
+  "/images/nav/support-where-to-buy.png": {
+   "labelX": 239,
+   "labelY": 64,
+   "labelAlign": "left",
+   "images": [
+    {
+     "src": "/images/nav/support-where-to-buy.png",
+     "x": 14,
+     "y": 7,
+     "w": 192,
+     "h": 139
+    }
+   ]
+  }
+ },
+ "searchProduct": {
+  "/images/nav/search-rio-k771bgp.png": {
+   "imageHeight": 128
+  },
+  "/images/nav/search-eisa-k768vi-pro.png": {
+   "imageHeight": 128
+  },
+  "/images/nav/search-k681mg-rgb-pro.png": {
+   "imageHeight": 59
+  },
+  "/images/nav/search-bk-7111wg.png": {
+   "imageHeight": 59
+  }
+ },
+ "about": {
+  "/images/pages/about/story.jpg": {
+   "width": 1152,
+   "height": 928,
+   "h": 450
+  },
+  "/images/pages/about/philosophy.jpg": {
+   "width": 1152,
+   "height": 928,
+   "h": 450
+  },
+  "/images/pages/about/dragon.jpg": {
+   "width": 1200,
+   "height": 896,
+   "h": 420
+  }
+ },
+ "supportTile": {
+  "/images/pages/support/mice.png": {
+   "width": 464,
+   "inset": 88,
+   "art": {
+    "width": 812,
+    "height": 500,
+    "left": 58,
+    "top": 0
+   }
+  },
+  "/images/pages/support/keyboards.png": {
+   "width": 464,
+   "inset": 40,
+   "plain": true,
+   "art": {
+    "width": 928,
+    "height": 482,
+    "left": 0,
+    "top": 9
+   }
+  },
+  "/images/pages/support/combo.png": {
+   "width": 464,
+   "inset": 40,
+   "art": {
+    "width": 928,
+    "height": 500,
+    "left": 0,
+    "top": 0
+   }
+  },
+  "/images/pages/support/headsets.png": {
+   "width": 464,
+   "inset": 88,
+   "art": {
+    "width": 744,
+    "height": 500,
+    "left": 92,
+    "top": 0
+   }
+  },
+  "/images/pages/support/speakers.png": {
+   "width": 464,
+   "inset": 40,
+   "plain": true,
+   "art": {
+    "width": 678,
+    "height": 500,
+    "left": 122,
+    "top": 0
+   }
+  },
+  "/images/pages/support/content-creation.png": {
+   "width": 464,
+   "inset": 40,
+   "art": {
+    "width": 774,
+    "height": 500,
+    "left": 77,
+    "top": 0
+   }
+  },
+  "/images/pages/support/pc-components.png": {
+   "width": 712,
+   "inset": 88,
+   "art": {
+    "width": 826,
+    "height": 500,
+    "left": 299,
+    "top": 0
+   }
+  },
+  "/images/pages/support/gamepads.png": {
+   "width": 704,
+   "inset": 40,
+   "art": {
+    "width": 822,
+    "height": 500,
+    "left": 293,
+    "top": 0
+   }
+  }
+ },
+ "supportRows": {
+  "pattern": [
+   3,
+   3,
+   2
+  ]
+ },
+ "download": {
+  "/images/gaming/products/k768vi-pro.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "top": 122,
+    "h": 182
+   }
+  },
+  "/images/gaming/products/k668wbo-wl.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "top": 122,
+    "h": 182
+   },
+   "crop": {
+    "w": 103.65,
+    "h": 156.04,
+    "left": -1.82,
+    "top": -28.02
+   }
+  },
+  "/images/gaming/products/k769bam-m.png": {
+   "width": 1600,
+   "height": 1600,
+   "box": {
+    "top": 154,
+    "h": 89
+   },
+   "crop": {
+    "w": 100,
+    "h": 307.87,
+    "left": 0,
+    "top": -85.39
+   }
+  }
+ },
+ "blog": {
+  "/images/pages/blog/featured.png": {
+   "width": 1538,
+   "height": 1000
+  },
+  "/images/pages/blog/mice-guide.png": {
+   "width": 1024,
+   "height": 1024
+  },
+  "/images/pages/blog/gear-care.png": {
+   "width": 1024,
+   "height": 434
+  },
+  "/images/pages/blog/artemis-k719.png": {
+   "width": 640,
+   "height": 250
+  },
+  "/images/pages/blog/switches.png": {
+   "width": 1024,
+   "height": 1024
+  },
+  "/images/pages/blog/h891-headset.png": {
+   "width": 1280,
+   "height": 1280
+  },
+  "/images/pages/blog/comic-frontier.png": {
+   "width": 850,
+   "height": 637
+  }
+ }
+}

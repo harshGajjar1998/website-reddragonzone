@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { footerColumns, socialLinks } from "@/data/navigation";
+import { getContent } from "@/lib/cms";
 import FooterLogo from "./FooterLogo";
 import MobileFooter from "./MobileFooter";
 
-export default function Footer() {
+export default async function Footer() {
+  const { footerColumns, footerBlurb, socialLinks } = (await getContent()).chrome;
   return (
     <>
       <MobileFooter />
@@ -15,8 +16,7 @@ export default function Footer() {
             <div className="flex w-[360px] shrink-0 flex-col gap-4">
               <FooterLogo />
               <p className="font-archivo text-[13px] leading-[1.5] text-ink/75">
-                Engineering mechanical excellence for the global elite. Built for raw reactive
-                triggers, structured matrix custom designs, and long-form combat stability.
+                {footerBlurb}
               </p>
             </div>
 

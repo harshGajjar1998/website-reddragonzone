@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import BrowseLink from "@/components/ui/BrowseLink";
 import RevealOnView from "@/components/ui/RevealOnView";
+import type { HomeSplit } from "@/data/home";
 import { cq } from "@/lib/mobile";
 
 /** Entrance stagger for `.enter-*` pieces (globals.css) */
@@ -66,9 +67,8 @@ function MobilePanelCopy({ title, description, href }: { title: string; descript
 
 const mobileGhost = "absolute font-gotham font-bold leading-[1.2] tracking-[0.03em] whitespace-nowrap";
 
-// API: dynamic data – Gaming / Office panels, mobile (hard-coded here for now)
 /** Mobile – the two panels stacked (Figma "Home Mobile version" screen 2, 390×800). */
-function MobileSplit() {
+function MobileSplit({ gaming, office }: HomeSplit) {
   return (
     <div className="overflow-hidden bg-silver-mobile lg:hidden">
       {/* ---------- Gaming ---------- */}
@@ -89,21 +89,17 @@ function MobileSplit() {
             className={`${mobileGhost} enter-left text-white/50`}
             style={{ left: cq(8), top: cq(40), fontSize: cq(96), ...delay(100) }}
           >
-            Game
+            {gaming.ghost}
           </p>
           <Image
-            src="/images/home/m997-main.png"
-            alt="Redragon PRISM PRO M997 gaming mouse"
+            src={gaming.image.src}
+            alt={gaming.image.alt}
             width={1600}
             height={1600}
             className="enter-right absolute max-w-none drop-gaming-mouse"
             style={{ left: cq(195), top: cq(34), width: cq(341), height: cq(341), ...delay(250) }}
           />
-          <MobilePanelCopy
-            title="Game"
-            description="High performance gaming gear built for pro-level precision"
-            href="/gaming"
-          />
+          <MobilePanelCopy title={gaming.title} description={gaming.description} href={gaming.href} />
         </RevealOnView>
       </div>
 
@@ -132,21 +128,17 @@ function MobileSplit() {
               className={`${mobileGhost} enter-left text-[rgba(182,182,182,0.5)]`}
               style={{ left: cq(8), top: cq(40), fontSize: cq(96), ...delay(100) }}
             >
-              Office
+              {office.ghost}
             </p>
             <Image
-              src="/images/home/office-mouse-bm4235.png"
-              alt="Redragon BM-4235 ergonomic office mouse"
+              src={office.image.src}
+              alt={office.image.alt}
               width={1600}
               height={1600}
               className="enter-right absolute max-w-none drop-office-mouse"
               style={{ left: cq(153), top: cq(29), width: cq(341), height: cq(341), ...delay(250) }}
             />
-            <MobilePanelCopy
-              title="Office"
-              description="Reliable and comfortable gear for work and everyday use."
-              href="/office"
-            />
+            <MobilePanelCopy title={office.title} description={office.description} href={office.href} />
           </RevealOnView>
         </div>
       </div>
@@ -154,15 +146,16 @@ function MobileSplit() {
   );
 }
 
-// API: dynamic data – Gaming / Office panels – titles, descriptions, links, images (hard-coded here for now)
+// API: dynamic data – Gaming / Office panels – titles, descriptions, links, images (CMS homepage "Gaming / Office" section)
 /**
  * Figma "Section 9" – Gaming / Office split (1440×800). On first view the ghost words slide in
  * from the left, the mice from the right and the watermark logos rise from the bottom.
  */
-export default function CategorySplitSection() {
+export default function CategorySplitSection({ split }: { split: HomeSplit }) {
+  const { gaming, office } = split;
   return (
     <section className="overflow-hidden lg:bg-silver">
-      <MobileSplit />
+      <MobileSplit {...split} />
       <RevealOnView className="page-frame hidden h-[800px] lg:block">
         {/* Dragon watermark behind the gaming panel (wrapped: its opacity utility would override the entrance) */}
         <div className="enter-bottom absolute left-[5px] top-[455px] h-[345px] w-[524px]">
@@ -189,11 +182,11 @@ export default function CategorySplitSection() {
             className="enter-left absolute left-[24px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-[rgba(182,182,182,0.5)]"
             style={delay(250)}
           >
-            Office
+            {office.ghost}
           </p>
           <Image
-            src="/images/home/office-mouse-bm4235.png"
-            alt="Redragon BM-4235 ergonomic office mouse"
+            src={office.image.src}
+            alt={office.image.alt}
             width={608}
             height={608}
             className="enter-right absolute left-[317px] top-[96px] size-[608px] drop-office-mouse"
@@ -209,9 +202,9 @@ export default function CategorySplitSection() {
             style={delay(150)}
           />
           <PanelCopy
-            title="Office"
-            description="Reliable and comfortable gear for work and everyday use."
-            href="/office"
+            title={office.title}
+            description={office.description}
+            href={office.href}
             left={88}
             ruleTop={456}
           />
@@ -224,20 +217,20 @@ export default function CategorySplitSection() {
             className="enter-left absolute left-[24px] top-[104px] font-gotham text-[153px] font-bold leading-[1.2] tracking-[4.59px] whitespace-nowrap text-white/50"
             style={delay(100)}
           >
-            Game
+            {gaming.ghost}
           </p>
           <Image
-            src="/images/home/m997-main.png"
-            alt="Redragon PRISM PRO M997 gaming mouse"
+            src={gaming.image.src}
+            alt={gaming.image.alt}
             width={554}
             height={554}
             className="enter-right absolute left-[386px] top-[123px] size-[554px] drop-gaming-mouse"
             style={delay(250)}
           />
           <PanelCopy
-            title="GAMING"
-            description="Highperformance gaming gear built for pro-level precision"
-            href="/gaming"
+            title={gaming.title}
+            description={gaming.description}
+            href={gaming.href}
             left={120}
             ruleTop={452}
           />

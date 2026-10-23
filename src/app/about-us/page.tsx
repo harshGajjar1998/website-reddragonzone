@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import Link from "next/link";
 import EliteClubNewsletter from "@/components/pages/EliteClubNewsletter";
 import SectionIntro from "@/components/pages/SectionIntro";
-import { aboutSections, aboutValues } from "@/data/pages";
+import { getContent } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "About Us | Redragon",
@@ -32,38 +33,42 @@ function ExploreLink({ href, label }: { href: string; label: string }) {
 }
 
 /** Figma "redragon-about-us" */
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { aboutSections, aboutValues, copy } = (await getContent()).pages;
+  const c = copy.about;
   return (
     <>
       {/* Hero */}
+      <CmsSection ids={["singleton:about_page"]}>
       <section className="relative flex h-[600px] items-center justify-center overflow-hidden bg-[#0f1115] lg:h-[700px]">
-        <Image src={`${A}/hero.jpg`} alt="" fill sizes="100vw" preload className="object-cover" />
+        <Image src={c.heroImage} alt="" fill sizes="100vw" preload className="object-cover" />
         <div className="absolute inset-0 bg-[#0f1115]/25" />
         <div className="relative flex flex-col items-center gap-8 px-4 text-center">
           <div className="flex w-full flex-col items-center gap-4 lg:w-[800px]">
             <p className="font-lexend-giga text-[16px] font-semibold uppercase tracking-[2px] text-crimson lg:text-[20px]">
-              [ Brand Genesis ]
+              {c.heroEyebrow}
             </p>
-            <h1 className="font-lexend-exa text-[36px] font-bold leading-[1.1] text-white lg:text-[64px]">ABOUT REDRAGON</h1>
-            <p className="font-lexend-deca text-[18px] font-light text-white lg:text-[24px]">Powering Gamers Worldwide Since 2013</p>
+            <h1 className="font-lexend-exa text-[36px] font-bold leading-[1.1] text-white lg:text-[64px]">{c.heroTitle}</h1>
+            <p className="font-lexend-deca text-[18px] font-light text-white lg:text-[24px]">{c.heroSubtitle}</p>
           </div>
           <p className="w-full font-lexend-deca text-[16px] leading-[1.6] text-[#9ba3af] lg:w-[680px]">
-            We build weaponry for the global elite. From click rates to sound profiles, every millisecond is tuned
-            for raw competitive supremacy.
+            {c.heroText}
           </p>
           <Link
-            href="/gaming"
+            href={c.heroButtonUrl || "/gaming"}
             className="flex h-12 items-center rounded-[4px] bg-crimson px-8 font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
           >
-            Enter the dragon zone
+            {c.heroButton}
           </Link>
         </div>
       </section>
+      </CmsSection>
 
       {/* Brand story / philosophy / inspiration */}
       {/* API: dynamic data – About Us sections */}
       {aboutSections.map((s) => (
-        <section key={s.title} className={s.tinted ? "bg-[#f6f6f6]" : "bg-white"}>
+        <CmsSection key={s.title} ids={entryIds([s])}>
+        <section className={s.tinted ? "bg-[#f6f6f6]" : "bg-white"}>
           <div
             className={`page-frame flex flex-col gap-8 px-4 py-14 lg:flex-row lg:items-center lg:gap-16 lg:px-[120px] lg:py-24 ${
               s.mediaLeft ? "lg:flex-row-reverse" : ""
@@ -85,15 +90,17 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+        </CmsSection>
       ))}
 
       {/* Explore our product (Figma "Section 2", 800px) */}
+      <CmsSection ids={["singleton:about_page"]}>
       <section className="overflow-hidden bg-[#f6f6f6]">
         {/* Mobile: the two cards stacked */}
         <div className="mobile-frame flex flex-col gap-6 px-4 py-14 lg:hidden">
           <div className="flex flex-col gap-2">
-            <p className="font-lexend-giga text-[20px] font-semibold leading-[1.2] text-[#e60012]">EXPLORE OUR PRODUCT</p>
-            <h2 className="font-lexend-exa text-[28px] font-medium leading-[1.2] text-ink">Which gear type are you looking for?</h2>
+            <p className="font-lexend-giga text-[20px] font-semibold leading-[1.2] text-[#e60012]">{c.exploreEyebrow}</p>
+            <h2 className="font-lexend-exa text-[28px] font-medium leading-[1.2] text-ink">{c.exploreTitle}</h2>
           </div>
           <div className="flex flex-col gap-4 rounded-[32px] bg-graphite px-6 pt-4 pb-8">
             <Image src={`${A}/gaming-mouse.png`} alt="Redragon gaming mouse" width={700} height={700} className="mx-auto size-[220px]" />
@@ -117,9 +124,9 @@ export default function AboutPage() {
 
         <div className="page-frame relative hidden h-[800px] lg:block">
           <div className="absolute left-[120px] top-24 flex flex-col gap-2">
-            <p className="font-lexend-giga text-[24px] font-semibold leading-[1.2] text-[#e60012]">EXPLORE OUR PRODUCT</p>
+            <p className="font-lexend-giga text-[24px] font-semibold leading-[1.2] text-[#e60012]">{c.exploreEyebrow}</p>
             <h2 className="font-lexend-exa text-[32px] font-medium leading-[1.2] text-ink">
-              Which gear type are you looking for?
+              {c.exploreTitle}
             </h2>
           </div>
 
@@ -153,11 +160,13 @@ export default function AboutPage() {
           <Image src={`${A}/office-mouse.png`} alt="Redragon office mouse" width={756} height={756} className="absolute left-[837px] top-[194px] size-[378px] max-w-none" />
         </div>
       </section>
+      </CmsSection>
 
       {/* Values */}
+      <CmsSection ids={["singleton:about_page", ...entryIds(aboutValues)]}>
       <section className="bg-white">
         <div className="page-frame flex flex-col gap-8 px-4 py-14 lg:gap-12 lg:px-[120px] lg:py-24">
-          <SectionIntro eyebrow="WHY REDRAGON" title="Built Different" />
+          <SectionIntro eyebrow={c.valuesEyebrow} title={c.valuesTitle} />
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
             {/* API: dynamic data – About Us values */}
             {aboutValues.map((v) => (
@@ -175,6 +184,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </CmsSection>
 
       <EliteClubNewsletter />
     </>

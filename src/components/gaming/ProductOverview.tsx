@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import Collapse from "@/components/ui/Collapse";
 import { categoryHref, rangeOf, type GalleryImage, type GamingCategory, type GamingProduct } from "@/data/gaming";
 
 function GalleryCell({ image, priority }: { image: GalleryImage; priority: boolean }) {
@@ -49,9 +50,9 @@ function Accordion({ title, body }: { title: string; body: string }) {
           className={`transition-transform ${open ? "rotate-90" : ""}`}
         />
       </button>
-      {open && (
-        <p className="mt-3 font-lexend text-[14px] font-light leading-[1.4] tracking-[0.84px] text-ink/75">{body}</p>
-      )}
+      <Collapse open={open} className={open ? "mt-3" : ""}>
+        <p className="font-lexend text-[14px] font-light leading-[1.4] tracking-[0.84px] text-ink/75">{body}</p>
+      </Collapse>
     </div>
   );
 }

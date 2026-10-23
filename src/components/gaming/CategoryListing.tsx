@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { productHref, type FilterGroup, type GamingCategory, type GamingProduct } from "@/data/gaming";
+import Collapse from "@/components/ui/Collapse";
 import ProductCard from "./ProductCard";
 
 /** Page 1 shows 2 large + 3 small cards under the banner; later pages a 3×3 grid */
@@ -41,7 +42,7 @@ function FilterGroupBlock({
     <div
       role="group"
       aria-label={group.title}
-      className={`flex w-full flex-col ${open ? "gap-4" : ""} ${last ? "" : "border-b border-ink/20 pb-6"}`}
+      className={`flex w-full flex-col ${last ? "" : "border-b border-ink/20 pb-6"}`}
     >
       <button
         type="button"
@@ -60,11 +61,8 @@ function FilterGroupBlock({
         />
       </button>
 
-      {open && (
-        <div
-          id={id}
-          className={group.columns === 2 ? "grid grid-cols-2 gap-3" : "flex flex-col gap-3"}
-        >
+      <Collapse open={open} id={id} className={open ? "mt-4" : ""}>
+        <div className={group.columns === 2 ? "grid grid-cols-2 gap-3" : "flex flex-col gap-3"}>
           {group.options.map((option) => {
             const checked = selected.has(option);
             return (
@@ -86,7 +84,7 @@ function FilterGroupBlock({
             );
           })}
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { blogCategories, type BlogCategory, type BlogPost } from "@/data/blog";
+import type { BlogCategory, BlogPost } from "@/data/blog";
 import BlogCard, { DiscoverMore, PostMeta } from "./BlogCard";
 
 const PER_PAGE = 6;
@@ -82,7 +82,16 @@ function Pagination({ page, total, href }: { page: number; total: number; href: 
 
 // API: dynamic data – blog posts (via props)
 /** Category tabs, featured post, 3-column grid and pagination (Figma "Content" + "Pagination"). */
-export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: number }) {
+// API: dynamic data – posts + categories (CMS Blog posts / Blog settings, via props)
+export default function BlogListing({
+  posts,
+  categories: blogCategories,
+  page,
+}: {
+  posts: BlogPost[];
+  categories: BlogCategory[];
+  page: number;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [category, setCategory] = useState<BlogCategory | null>(null);
@@ -180,7 +189,7 @@ export default function BlogListing({ posts, page }: { posts: BlogPost[]; page: 
 }
 
 /** Reads `?page=` in the browser (static export has no server-side searchParams). Wrap in <Suspense>. */
-export function BlogListingFromUrl({ posts }: { posts: BlogPost[] }) {
+export function BlogListingFromUrl({ posts, categories }: { posts: BlogPost[]; categories: BlogCategory[] }) {
   const page = Math.max(1, Number(useSearchParams().get("page")) || 1);
-  return <BlogListing posts={posts} page={page} />;
+  return <BlogListing posts={posts} categories={categories} page={page} />;
 }

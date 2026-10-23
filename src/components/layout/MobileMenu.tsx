@@ -3,14 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { mainNav, megaMenus, socialLinks } from "@/data/navigation";
+import { useChrome } from "./ChromeProvider";
+import Collapse from "@/components/ui/Collapse";
 
 /**
  * Full-screen navigation drawer opened by the mobile header's menu button.
  * Not in the Figma file – styled after the dark mega-menu panels (charcoal / graphite,
  * Lexend Deca labels) and reuses their category tiles as sub-links.
  */
-export default function MobileMenu({ onClose, logo }: { onClose: () => void; logo: React.ReactNode }) {
+export default function MobileMenu({
+  open: visible,
+  onClose,
+  logo,
+}: {
+  /** false while the drawer fades out after closing */
+  open: boolean;
+  onClose: () => void;
+  logo: React.ReactNode;
+}) {
+  const { mainNav, megaMenus, socialLinks } = useChrome();
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,7 +40,10 @@ export default function MobileMenu({ onClose, logo }: { onClose: () => void; log
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-charcoal lg:hidden"
+      inert={!visible}
+      className={`fixed inset-0 z-50 flex flex-col overflow-y-auto bg-charcoal transition-[opacity,translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] starting:-translate-y-3 starting:opacity-0 motion-reduce:transition-none lg:hidden ${
+        visible ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"
+      }`}
     >
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
         {logo}
@@ -67,8 +81,8 @@ export default function MobileMenu({ onClose, logo }: { onClose: () => void; log
                         className={`transition-transform ${open ? "rotate-180" : ""}`}
                       />
                     </button>
-                    {open && (
-                      <ul id={panelId} className="flex flex-col gap-2 pb-5">
+                    <Collapse open={open} id={panelId}>
+                      <ul className="flex flex-col gap-2 pb-5">
                         <li>
                           <Link
                             href={item.href}
@@ -93,7 +107,7 @@ export default function MobileMenu({ onClose, logo }: { onClose: () => void; log
                           </li>
                         ))}
                       </ul>
-                    )}
+                    </Collapse>
                   </>
                 ) : (
                   <Link
