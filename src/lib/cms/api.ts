@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 
 /* ==================================================================
    Raw shapes of the CMS public API (reddragon-cms: GET /api/public/bundle).
@@ -146,7 +147,7 @@ export type CmsBundle = {
  * build stamp (next.config.ts) keeps a later build from reusing it.
  */
 /**
- * Draft preview: the server started by `npm run preview:cms` (CMS_PREVIEW=1) renders unpublished
+ * Draft preview: the server started by `npm run preview:cms`, or built with `npm run build:preview` (CMS_PREVIEW=1), renders unpublished
  * content for the CMS visual editor, authenticated with the key it shares with the CMS.
  */
 export const isCmsPreview = () => process.env.CMS_PREVIEW === "1";
@@ -164,11 +165,12 @@ export async function fetchBundle(): Promise<CmsBundle> {
   let res: Response;
   try {
     res = await fetch(url, {
-      // `next dev`: fetch on every request so CMS edits show on refresh. Builds: once, shared by every page.
-      ...(process.env.NODE_ENV === "development" ? { cache: "no-store" as const } : { cache: "force-cache" as const, next: { tags: ["cms"] } }),
+      // `next dev` and the preview server: fetch on every request so CMS edits show on refresh. Builds: once, shared by every page.
+      ...(process.env.NODE_ENV === "development" || preview ? { cache: "no-store" as const } : { cache: "force-cache" as const, next: { tags: ["cms"] } }),
       headers: { Accept: "application/json", ...(preview ? { "X-Preview-Key": process.env.CMS_PREVIEW_KEY! } : {}) },
     });
   } catch (e) {
+    unstable_rethrow(e); // preview server: Next's "render this route per request" signal, not a network error
     throw new Error(`Could not reach the CMS at ${url}: ${(e as Error).message}`);
   }
   if (!res.ok) throw new Error(`The CMS answered ${res.status} for ${url}`);

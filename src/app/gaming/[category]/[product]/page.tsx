@@ -9,8 +9,6 @@ import KeyFeatures from "@/components/gaming/KeyFeatures";
 import ProductOverview from "@/components/gaming/ProductOverview";
 import { findCategory, findProduct, getContent } from "@/lib/cms";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   // API: dynamic data – gaming product slugs
   return (await getContent()).gaming.products.map((p) => ({ category: p.category, product: p.slug }));

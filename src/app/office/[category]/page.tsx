@@ -7,8 +7,6 @@ import NewsletterSection from "@/components/office/NewsletterSection";
 import OfficeCategoryHero from "@/components/office/OfficeCategoryHero";
 import { findCategory, getContent, productsIn } from "@/lib/cms";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   // API: dynamic data – office category slugs
   return (await getContent()).office.categories.map((c) => ({ category: c.slug }));

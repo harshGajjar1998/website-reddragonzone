@@ -9,8 +9,6 @@ import OfficeShowcase from "@/components/office/OfficeShowcase";
 import OfficeSpecHero from "@/components/office/OfficeSpecHero";
 import { findCategory, findProduct, getContent } from "@/lib/cms";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   // API: dynamic data – office product slugs
   return (await getContent()).office.products.map((p) => ({ category: p.category, product: p.slug }));

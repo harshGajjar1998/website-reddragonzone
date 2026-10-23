@@ -7,8 +7,6 @@ import CategoryHero from "@/components/gaming/CategoryHero";
 import CategoryListing, { CategoryListingFromUrl } from "@/components/gaming/CategoryListing";
 import { findCategory, getContent, productsIn } from "@/lib/cms";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   // API: dynamic data – gaming category slugs
   return (await getContent()).gaming.categories.map((c) => ({ category: c.slug }));

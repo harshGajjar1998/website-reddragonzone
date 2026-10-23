@@ -7,8 +7,9 @@
     "dev": "node scripts/optimize-images.mjs && next dev -p 3001",
     "preview:cms": "node scripts/optimize-images.mjs && node scripts/cms-preview.mjs",
     "build": "node scripts/optimize-images.mjs && next build",
-    "start": "next start -p 3001",
-    "lint": "eslint"
+    "start": "next start",
+    "lint": "eslint",
+    "build:preview": "node scripts/optimize-images.mjs && next build --webpack"
   },
   "dependencies": {
     "next": "16.3.8",

@@ -7,8 +7,6 @@ import BlogCard from "@/components/blog/BlogCard";
 import NewsletterCard from "@/components/blog/NewsletterCard";
 import { getContent } from "@/lib/cms";
 
-export const dynamicParams = false;
-
 const getPost = async (slug: string) => (await getContent()).blog.posts.find((p) => p.slug === slug);
 
 export async function generateStaticParams() {
