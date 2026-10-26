@@ -7,6 +7,7 @@ import FeaturedHero from "@/components/gaming/FeaturedHero";
 import FeaturedShowcase from "@/components/gaming/FeaturedShowcase";
 import KeyFeatures from "@/components/gaming/KeyFeatures";
 import ProductOverview from "@/components/gaming/ProductOverview";
+import ProductJsonLd from "@/components/cms/ProductJsonLd";
 import { findCategory, findProduct, getContent } from "@/lib/cms";
 
 export async function generateStaticParams() {
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/gaming/[category]
  */
 export default async function GamingProductPage({ params }: PageProps<"/gaming/[category]/[product]">) {
   const { category: categorySlug, product: slug } = await params;
-  const { gaming } = await getContent();
+  const { gaming, siteUrl } = await getContent();
   // API: dynamic data – gaming category + product
   const category = findCategory(gaming.categories, categorySlug);
   const product = findProduct(gaming.products, categorySlug, slug);
@@ -38,6 +39,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
     const { featured } = product;
     return (
       <CmsSection ids={entryIds([product], "product")}>
+        <ProductJsonLd product={product} siteUrl={siteUrl} />
         {/* Mobile opens with the product overview (Figma "Spice detal"), desktop with the hero */}
         <ProductOverview product={product} category={category} special={{ ghost: featured.hero.model }} />
         <FeaturedHero hero={featured.hero} name={product.name} />
@@ -60,6 +62,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
 
   return (
     <CmsSection ids={entryIds([product], "product")}>
+      <ProductJsonLd product={product} siteUrl={siteUrl} />
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} />}
       <CmsSection ids={["shared:community"]}>

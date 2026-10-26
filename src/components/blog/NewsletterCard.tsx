@@ -1,20 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useFormSubmit } from "@/lib/forms";
+import Honeypot from "@/components/ui/Honeypot";
 
 /**
  * "Stay in the Game!" newsletter card (Figma "Newslette section", 1312×286).
  * The faint grid overlay sits on top of the copy, fading its right edge as in the design.
  */
 export default function NewsletterCard() {
-  const [done, setDone] = useState(false);
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: connect to the newsletter / CRM endpoint
-    setDone(true);
-  }
+  const { onSubmit, done } = useFormSubmit("newsletter");
 
   return (
     <section className="page-frame px-5 pb-10 lg:px-16">
@@ -27,6 +22,7 @@ export default function NewsletterCard() {
         </div>
 
         <form onSubmit={onSubmit} className="flex w-full flex-col gap-4 lg:w-[458px]">
+          <Honeypot />
           <label htmlFor="blog-newsletter-email" className="font-lexend text-[16px] leading-[1.5] text-[#111]">
             Join our newsletter ↓
           </label>
@@ -35,6 +31,7 @@ export default function NewsletterCard() {
             <input
               id="blog-newsletter-email"
               type="email"
+              name="email"
               required
               placeholder="Enter your email address"
               className="h-[49px] min-w-0 flex-1 bg-[#f5f8fb] px-3 py-2 lg:h-10 lg:w-[333px] lg:flex-none font-lexend text-[16px] leading-[1.5] text-[#111] outline outline-1 outline-[#111]/10 placeholder:text-[#111]/40 focus:outline-dragon"

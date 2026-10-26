@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useFormSubmit } from "@/lib/forms";
+import Honeypot from "@/components/ui/Honeypot";
 import { Button } from "@/components/ui/Button";
 
 type NewsletterSectionProps = {
@@ -14,13 +15,7 @@ type NewsletterSectionProps = {
 // API: dynamic data – newsletter block content (via props)
 /** Office "Section 9" (top half) – newsletter sign-up on #bebebe (375px). */
 export default function NewsletterSection({ eyebrow, title, description, images }: NewsletterSectionProps) {
-  const [submitted, setSubmitted] = useState(false);
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: connect to the newsletter / CRM endpoint
-    setSubmitted(true);
-  }
+  const { onSubmit, done: submitted } = useFormSubmit("newsletter");
 
   const signUp = (
     <Button
@@ -42,12 +37,14 @@ export default function NewsletterSection({ eyebrow, title, description, images 
           {description}
         </p>
         <form onSubmit={onSubmit} className="mt-6 flex gap-3">
+          <Honeypot />
           <label htmlFor="office-newsletter-email-mobile" className="sr-only">
             Email address
           </label>
           <input
             id="office-newsletter-email-mobile"
             type="email"
+            name="email"
             required
             placeholder="Enter your email address..."
             className="h-12 min-w-0 flex-1 rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.36px] text-ink outline-none placeholder:text-[12px] placeholder:text-white focus:border-dragon"
@@ -82,12 +79,14 @@ export default function NewsletterSection({ eyebrow, title, description, images 
             {description}
           </p>
           <form onSubmit={onSubmit} className="flex items-start gap-4">
+            <Honeypot />
             <label htmlFor="office-newsletter-email" className="sr-only">
               Email address
             </label>
             <input
               id="office-newsletter-email"
               type="email"
+              name="email"
               required
               placeholder="Enter your email address..."
               className="h-12 w-[271px] rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.48px] text-ink outline-none placeholder:text-ink focus:border-dragon"

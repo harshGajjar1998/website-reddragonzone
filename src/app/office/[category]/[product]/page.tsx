@@ -7,6 +7,7 @@ import BlueprintSection from "@/components/office/BlueprintSection";
 import NewsletterSection from "@/components/office/NewsletterSection";
 import OfficeShowcase from "@/components/office/OfficeShowcase";
 import OfficeSpecHero from "@/components/office/OfficeSpecHero";
+import ProductJsonLd from "@/components/cms/ProductJsonLd";
 import { findCategory, findProduct, getContent } from "@/lib/cms";
 
 export async function generateStaticParams() {
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/office/[category]
  */
 export default async function OfficeProductPage({ params }: PageProps<"/office/[category]/[product]">) {
   const { category: categorySlug, product: slug } = await params;
-  const { office } = await getContent();
+  const { office, siteUrl } = await getContent();
   // API: dynamic data – office category + product
   const category = findCategory(office.categories, categorySlug);
   const product = findProduct(office.products, categorySlug, slug);
@@ -37,6 +38,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
   if (product.featured) {
     return (
       <CmsSection ids={entryIds([product], "product")}>
+        <ProductJsonLd product={product} siteUrl={siteUrl} />
         <OfficeSpecHero product={product} category={category} />
         <OfficeShowcase showcase={product.featured.showcase} />
         <BlueprintSection
@@ -58,6 +60,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
 
   return (
     <CmsSection ids={entryIds([product], "product")}>
+      <ProductJsonLd product={product} siteUrl={siteUrl} />
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} light />}
       {/* API: dynamic data – office newsletter content */}

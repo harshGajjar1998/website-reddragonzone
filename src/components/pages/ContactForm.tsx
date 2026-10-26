@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useFormSubmit } from "@/lib/forms";
+import Honeypot from "@/components/ui/Honeypot";
 
 const label = "font-lexend-deca text-[14px] font-medium leading-[1.6] text-ink";
 const input =
@@ -22,23 +23,17 @@ function Field({ id, title, required, ...props }: { id: string; title: string; r
 /** Figma "Contact Us" card (632×509, white, r16) */
 // API: dynamic data – enquiry types (CMS Contact page, via props)
 export default function ContactForm({ enquiryTypes }: { enquiryTypes: string[] }) {
-  const [sent, setSent] = useState(false);
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: post to the contact / CRM endpoint
-    setSent(true);
-    e.currentTarget.reset();
-  }
+  const { onSubmit, done: sent, sending, error } = useFormSubmit("contact");
 
   return (
     <div className="mt-8 rounded-2xl bg-white px-5 pt-6 pb-6 lg:absolute lg:left-[728px] lg:top-[214px] lg:mt-0 lg:h-[509px] lg:w-[632px] lg:px-[31px] lg:pt-8 lg:pb-0">
       <h2 className="font-lexend-exa text-[32px] leading-[1.1] tracking-[-2.4px] text-black lg:text-[48px] lg:tracking-[-3.84px]">Contact Us</h2>
       <p className="mt-3 font-lexend-deca text-[16px] font-light leading-[1.4] tracking-[0.48px] text-[#626466] lg:mt-5 lg:text-[20px] lg:tracking-[0.6px]">
-        {sent ? "Thanks! We'll get back to you shortly." : "Looking forward to your feedback"}
+        {sent ? "Thanks! We'll get back to you shortly." : error ? <span className="text-crimson" role="alert">{error}</span> : "Looking forward to your feedback"}
       </p>
 
-      <form onSubmit={onSubmit} className="mt-5 flex w-full flex-col lg:w-[569px]">
+      <form onSubmit={onSubmit} className="relative mt-5 flex w-full flex-col lg:w-[569px]">
+        <Honeypot />
         <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-[276px_276px] lg:gap-y-5">
           <Field id="name" title="Name" required placeholder="Enter your name" autoComplete="name" />
           <Field id="phone" title="Phone Number" type="tel" placeholder="Enter your phone number" autoComplete="tel" />
@@ -78,9 +73,10 @@ export default function ContactForm({ enquiryTypes }: { enquiryTypes: string[] }
 
         <button
           type="submit"
-          className="mt-5 h-12 cursor-pointer rounded-[4px] bg-crimson font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
+          disabled={sending}
+          className="mt-5 h-12 cursor-pointer disabled:cursor-wait disabled:opacity-70 rounded-[4px] bg-crimson font-lexend-deca text-[16px] font-semibold uppercase tracking-[1px] text-white transition-colors hover:bg-[#c3151c]"
         >
-          Submit
+          {sending ? "Sending…" : "Submit"}
         </button>
       </form>
     </div>

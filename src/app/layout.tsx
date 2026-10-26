@@ -12,8 +12,8 @@ import { getContent } from "@/lib/cms";
 
 /** Site title and description from the CMS (Settings & SEO); pages override them. */
 export async function generateMetadata(): Promise<Metadata> {
-  const { seo } = await getContent();
-  return { title: seo.title, description: seo.description };
+  const { seo, siteUrl } = await getContent();
+  return { metadataBase: new URL(siteUrl), title: seo.title, description: seo.description };
 }
 
 /** Scale factor for the 1440px desktop canvas (used by the `zoom` rule in globals.css). Runs before first paint. */

@@ -44,6 +44,11 @@ export type CmsProduct = {
   images: Str[];
   tagline: Str;
   description: Str;
+  specs: { k: Str; v: Str }[];
+  model_number: Str;
+  price_tier: Str;
+  flagship: boolean;
+  in_box: Str[];
   series: Str;
   keywords: Str;
   tags: Str[];
@@ -84,6 +89,8 @@ export type CmsFeaturedCard = { product: Str; name: Str; label: Str; description
 
 export type CmsBundle = {
   site: {
+    /** The public website's address (CMS_SITE_URL) */
+    url?: Str;
     settings: {
       title: Str;
       description: Str;

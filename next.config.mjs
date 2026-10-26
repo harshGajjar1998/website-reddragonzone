@@ -26,7 +26,11 @@ const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
   // …and hides the dev badge so the editor shows the page exactly as visitors see it
   devIndicators: preview ? false : undefined,
-  env: { CMS_BUILD_STAMP: String(Date.now()) },
+  env: {
+    CMS_BUILD_STAMP: String(Date.now()),
+    // The contact and newsletter forms post here from the browser (src/lib/forms.ts)
+    CMS_FORMS_URL: `${(process.env.CMS_API_URL ?? "").replace(/\/$/, "")}/api/public/forms`,
+  },
   trailingSlash: true,
   images: {
     loader: "custom",

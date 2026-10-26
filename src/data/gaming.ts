@@ -127,6 +127,8 @@ export type GamingProduct = {
   slug: string;
   category: string;
   name: string;
+  /** Model number, e.g. K617-RGB */
+  model?: string;
   series?: string;
   /** Top-right label on cards */
   keywords: string;

@@ -1,17 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useFormSubmit } from "@/lib/forms";
+import Honeypot from "@/components/ui/Honeypot";
 
 /** About page "newsletter-section" – dark boxed sign-up with red outline (1440×385 on #0f1115). */
 export default function EliteClubNewsletter() {
-  const [done, setDone] = useState(false);
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: connect to the newsletter / CRM endpoint
-    setDone(true);
-  }
+  const { onSubmit, done } = useFormSubmit("newsletter");
 
   return (
     <section className="bg-[#0f1115]">
@@ -31,12 +26,14 @@ export default function EliteClubNewsletter() {
           </div>
 
           <form onSubmit={onSubmit} className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <Honeypot />
             <label htmlFor="elite-email" className="sr-only">
               Email address
             </label>
             <input
               id="elite-email"
               type="email"
+              name="email"
               required
               placeholder="Enter your hardware email address..."
               className="h-12 w-full rounded-[4px] border border-[#3b424f] bg-[#0f1115] px-4 font-lexend-deca text-[16px] text-white outline-none placeholder:text-[14px] placeholder:text-[#9ba3af] focus:border-crimson sm:w-[346px] sm:text-[14px]"

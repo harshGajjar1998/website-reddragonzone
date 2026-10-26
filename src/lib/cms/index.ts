@@ -25,6 +25,8 @@ import { layout, placed } from "./layout";
    ================================================================== */
 
 export type SiteContent = {
+  /** Absolute site address without a trailing slash, for the sitemap, canonical links and structured data */
+  siteUrl: string;
   seo: { title: string; description: string };
   chrome: ChromeContent;
   home: HomeContent;
@@ -59,6 +61,7 @@ function adapt(b: CmsBundle): SiteContent {
   const home = homeContent(b);
 
   return {
+    siteUrl: (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, ""),
     seo: { title: b.site.settings.title, description: b.site.settings.description },
     chrome: chrome(b, home.community),
     home,
@@ -133,6 +136,7 @@ function product(p: CmsProduct, dims: Dims): GamingProduct {
     slug: p.slug,
     category: p.category,
     name: p.name,
+    model: opt(p.model_number),
     series: opt(p.series),
     keywords: p.keywords,
     tagline: p.tagline,
