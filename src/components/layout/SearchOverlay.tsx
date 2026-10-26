@@ -38,7 +38,7 @@ export default function SearchOverlay({
   open: boolean;
   onClose: () => void;
 }) {
-  const { search } = useChrome();
+  const { search, logos } = useChrome();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const mobileInputRef = useRef<HTMLInputElement>(null);
@@ -188,7 +188,7 @@ export default function SearchOverlay({
           <div className="page-frame flex items-center justify-between px-[120px] py-4">
             <Link href="/" aria-label="Redragon home" onClick={onClose} className="flex h-10 items-center">
               <Image
-                src="/brand/redragon-logo.png"
+                src={logos.main}
                 alt="Redragon"
                 width={143}
                 height={98}

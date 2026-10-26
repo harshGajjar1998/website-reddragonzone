@@ -15,7 +15,7 @@ import SearchOverlay from "./SearchOverlay";
 const CLOSE_DELAY_MS = 150;
 
 export default function MainNav() {
-  const { mainNav, megaMenus } = useChrome();
+  const { mainNav, megaMenus, logos } = useChrome();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function MainNav() {
     <Link href="/" aria-label="Redragon home" onClick={closeMenu} className="flex h-10 items-center">
       {range === "office" ? (
         <Image
-          src="/brand/redragon-logo-office.png"
+          src={logos.office}
           alt="Redragon"
           width={1167}
           height={1290}
@@ -61,16 +61,16 @@ export default function MainNav() {
       ) : range === "gaming" ? (
         /* Figma mobile "GAMING LOGO 2", 58×40 */
         <Image
-          src="/brand/redragon-logo-gaming.png"
+          src={logos.gaming}
           alt="Redragon"
           width={58}
           height={40}
           preload
-          className="h-10 w-[58px] max-w-none object-cover"
+          className="h-10 w-[58px] max-w-none object-contain"
         />
       ) : (
         <Image
-          src="/brand/redragon-logo.png"
+          src={logos.main}
           alt="Redragon"
           width={120}
           height={32}
@@ -130,7 +130,7 @@ export default function MainNav() {
             {range === "office" ? (
               /* Office pages use the R mark (Figma "image 5", 48×48 fit) */
               <Image
-                src="/brand/redragon-logo-office.png"
+                src={logos.office}
                 alt="Redragon"
                 width={1167}
                 height={1290}
@@ -141,17 +141,17 @@ export default function MainNav() {
             ) : range === "gaming" ? (
               /* Gaming pages use the dragon-head mark (Figma "GAMING LOGO 2", 70×48) */
               <Image
-                src="/brand/redragon-logo-gaming.png"
+                src={logos.gaming}
                 alt="Redragon"
                 width={70}
                 height={48}
                 preload
-                className="h-12 w-[70px] max-w-none object-cover"
+                className="h-12 w-[70px] max-w-none object-contain"
               />
             ) : (
               /* Logo box is 143×98 in the design (object-contain) – it overflows the 40px row */
               <Image
-                src="/brand/redragon-logo.png"
+                src={logos.main}
                 alt="Redragon"
                 width={143}
                 height={98}

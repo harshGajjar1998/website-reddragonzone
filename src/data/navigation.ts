@@ -93,4 +93,6 @@ export type ChromeContent = {
   footerBlurb: string;
   socialLinks: SocialLink[];
   community: Community | null;
+  /** Settings & SEO logos; each is drawn in a fixed box (object-contain), so a new file can't move the layout */
+  logos: { main: string; gaming: string; office: string; footer: string };
 };

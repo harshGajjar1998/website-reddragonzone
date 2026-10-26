@@ -27,7 +27,7 @@ import { layout, placed } from "./layout";
 export type SiteContent = {
   /** Absolute site address without a trailing slash, for the sitemap, canonical links and structured data */
   siteUrl: string;
-  seo: { title: string; description: string };
+  seo: { title: string; description: string; favicon: string };
   chrome: ChromeContent;
   home: HomeContent;
   gaming: GamingContent;
@@ -62,7 +62,7 @@ function adapt(b: CmsBundle): SiteContent {
 
   return {
     siteUrl: (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, ""),
-    seo: { title: b.site.settings.title, description: b.site.settings.description },
+    seo: { title: b.site.settings.title, description: b.site.settings.description, favicon: b.site.settings.favicon_url },
     chrome: chrome(b, home.community),
     home,
     gaming: gamingContent(b, products, dims),
@@ -438,6 +438,12 @@ function chrome(b: CmsBundle, community: HomeContent["community"]): ChromeConten
       href && SOCIAL_NETWORKS[key] ? [{ ...SOCIAL_NETWORKS[key], href }] : [],
     ),
     community,
+    logos: {
+      main: settings.logo_url || "/brand/redragon-logo.png",
+      gaming: settings.gaming_logo_url || "/brand/redragon-logo-gaming.png",
+      office: settings.office_logo_url || "/brand/redragon-logo-office.png",
+      footer: settings.footer_logo_url || "/brand/redragon-logo-dragon.png",
+    },
   };
 }
 

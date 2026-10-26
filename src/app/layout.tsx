@@ -13,7 +13,13 @@ import { getContent } from "@/lib/cms";
 /** Site title and description from the CMS (Settings & SEO); pages override them. */
 export async function generateMetadata(): Promise<Metadata> {
   const { seo, siteUrl } = await getContent();
-  return { metadataBase: new URL(siteUrl), title: seo.title, description: seo.description };
+  return {
+    metadataBase: new URL(siteUrl),
+    title: seo.title,
+    description: seo.description,
+    // Browser icon from Settings & SEO; app/favicon.ico otherwise
+    ...(seo.favicon ? { icons: { icon: seo.favicon } } : {}),
+  };
 }
 
 /** Scale factor for the 1440px desktop canvas (used by the `zoom` rule in globals.css). Runs before first paint. */

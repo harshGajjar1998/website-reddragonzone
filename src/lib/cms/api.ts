@@ -95,6 +95,8 @@ export type CmsBundle = {
       title: Str;
       description: Str;
       logo_url: Str;
+      gaming_logo_url?: Str;
+      office_logo_url?: Str;
       footer_logo_url: Str;
       favicon_url: Str;
       footer_text: Str;
