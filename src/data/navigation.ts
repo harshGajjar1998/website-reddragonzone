@@ -208,7 +208,7 @@ export const megaMenus: Record<string, MegaMenu> = {
     gridTop: 84,
     tileWidth: 390,
     tileHeight: 152,
-    columns: 2,
+    columns: 3,
     tiles: [
       {
         label: "Manuals & Software's",
@@ -226,6 +226,14 @@ export const megaMenus: Record<string, MegaMenu> = {
         labelY: 64,
         labelAlign: "left",
         images: [{ src: "/images/nav/support-where-to-buy.png", x: 14, y: 7, w: 192, h: 139 }],
+      },
+      {
+        label: "Press & Awards",
+        href: "/press-and-awards",
+        labelX: 229,
+        labelY: 64,
+        labelAlign: "left",
+        images: [{ src: "/images/nav/support-press.png", x: 14, y: 7, w: 192, h: 139 }],
       },
     ],
   },
@@ -332,6 +340,7 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: "Need Help?", href: "/support" },
       { label: "Download", href: "/support/download" },
+      { label: "Press & Awards", href: "/press-and-awards" },
     ],
   },
   {

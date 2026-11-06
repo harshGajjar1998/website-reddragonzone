@@ -1,13 +1,15 @@
 import Image from "next/image";
+import ProductActions from "@/components/product/ProductActions";
+import ProductPointers from "@/components/product/ProductPointers";
 import { ButtonLink } from "@/components/ui/Button";
-import type { FeaturedHero as FeaturedHeroData } from "@/data/gaming";
+import type { FeaturedHero as FeaturedHeroData, GamingProduct } from "@/data/gaming";
 
 // API: dynamic data – featured product banner (via props)
 /**
  * Featured product hero ("TECHNICAL SPECIFICATIONS", 1440×688 below the header):
  * dark gradient, spotlight panel, outlined model name, product render + thumbnails.
  */
-export default function FeaturedHero({ hero, name }: { hero: FeaturedHeroData; name: string }) {
+export default function FeaturedHero({ hero, product }: { hero: FeaturedHeroData; product: GamingProduct }) {
   return (
     // Desktop only – on mobile the page opens with the product overview instead
     <section className="relative hidden overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071] to-[78.646%] lg:block">
@@ -55,19 +57,23 @@ export default function FeaturedHero({ hero, name }: { hero: FeaturedHeroData; n
         <div className="absolute left-[120px] top-[173px] flex flex-col items-start text-white">
           <p className="font-lato text-[20px] leading-normal text-white/80">{hero.eyebrow}</p>
           <h1 className="mt-2 font-lato text-[40px] font-black leading-normal whitespace-nowrap">
-            <span className="sr-only">{name} – </span>
+            <span className="sr-only">{product.name} – </span>
             {hero.title}
           </h1>
           <p className="mt-2 w-[592px] font-lato text-[16px] font-light leading-[1.5] text-white/80">
             {hero.description}
           </p>
-          <ButtonLink
-            href="#features"
-            chevron
-            className="mt-[33px] px-7 py-[14.5px] font-lato text-[16px] font-semibold leading-normal"
-          >
-            More details
-          </ButtonLink>
+          <div className="mt-6 flex items-center gap-4">
+            <ButtonLink
+              href="#features"
+              chevron
+              className="px-7 py-[14.5px] font-lato text-[16px] font-semibold leading-normal"
+            >
+              More details
+            </ButtonLink>
+            <ProductActions product={product} dark />
+          </div>
+          <ProductPointers product={product} dark className="mt-5 w-[640px] flex-row flex-wrap gap-x-6 gap-y-3" />
         </div>
       </div>
     </section>

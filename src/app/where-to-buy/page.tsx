@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { Suspense } from "react";
 import CenteredHeading from "@/components/gaming/CenteredHeading";
 import CommunitySection from "@/components/home/CommunitySection";
 import StoreFinder from "@/components/pages/StoreFinder";
@@ -22,9 +23,12 @@ export default function WhereToBuyPage() {
       </section>
 
       <section className="bg-white">
-        <div className="page-frame flex min-h-[350px] flex-col items-center px-4 pt-14 pb-14 lg:px-20 lg:pt-[88px] lg:pb-[88px]">
+        <div className="page-frame pt-14 pb-14 lg:pt-[72px] lg:pb-[72px]">
           <CenteredHeading title="WHERE TO BUY" subtitle="Locate authorized stores for individual purchases" />
-          <StoreFinder />
+          {/* Reads ?product= from the URL, so it renders on the client */}
+          <Suspense>
+            <StoreFinder />
+          </Suspense>
         </div>
       </section>
 

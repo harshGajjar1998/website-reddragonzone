@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
-import { downloads, supportTiles, type Download, type SupportTile } from "@/data/pages";
+import { downloads, supportSearchHref, supportTiles, type Download, type SupportTile } from "@/data/pages";
 
 const PAGE = 8;
-const TILE_BG = "/images/gaming/categories/tile-bg.png";
+const TILE_BG = "/images/pages/support/tile-bg.png";
 
 function SearchBox({
   value,
@@ -65,8 +67,8 @@ function Tile({ tile, active, onSelect }: { tile: SupportTile; active: boolean; 
         <Image
           src={TILE_BG}
           alt=""
-          width={3000}
-          height={2000}
+          width={960}
+          height={600}
           sizes="720px"
           className="absolute left-0 top-[-50px] h-[300px] max-w-none object-cover opacity-20"
           style={{ width: tile.width + 16 }}
@@ -133,8 +135,8 @@ function MobileTile({ tile, active, onSelect }: { tile: SupportTile; active: boo
       <Image
         src={TILE_BG}
         alt=""
-        width={3000}
-        height={2000}
+        width={960}
+        height={600}
         sizes="342px"
         className="absolute left-0 top-0 h-[154px] w-[342px] max-w-none object-cover opacity-20"
       />
@@ -170,24 +172,24 @@ function MobileDownloadCard({ item }: { item: Download }) {
   return (
     <li className="flex flex-col bg-[#f6f6f6] p-5 lg:hidden">
       <div className="flex items-start justify-between gap-4">
-        <p className="font-lexend uppercase text-ink">
+        <Link href={supportSearchHref(item.slug)} className="font-lexend uppercase text-ink">
           <span className="block text-[16px] font-semibold leading-5">{item.name.slice(0, split)}</span>
           <span className="mt-1 block text-[14px] font-medium leading-[18px]">{item.name.slice(split + 1)}</span>
-        </p>
+        </Link>
         <p className="font-lexend text-[11px] uppercase leading-[13px] text-ink">{item.keywords}</p>
       </div>
       <div className="relative mt-4 h-[200px] w-full">
         <Image src={item.image.src} alt={item.name} fill sizes="(max-width: 640px) 80vw, 302px" className="object-contain" />
       </div>
       <div className="mt-4 flex gap-3">
-        <a href={item.software} className={action}>
+        <Link href={supportSearchHref(item.slug, "software")} className={action}>
           <Image src="/icons/pages/download.svg" alt="" width={20} height={20} />
           Software
-        </a>
-        <a href={item.manual} className={action}>
+        </Link>
+        <Link href={supportSearchHref(item.slug, "manual")} className={action}>
           <Image src="/icons/pages/download.svg" alt="" width={20} height={20} />
           Manual
-        </a>
+        </Link>
       </div>
     </li>
   );
@@ -198,9 +200,12 @@ function DownloadCard({ item }: { item: Download }) {
   const link = "flex items-center gap-1 font-lexend-deca text-[14px] font-medium uppercase tracking-[1px] text-[#e60012] hover:underline";
   return (
     <li className="relative hidden h-[384px] w-[308px] bg-[#f6f6f6] outline outline-[1.2px] outline-offset-[-1.2px] outline-white/50 lg:block">
-      <p className="absolute left-4 top-6 w-32 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] whitespace-pre-wrap text-ink">
+      <Link
+        href={supportSearchHref(item.slug)}
+        className="absolute left-4 top-6 w-32 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] whitespace-pre-wrap text-ink hover:underline"
+      >
         {item.name}
-      </p>
+      </Link>
       <p className="absolute right-4 top-6 font-lexend text-[12px] uppercase leading-[1.2] text-ink">{item.keywords}</p>
       <div className="absolute left-[17px] w-[274px] overflow-hidden" style={{ top: image.box.top, height: image.box.h }}>
         {image.crop ? (
@@ -216,20 +221,21 @@ function DownloadCard({ item }: { item: Download }) {
           <Image src={image.src} alt={item.name} fill sizes="274px" className="object-cover" />
         )}
       </div>
-      <a href={item.software} className={`${link} absolute left-6 top-[336px]`}>
+      <Link href={supportSearchHref(item.slug, "software")} className={`${link} absolute left-6 top-[336px]`}>
         <Image src="/icons/pages/download.svg" alt="" width={24} height={24} />
         Software
-      </a>
-      <a href={item.manual} className={`${link} absolute left-[194px] top-[336px]`}>
+      </Link>
+      <Link href={supportSearchHref(item.slug, "manual")} className={`${link} absolute left-[194px] top-[336px]`}>
         <Image src="/icons/pages/download.svg" alt="" width={24} height={24} />
         Manual
-      </a>
+      </Link>
     </li>
   );
 }
 
 /** Support page body: hero search, category tiles and the manuals/software grid. */
 export default function SupportCenter() {
+  const router = useRouter();
   const [heroQuery, setHeroQuery] = useState("");
   const [query, setQuery] = useState("");
   const [applied, setApplied] = useState("");
@@ -245,6 +251,11 @@ export default function SupportCenter() {
   );
 
   const toList = () => listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  /** Hero "Find" opens the Firmware & Software Finder results */
+  const findProduct = () => {
+    if (heroQuery.trim()) router.push(supportSearchHref(heroQuery.trim()));
+  };
 
   return (
     <>
@@ -272,12 +283,7 @@ export default function SupportCenter() {
           <SearchBox
             value={heroQuery}
             onChange={setHeroQuery}
-            onSubmit={() => {
-              setQuery(heroQuery);
-              setApplied(heroQuery);
-              setShown(PAGE);
-              toList();
-            }}
+            onSubmit={findProduct}
             placeholder="Search"
             button="Find"
             className="relative mt-[18px]"
@@ -294,12 +300,7 @@ export default function SupportCenter() {
           <SearchBox
             value={heroQuery}
             onChange={setHeroQuery}
-            onSubmit={() => {
-              setQuery(heroQuery);
-              setApplied(heroQuery);
-              setShown(PAGE);
-              toList();
-            }}
+            onSubmit={findProduct}
             placeholder="Search"
             button="Find"
             className="absolute left-20 top-[331px]"
@@ -346,8 +347,8 @@ export default function SupportCenter() {
       </section>
 
       {/* Manuals & software list (Figma "Section 12") */}
-      <section ref={listRef} className="bg-silver scroll-mt-4">
-        <div className="page-frame flex flex-col items-center px-6 pt-12 pb-12 lg:min-h-[1152px] lg:px-20 lg:pt-[72px] lg:pb-10">
+      <section id="products" ref={listRef} className="bg-silver scroll-mt-4">
+        <div className="page-frame flex flex-col items-center px-6 pt-12 pb-12 lg:min-h-[1152px] lg:px-20 lg:pt-[72px] lg:pb-[39px]">
           <div className="flex w-full flex-col gap-3 lg:hidden">
             <h2 className="font-lexend-giga text-[22px] font-bold leading-7 tracking-[-1px] text-[#e60012]">
               Manuals &amp; Software&apos;s
@@ -355,7 +356,7 @@ export default function SupportCenter() {
             <p className="font-lexend-exa text-[26px] font-medium leading-[31px] text-ink">Features Products</p>
           </div>
           <div className="relative hidden h-[77px] w-[624px] lg:block">
-            <h2 className="absolute left-0 top-0 font-lexend-giga text-[48px] font-bold leading-[1.2] tracking-[-3.84px] whitespace-nowrap text-[#e60012]/50 [text-shadow:0_4px_4px_rgb(0_0_0/0.15)]">
+            <h2 className="absolute left-0 top-0 font-lexend-giga text-[48px] font-bold leading-[1.2] tracking-[-3.84px] whitespace-nowrap text-[#e60012]/80 [text-shadow:0_4px_4px_rgb(0_0_0/0.15)]">
               Manuals &amp; Software&apos;s
             </h2>
             <p className="absolute left-[132px] top-[37px] font-lexend-exa text-[32px] font-medium leading-[1.2] whitespace-nowrap text-ink">

@@ -392,6 +392,13 @@ export type FeaturedDetail = {
   mobileExploded?: string;
 };
 
+export type ProductSpecs = {
+  /** Lines under "Dimensions" */
+  dimensions: string[];
+  /** Titled lists under "Technical Specifications" */
+  technical: { title: string; items: string[] }[];
+};
+
 export type GamingProduct = {
   /** Defaults to "gaming" */
   range?: ProductRange;
@@ -416,6 +423,8 @@ export type GamingProduct = {
   modules?: { label: string; href?: string }[];
   colors?: { name: string; hex: string }[];
   details?: { title: string; body: string }[];
+  /** Structured "Specifications" panel content; see productSpecs() in data/productInfo.ts */
+  specs?: ProductSpecs;
   keyFeatures?: {
     description: string;
     hero: { src: string; width: number; height: number; crop?: Art["crop"] };

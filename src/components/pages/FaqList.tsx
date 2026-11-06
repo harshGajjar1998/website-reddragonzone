@@ -21,9 +21,9 @@ export default function FaqList({ faqs, defaultOpen = 1 }: { faqs: Faq[]; defaul
               aria-expanded={isOpen}
               aria-controls={`faq-${i}`}
               onClick={() => setOpen(isOpen ? null : i)}
-              className="flex min-h-[72px] w-full cursor-pointer items-center justify-between gap-3 px-5 py-5 text-left lg:min-h-[92.8px] lg:gap-2 lg:px-8 lg:py-8"
+              className="flex min-h-[72px] w-full cursor-pointer items-center justify-between gap-3 px-5 py-5 text-left lg:min-h-[92.8px] lg:gap-0 lg:px-8 lg:py-4"
             >
-              <span className="font-lexend-deca text-[16px] leading-[1.5] tracking-[-0.26px] text-black lg:w-[624px] lg:text-[16.5px] lg:leading-[28.8px]">
+              <span className="font-lexend-deca text-[16px] leading-[1.5] tracking-[-0.26px] text-black lg:w-[633px] lg:shrink-0 lg:text-[16.5px] lg:leading-[28.8px]">
                 {f.q}
               </span>
               <Image

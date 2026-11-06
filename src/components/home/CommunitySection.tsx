@@ -1,20 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import FormFeedback from "@/components/ui/FormFeedback";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { communityImages } from "@/data/home";
+import { useNewsletterForm } from "@/lib/forms";
 
 /** Figma "Section 6" (top half) – Esports community newsletter sign-up. */
 export default function CommunitySection() {
-  const [submitted, setSubmitted] = useState(false);
-
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: connect to the newsletter / CRM endpoint
-    setSubmitted(true);
-  }
+  const { feedback, sending, onSubmit, onChange, invalid } = useNewsletterForm();
 
   return (
     <section className="bg-[linear-gradient(180deg,#727071_0%,#454344_100%)] lg:bg-[linear-gradient(90deg,#727071_0%,#454344_100%)]">
@@ -26,25 +21,29 @@ export default function CommunitySection() {
           The best players in the world choose Redragon because every millisecond determines victory. Join the
           vanguard division.
         </p>
-        <form onSubmit={onSubmit} className="mt-6 flex gap-3">
+        <form noValidate onSubmit={onSubmit} onChange={onChange} className="mt-6 flex gap-3">
           <label htmlFor="community-email-mobile" className="sr-only">
             Email address
           </label>
           <input
             id="community-email-mobile"
+            name="email"
             type="email"
             required
+            aria-invalid={invalid || undefined}
             placeholder="Enter your email address..."
-            className="h-12 min-w-0 flex-1 rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.36px] text-white outline-none placeholder:text-[12px] placeholder:text-white focus:border-white"
+            className={`h-12 min-w-0 flex-1 rounded-[4px] border bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.36px] text-white outline-none placeholder:text-[12px] placeholder:text-white focus:border-white ${invalid ? "border-[#d32632]" : "border-black"}`}
           />
           <Button
             type="submit"
             chevron
+            disabled={sending}
             className="h-12 w-[118px] shrink-0 font-outfit text-[12px] font-bold leading-normal tracking-[1px]"
           >
-            {submitted ? "Thanks" : "Sign Up"}
+            Sign Up
           </Button>
         </form>
+        {feedback && <FormFeedback feedback={feedback} compact className="mt-3" />}
         {/* API: dynamic data – community images (mobile) */}
         <ul className="mt-6 grid grid-cols-3 gap-4">
           <li className="relative col-span-3 h-[181.5px] overflow-hidden rounded-[6px]">
@@ -77,24 +76,29 @@ export default function CommunitySection() {
             The best players in the world choose Redragon because every millisecond determines
             victory. Join the vanguard division.
           </p>
-          <form onSubmit={onSubmit} className="flex items-start gap-4">
+          <form noValidate onSubmit={onSubmit} onChange={onChange} className="relative flex items-start gap-4">
             <label htmlFor="community-email" className="sr-only">
               Email address
             </label>
             <input
               id="community-email"
+              name="email"
               type="email"
               required
+              aria-invalid={invalid || undefined}
               placeholder="Enter your email address..."
-              className="h-12 w-[271px] rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.48px] text-white outline-none placeholder:text-white focus:border-white"
+              className={`h-12 w-[271px] rounded-[4px] border bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.48px] text-white outline-none placeholder:text-white focus:border-white ${invalid ? "border-[#d32632]" : "border-black"}`}
             />
             <Button
               type="submit"
               chevron
+              disabled={sending}
               className="px-7 py-[14px] font-outfit text-[14px] font-bold leading-normal tracking-[1px]"
             >
-              {submitted ? "Thanks" : "Sign Up"}
+              Sign Up
             </Button>
+            {/* Absolute so a message doesn't change the fixed section height */}
+            {feedback && <FormFeedback feedback={feedback} compact className="absolute top-full right-0 left-0 mt-2" />}
           </form>
         </div>
 

@@ -2,7 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/data/blog";
 
-export function PostMeta({ post }: { post: BlogPost }) {
+type CardPost = Pick<BlogPost, "slug" | "title" | "excerpt" | "readTime"> & {
+  category: string;
+  image: { src: string; bg?: string };
+};
+
+export function PostMeta({ post }: { post: CardPost }) {
   return (
     <div className="flex items-center gap-4">
       <span className="rounded-[2px] bg-[#111] px-2 py-1 font-lexend text-[14px] leading-[1.5] text-white">
@@ -36,8 +41,8 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
 
 // API: dynamic data – blog post (via props)
 /** 416px blog card – 300px image + tag, title, excerpt and button. */
-export default function BlogCard({ post }: { post: BlogPost }) {
-  const href = `/blog/${post.slug}`;
+export default function BlogCard({ post, basePath = "/blog" }: { post: CardPost; basePath?: string }) {
+  const href = `${basePath}/${post.slug}`;
   return (
     <article className="flex w-full flex-col overflow-hidden lg:w-[416px] rounded-[6px] bg-white outline outline-1 outline-[#111]/10">
       <Link
