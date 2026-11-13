@@ -1,15 +1,20 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { getContent } from "@/lib/cms";
+import { useProductRange } from "@/lib/useProductRange";
+import { useChrome } from "./ChromeProvider";
 import FooterLogo from "./FooterLogo";
 import MobileFooter from "./MobileFooter";
 
-export default async function Footer() {
-  const { footerColumns, footerBlurb, socialLinks } = (await getContent()).chrome;
+/** Desktop footer: silver on gaming/shared pages, white on Office pages (Figma Office frames). */
+export default function Footer() {
+  const { footerColumns, footerBlurb, socialLinks } = useChrome();
+  const office = useProductRange() === "office";
   return (
     <>
       <MobileFooter />
-      <footer className="hidden bg-silver-footer lg:block shadow-[inset_0_0_0_1px_#171a21]">
+      <footer className={`site-footer hidden lg:block ${office ? "bg-white" : "bg-silver-footer shadow-[inset_0_0_0_1px_#171a21]"}`}>
         <div className="page-frame flex flex-col gap-16 px-[120px] pt-20 pb-10">
           {/* Top: brand + link columns */}
           <div className="flex items-start gap-12">

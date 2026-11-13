@@ -8,8 +8,9 @@ import ArtImage from "./ArtImage";
  * lead banner (1280×600), three 416×384 feature cards, closing banner (1280×512).
  */
 export default function FeaturedShowcase({ showcase }: { showcase: FeaturedDetail["showcase"] }) {
-  const { banners } = showcase;
-  const mobileBanners = showcase.mobileBanners ?? banners;
+  // Each size falls back to the other when only one pair of banners is set in the CMS
+  const banners = showcase.banners ?? showcase.mobileBanners;
+  const mobileBanners = showcase.mobileBanners ?? showcase.banners;
   return (
     <section id="features" className="bg-silver-mobile overflow-hidden lg:bg-silver">
       {/* Mobile – Figma "Spice detal" screen 2 (394×1379) */}
@@ -61,29 +62,36 @@ export default function FeaturedShowcase({ showcase }: { showcase: FeaturedDetai
       </div>
 
       <div className="page-frame hidden flex-col items-center px-20 pt-14 pb-20 lg:flex">
-        <h2 className="text-center font-lexend-giga text-[40px] font-bold leading-none tracking-[-3.2px] text-[rgba(230,0,18,0.8)]">
-          {showcase.title[0]}
-          <br />
-          {showcase.title[1]}
+        {/* Each line: lead words in ink, last word in red ("Designed for Gamers") */}
+        <h2 className="text-center font-lexend-giga text-[40px] font-bold leading-none tracking-[-3.2px]">
+          {showcase.title.map((line) => {
+            const split = line.lastIndexOf(" ");
+            return (
+              <span key={line} className="block">
+                <span className="text-ink/80">{line.slice(0, split + 1)}</span>
+                <span className="text-[rgba(230,0,18,0.8)]">{line.slice(split + 1)}</span>
+              </span>
+            );
+          })}
         </h2>
         <p className="mt-4 w-[810px] text-center font-lexend-deca text-[20px] font-light leading-[1.4] tracking-[0.6px] text-ink/60">
           {showcase.description}
         </p>
 
         {banners?.top && (
-          <div className="relative mt-12 h-[600px] w-[1280px]">
+          <div className="relative mt-12 h-[600px] w-[1280px] overflow-hidden rounded-2xl">
             <Image src={banners.top} alt="" fill sizes="1280px" className="object-cover" />
           </div>
         )}
 
         <ul className="mt-4 flex gap-4">
           {showcase.cards.map((card) => (
-            <li key={card.title} className="relative h-[384px] w-[416px] overflow-hidden bg-[#f6f6f6]">
+            <li key={card.title} className="relative h-[384px] w-[416px] overflow-hidden rounded-2xl bg-[#f6f6f6]">
               <ArtImage art={card.image} />
-              <h3 className="absolute left-6 top-8 font-lexend text-[20px] font-medium uppercase leading-[1.2] text-ink">
+              <h3 className="absolute left-6 top-8 font-lexend text-[24px] font-medium leading-none text-ink">
                 {card.title}
               </h3>
-              <p className="absolute left-6 top-[68px] font-lexend text-[14px] font-light leading-[1.2] text-ink/75">
+              <p className="absolute left-6 top-[68px] font-lexend text-[16px] font-light leading-none text-ink/75">
                 {card.text}
               </p>
             </li>
@@ -91,7 +99,7 @@ export default function FeaturedShowcase({ showcase }: { showcase: FeaturedDetai
         </ul>
 
         {banners?.bottom && (
-          <div className="relative mt-4 h-[512px] w-[1280px]">
+          <div className="relative mt-4 h-[512px] w-[1280px] overflow-hidden rounded-2xl">
             <Image src={banners.bottom} alt="" fill sizes="1280px" className="object-cover" />
           </div>
         )}

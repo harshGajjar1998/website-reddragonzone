@@ -10,10 +10,10 @@ type CardPost = Pick<BlogPost, "slug" | "title" | "excerpt" | "readTime"> & {
 export function PostMeta({ post }: { post: CardPost }) {
   return (
     <div className="flex items-center gap-4">
-      <span className="rounded-[2px] bg-[#111] px-2 py-1 font-lexend text-[14px] leading-[1.5] text-white">
+      <span className="rounded-[2px] bg-[#111] px-2 py-1 font-lexend text-[12px] leading-[1.5] text-white lg:text-[14px]">
         {post.category}
       </span>
-      <span className="font-lexend text-[14px] leading-[1.5] text-[#111]">{post.readTime}</span>
+      <span className="font-lexend text-[12px] leading-[1.25] text-[#111] lg:text-[14px] lg:leading-[1.5]">{post.readTime}</span>
     </div>
   );
 }
@@ -23,7 +23,7 @@ export function DiscoverMore({ href, rounded = 2 }: { href: string; rounded?: 2 
   return (
     <Link
       href={href}
-      className={`inline-flex h-[45px] w-fit items-center gap-1 border border-[#111] px-6 font-lexend text-[16px] leading-[1.5] text-[#111] transition-colors hover:bg-[#111] hover:text-white lg:h-auto lg:px-4 lg:py-2 ${
+      className={`inline-flex h-[45px] w-fit items-center gap-1 border border-[#111] px-6 font-lexend text-[14px] leading-[1.5] text-[#111] lg:text-[16px] transition-colors hover:bg-[#111] hover:text-white lg:h-auto lg:px-4 lg:py-2 ${
         rounded === 4 ? "rounded-[4px]" : "rounded-[2px]"
       } group`}
     >
@@ -64,12 +64,12 @@ export default function BlogCard({ post, basePath = "/blog" }: { post: CardPost;
         <div className="flex flex-col gap-4">
           <PostMeta post={post} />
           <div className="flex flex-col gap-4 lg:gap-2">
-            <h3 className="font-lexend-deca text-[24px] leading-[29px] text-[#111] lg:leading-[1.39]">
+            <h3 className="font-lexend-deca text-[22px] leading-[1.3] text-[#111] lg:text-[24px] lg:leading-[1.39]">
               <Link href={href} className="hover:text-dragon">
                 {post.title}
               </Link>
             </h3>
-            <p className="font-lexend text-[16px] leading-[1.5] text-[#111]/60">{post.excerpt}</p>
+            <p className="font-lexend text-[15px] leading-[1.5] text-[#111]/60 lg:text-[16px]">{post.excerpt}</p>
           </div>
         </div>
         <DiscoverMore href={href} />

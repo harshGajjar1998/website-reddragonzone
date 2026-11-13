@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export const metadata: Metadata = { title: "Page not found | Redragon" };
 
-/** Figma "404 ERROR" – shown for every unknown URL (and notFound() calls). */
+/** Figma "404 ERROR" – shown for every unknown URL (and notFound() calls). No footer in Figma (`data-hide-footer`). */
 export default function NotFound() {
   return (
-    <section className="relative overflow-hidden bg-black">
+    <section data-hide-footer className="relative overflow-hidden bg-black">
       <Image src="/images/pages/not-found/hero.png" alt="" fill sizes="100vw" preload className="object-cover" />
       <div className="page-frame relative flex h-[600px] flex-col items-center justify-center gap-10 px-4 lg:block lg:h-[800px] lg:px-0">
         <h1 className="text-center text-white lg:absolute lg:left-1/2 lg:top-[199px] lg:-translate-x-1/2">

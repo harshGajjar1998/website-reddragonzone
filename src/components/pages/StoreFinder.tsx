@@ -3,15 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import StillNeedHelp from "@/components/pages/StillNeedHelp";
-import { Button } from "@/components/ui/Button";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { storeCountries, storesForProduct, type CountryStores, type OfflineStore, type OnlineStore } from "@/data/pages";
 
 type Mode = "online" | "offline";
 type Coords = { lat: number; lng: number };
 
-const ICONS = "/images/pages/where-to-buy";
+/** Placeholder photo the CMS mapping uses for stores without one – the card shows "STORE" instead */
+const PLACEHOLDER_PHOTO = "/images/pages/where-to-buy/store-gamers-hub.png";
 
 /** Great-circle distance in km */
 function distanceKm(a: Coords, b: Coords) {
@@ -33,24 +32,73 @@ export function localeCountry(countries: string[] = storeCountries) {
   }
 }
 
+/** Flag emoji for an English country name ("India" → 🇮🇳), or "" when unknown */
+let flagCodes: Map<string, string> | undefined;
+function flagOf(country: string) {
+  try {
+    if (!flagCodes) {
+      flagCodes = new Map();
+      const names = new Intl.DisplayNames(["en"], { type: "region" });
+      for (let a = 65; a <= 90; a++) {
+        for (let b = 65; b <= 90; b++) {
+          const code = String.fromCharCode(a, b);
+          const name = names.of(code);
+          if (name && name !== code) flagCodes.set(name, code);
+        }
+      }
+    }
+    const code = flagCodes.get(country);
+    return code ? String.fromCodePoint(...[...code].map((ch) => 0x1f1a5 + ch.charCodeAt(0))) : "";
+  } catch {
+    return "";
+  }
+}
+
+/** "Redragon India Official Store" → "RI" (logo placeholder) */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter((w) => /^[a-z0-9]/i.test(w))
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+
 /**
- * Where to buy flow (Figma "Where to buy" frames 42:2694 / 42:2803 / 42:2944 / 42:3117):
- * country select + "Find stores near me" → Online / Offline toggle → store list, map, or "No stores found".
- * Also renders the "Still need help?" banner, whose gap above it differs per state in the design.
+ * Where to buy (Figma "Where to buy — ONLINE selected / Retailer results" 3222:1643 and
+ * "Online & Nearby tabs / Revised" 3222:1488): country picker with flag + "Use my location",
+ * Online / Nearby switch, then shop-online cards or the nearby store list with a map.
  */
 // API: dynamic data – stores per country (CMS Stores, via props)
-export default function StoreFinder({ storesByCountry }: { storesByCountry: Record<string, CountryStores> }) {
+export default function StoreFinder({
+  storesByCountry,
+  heading,
+  subtitle,
+}: {
+  storesByCountry: Record<string, CountryStores>;
+  heading: string;
+  subtitle: string;
+}) {
   // The selector lists every country we cover plus any the CMS adds
   const countries = [...new Set([...storeCountries, ...Object.keys(storesByCountry)])].sort();
   // Set when the visitor arrives from a product page's "Where to Buy" button
   const params = useSearchParams();
   const productSlug = params.get("product");
   const productName = params.get("name");
-  const [country, setCountry] = useState("");
+  const [picked, setPicked] = useState("");
   const [mode, setMode] = useState<Mode>("online");
   const [userPos, setUserPos] = useState<Coords | null>(null);
   const [activeStore, setActiveStore] = useState(0);
   const [locating, setLocating] = useState(false);
+  const selectRef = useRef<HTMLSelectElement>(null);
+
+  // Until the visitor picks one, start on their own country when we list it (Figma shows results straight away).
+  // Empty while prerendering; read from the browser locale after hydration.
+  const detected = useSyncExternalStore(
+    noSubscribe,
+    () => localeCountry(countries) ?? "",
+    () => "",
+  );
+  const country = picked || detected;
 
   // API: dynamic data – stores for the chosen country, narrowed to the product when one is set
   const stores = country ? storesForProduct(storesByCountry, productSlug, country) : undefined;
@@ -60,11 +108,11 @@ export default function StoreFinder({ storesByCountry }: { storesByCountry: Reco
   const empty = !!country && list.length === 0;
 
   function pickCountry(c: string) {
-    setCountry(c);
+    setPicked(c);
     setActiveStore(0);
   }
 
-  function nearMe() {
+  function useMyLocation() {
     const fallback = () => {
       setLocating(false);
       const c = localeCountry(countries);
@@ -98,116 +146,142 @@ export default function StoreFinder({ storesByCountry }: { storesByCountry: Reco
     );
   }
 
-  // Gap above the help banner, per Figma state (initial / online / offline / no stores)
-  const helpGap = !country ? "lg:mt-[58px]" : empty ? "lg:mt-[25px]" : mode === "online" ? "lg:mt-[56px]" : "lg:mt-[38px]";
+  function changeLocation() {
+    setUserPos(null);
+    selectRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    selectRef.current?.focus();
+  }
+
+  const flag = country ? flagOf(country) : "";
 
   return (
-    <>
-      <div className="w-full px-4 lg:px-[188px]">
-        {productName && (
-          <p className="mt-6 text-center font-lexend-deca text-[16px] leading-[1.6] text-[#626466]">
-            {/* API: dynamic data – product name */}
-            Showing stores for <span className="font-medium text-ink">{productName}</span>{" "}
-            <Link href="/where-to-buy/" className="text-crimson underline">
-              Show all
-            </Link>
-          </p>
-        )}
-        {/* Country select + Find stores near me */}
-        <div className="mt-8 flex flex-col gap-3 lg:mt-[48px] lg:flex-row lg:gap-[24px]">
-          <label className="relative block w-full lg:w-[704px]">
-            <span className="sr-only">Country</span>
-            <select
-              value={country}
-              onChange={(e) => pickCountry(e.target.value)}
-              className={`h-[54px] w-full cursor-pointer appearance-none rounded-[4px] border border-ink bg-white pr-12 pl-[20px] font-lexend-deca text-[16px] leading-none text-ink outline-none focus-visible:border-crimson lg:text-[20px] ${country ? "uppercase" : ""}`}
-            >
-              <option value="" disabled>
-                Select Country
-              </option>
-              {countries.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            {/* Material keyboard_arrow_down */}
-            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden className="pointer-events-none absolute top-1/2 right-[20px] -translate-y-1/2">
-              <path d="M6.18 7.16 10 10.97l3.82-3.81L15 8.33l-5 5-5-5z" fill="#1D1B20" />
-            </svg>
-          </label>
-          <Button
-            type="button"
-            onClick={nearMe}
-            disabled={locating}
-            className="h-[54px] w-full shrink-0 gap-[8px] px-[32px] font-lexend-deca text-[16px] leading-[normal] font-semibold disabled:cursor-wait lg:w-[336px] lg:text-[20px]"
+    <div className="px-4 lg:px-[130px]">
+      <h2 className="font-lexend-exa text-[24px] font-bold uppercase leading-[1.25] text-[#17191c] lg:text-[29px]">{heading}</h2>
+      <p className="mt-3 font-lexend-deca text-[15px] leading-[19px] text-[#6a6e74]">{subtitle}</p>
+      {productName && (
+        <p className="mt-3 font-lexend-deca text-[15px] leading-[19px] text-[#6a6e74]">
+          {/* API: dynamic data – product name */}
+          Showing stores for <span className="font-medium text-[#17191c]">{productName}</span>{" "}
+          <Link href="/where-to-buy/" className="font-semibold text-[#e11a2b] underline">
+            Show all
+          </Link>
+        </p>
+      )}
+
+      {/* Country picker + Use my location */}
+      <div className="mt-[29px] flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-[25px]">
+        <label className="relative block w-full lg:w-[740px]">
+          <span className="sr-only">Country</span>
+          {flag && (
+            <span aria-hidden className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 font-['Twemoji_Country_Flags',sans-serif] text-[17px] leading-none">
+              {flag}
+            </span>
+          )}
+          <select
+            ref={selectRef}
+            value={country}
+            onChange={(e) => pickCountry(e.target.value)}
+            className={`h-14 w-full cursor-pointer appearance-none rounded-[5px] border border-[#c8ccd2] bg-white pr-12 font-lexend-deca text-[17px] font-medium leading-none text-[#17191c] outline-none focus-visible:border-[#e11a2b] ${
+              flag ? "pl-[52px]" : "pl-5"
+            }`}
           >
-            <Image src={`${ICONS}/icon-location.svg`} alt="" width={24} height={24} />
-            {locating ? "Locating…" : "Find stores near me"}
-          </Button>
-        </div>
-
-        {country && (
-          <>
-            {/* Online / Offline toggle between two hairlines */}
-            <div className="mt-8 flex items-center justify-center gap-[16px] lg:mt-[48px]">
-              <span aria-hidden className="hidden h-[1.5px] flex-1 rounded-full bg-[#e7e7e7] lg:block" />
-              <div role="tablist" aria-label="Shopping type" className="flex w-full max-w-[344px] shrink-0 gap-[4px] overflow-clip rounded-[4px] border border-[#d6d6d6] bg-white p-[3px] lg:w-[344px]">
-                {(["online", "offline"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    role="tab"
-                    aria-selected={mode === m}
-                    onClick={() => {
-                      setMode(m);
-                      setActiveStore(0);
-                    }}
-                    className={`flex h-[42px] min-w-px flex-1 cursor-pointer items-center justify-center rounded-[2px] font-lexend-deca text-[16px] leading-[normal] whitespace-nowrap transition-colors ${
-                      mode === m ? "bg-crimson font-semibold text-white" : "bg-white text-ink hover:bg-[#f6f6f6]"
-                    }`}
-                  >
-                    {m === "online" ? "Online Shopping" : "Offline Shopping"}
-                  </button>
-                ))}
-              </div>
-              <span aria-hidden className="hidden h-[1.5px] flex-1 rounded-full bg-[#e7e7e7] lg:block" />
-            </div>
-
-            <div aria-live="polite" className="mt-10 lg:mt-[48px]">
-              {empty ? (
-                <NoStores />
-              ) : mode === "online" ? (
-                <>
-                  <ResultsHeading title={`Stores in ${country}`} uppercase subtitle="Find official stores and trusted retail partners in your country." />
-                  <ul className="mt-6 flex flex-col gap-[16px] lg:mt-[32px]">
-                    {online.map((s) => (
-                      <OnlineCard key={s.name} store={s} />
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <>
-                  <ResultsHeading title="Find physical retailers" subtitle="Map and store listings for this product" />
-                  <div className="mt-6 flex flex-col gap-[16px] lg:flex-row lg:items-start">
-                    <ul className="flex flex-col gap-[13px] lg:w-[632px] lg:shrink-0">
-                      {offline.map((s, i) => (
-                        <OfflineCard key={s.name} store={s} index={i} active={i === activeStore} onSelect={() => setActiveStore(i)} />
-                      ))}
-                    </ul>
-                    <StoreMap store={offline[activeStore] ?? offline[0]} />
-                  </div>
-                </>
-              )}
-            </div>
-          </>
-        )}
+            <option value="" disabled>
+              Select your country
+            </option>
+            {countries.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden className="pointer-events-none absolute top-1/2 right-[22px] -translate-y-1/2">
+            <path d="M6.18 7.16 10 10.97l3.82-3.81L15 8.33l-5 5-5-5z" fill="#6a6e74" />
+          </svg>
+        </label>
+        <button
+          type="button"
+          onClick={useMyLocation}
+          disabled={locating}
+          className="w-fit cursor-pointer font-lexend-deca text-[15px] font-semibold leading-[19px] whitespace-nowrap text-[#e11a2b] hover:underline disabled:cursor-wait"
+        >
+          <span aria-hidden>⌖&nbsp;&nbsp;</span>
+          {locating ? "Locating…" : "Use my location"}
+        </button>
       </div>
 
-      <StillNeedHelp enquiry="Where to buy" className={`mx-4 mt-12 ${helpGap}`} />
-    </>
+      {/* Online / Nearby switch */}
+      <div role="tablist" aria-label="Shopping type" className="mt-9 flex h-[50px] w-full max-w-[386px] gap-[7px] rounded-[9px] bg-[#f6f7f9] p-[5px]">
+        {(["online", "offline"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            role="tab"
+            aria-selected={mode === m}
+            onClick={() => {
+              setMode(m);
+              setActiveStore(0);
+            }}
+            className={`flex h-10 flex-1 cursor-pointer items-center justify-center rounded-[7px] font-lexend-deca text-[15px] leading-[19px] whitespace-nowrap transition-colors ${
+              mode === m ? "bg-[#e11a2b] font-semibold text-white" : "font-medium text-[#17191c] hover:bg-white"
+            }`}
+          >
+            <span aria-hidden>{m === "online" ? "◎" : "⌖"}&nbsp;&nbsp;&nbsp;</span>
+            {m === "online" ? "Online" : "Nearby"}
+          </button>
+        ))}
+      </div>
+
+      {country && (
+        <div aria-live="polite" className="mt-[34px]">
+          {mode === "online" ? (
+            <>
+              <ResultsHeading title="Shop online" subtitle={`Verified online shopping partners for ${country}`} />
+              {empty ? (
+                <NoStores />
+              ) : (
+                <ul className="mt-[33px] grid gap-[23px] md:grid-cols-2 lg:grid-cols-3">
+                  {online.map((s) => (
+                    <OnlineCard key={s.name} store={s} />
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-end justify-between gap-3 lg:mr-[62px]">
+                <ResultsHeading title="Nearby stores" subtitle={`Showing stores near ${country}`} />
+                <button
+                  type="button"
+                  onClick={changeLocation}
+                  className="mb-5 cursor-pointer font-lexend-deca text-[13px] font-semibold leading-4 text-[#e11a2b] hover:underline"
+                >
+                  <span aria-hidden>✎&nbsp;&nbsp;</span>Change location
+                </button>
+              </div>
+              {empty ? (
+                <NoStores />
+              ) : (
+                <div className="mt-6 flex flex-col gap-[13px] lg:flex-row lg:items-start lg:gap-[22px]">
+                  <ul className="flex flex-col gap-[13px] lg:w-[770px] lg:shrink-0">
+                    {offline.map((s, i) => (
+                      <OfflineCard key={s.name} store={s} index={i} active={i === activeStore} onSelect={() => setActiveStore(i)} />
+                    ))}
+                  </ul>
+                  <StoreMap
+                    store={offline[activeStore] ?? offline[0]}
+                    className="h-[300px] w-full border border-[#e4e5e8] lg:sticky lg:top-24 lg:h-[362px] lg:w-[388px] lg:shrink-0"
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
+
+const noSubscribe = () => () => {};
 
 /** Fill in live distances once we have the shopper's position, nearest first */
 function withDistances(stores: OfflineStore[], pos: Coords | null) {
@@ -217,56 +291,70 @@ function withDistances(stores: OfflineStore[], pos: Coords | null) {
     .sort((a, b) => a.distanceKm - b.distanceKm);
 }
 
-function ResultsHeading({ title, subtitle, uppercase }: { title: string; subtitle: string; uppercase?: boolean }) {
+function ResultsHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="flex flex-col gap-[8px] lg:w-[418px]">
-      <h3 className={`font-lexend-exa text-[22px] leading-[1.2] font-bold text-dragon lg:text-[27px] ${uppercase ? "uppercase" : ""}`}>{title}</h3>
-      <p className="font-lexend text-[14px] leading-[1.13] text-[#6f7279]">{subtitle}</p>
+    <div className="flex flex-col gap-[7px]">
+      <h3 className="font-lexend-exa text-[23px] font-bold uppercase leading-[1.25] text-[#17191c] lg:text-[24px]">{title}</h3>
+      <p className="font-lexend-deca text-[14px] leading-[18px] text-[#6a6e74]">{subtitle}</p>
     </div>
   );
 }
 
-/** Online retailer row (Figma "Frame 156/157", 1064×128) */
+/** Shop-online card (Figma "RDZ / Online retailer card", 378×310) */
 function OnlineCard({ store }: { store: OnlineStore }) {
-  const official = store.type === "Official store";
   return (
-    <li
-      className={`flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[8px] border border-[#e6e7ea] p-3 lg:h-[128px] lg:flex-nowrap lg:gap-0 lg:py-0 lg:pr-[47px] lg:pl-[15px] ${
-        official ? "bg-[#f6f6f6]" : "bg-white"
-      }`}
-    >
-      <div className={`flex h-[68px] w-[96px] shrink-0 items-center justify-center overflow-clip rounded-[4px] lg:h-[96px] lg:w-[136px] ${official ? "" : "bg-white"}`}>
-        {store.logo ? (
-          <Image
-            src={store.logo.src}
-            alt={store.name}
-            width={store.logo.width}
-            height={store.logo.height}
-            sizes="105px"
-            className="ml-px h-[50px] w-[73px] object-contain lg:h-[72px] lg:w-[105px]"
-          />
-        ) : (
-          <span className="px-2 text-center font-lexend text-[14px] font-medium leading-[1.2] text-[#1b1b1f]">{store.name}</span>
-        )}
+    <li className="flex min-h-[310px] flex-col rounded-[9px] border border-[#e4e5e8] bg-white p-[22px] pt-6">
+      <div className="flex items-start gap-4">
+        <div className="flex h-[72px] w-[75px] shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-[#f6f7f9]">
+          {store.logo ? (
+            <Image
+              src={store.logo.src}
+              alt=""
+              width={store.logo.width}
+              height={store.logo.height}
+              sizes="64px"
+              className="h-[52px] w-[60px] object-contain"
+            />
+          ) : (
+            <span aria-hidden className="font-lexend-deca text-[25px] font-semibold leading-[31px] text-[#e11a2b]">
+              {initials(store.name)}
+            </span>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-col items-start gap-[11px] pt-[5px]">
+          <p className="font-lexend-deca text-[17px] font-semibold leading-[21px] text-[#17191c]">{store.name}</p>
+          <TypeBadge>{store.type === "Official store" ? "Official store" : "Online retailer"}</TypeBadge>
+        </div>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col items-start gap-[12px] lg:ml-[24px] lg:w-[230px] lg:flex-none lg:translate-y-[0.5px]">
-        <p className="font-lexend text-[18px] leading-[normal] font-medium text-[#1b1b1f] lg:text-[20px] lg:whitespace-nowrap">{store.name}</p>
-        <Badge>{store.type}</Badge>
+      {store.description && <p className="mt-7 font-lexend-deca text-[12px] leading-[15px] text-[#6a6e74]">{store.description}</p>}
+      <div className="mt-auto pt-6">
+        <hr className="border-0 border-t border-[#e4e5e8]" />
+        <div className="mt-[18px] flex items-end justify-between gap-3">
+          <div className="min-h-[37px]">
+            {store.categories && (
+              <>
+                <p className="font-lexend-deca text-[10px] font-semibold uppercase leading-3 text-[#6a6e74]">Explore products</p>
+                <p className="mt-2.5 font-lexend-deca text-[12px] font-medium leading-[15px] whitespace-pre text-[#17191c]">
+                  {store.categories.join("  ·  ")}
+                </p>
+              </>
+            )}
+          </div>
+          <a
+            href={store.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-[-1px] flex h-[43px] w-[163px] shrink-0 items-center justify-center rounded-[5px] bg-[#e11a2b] font-lexend-deca text-[12px] font-semibold uppercase leading-[15px] whitespace-pre text-white transition-colors hover:bg-[#a3121a]"
+          >
+            Visit store  ↗<span className="sr-only"> (opens {store.name} in a new tab)</span>
+          </a>
+        </div>
       </div>
-      <a
-        href={store.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex h-[42px] w-full items-center justify-center gap-[8px] rounded-[2px] bg-crimson px-[24px] font-lexend-deca text-[16px] leading-[normal] font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#a3121a] lg:ml-auto lg:w-auto"
-      >
-        Shop Now
-        <Image src={`${ICONS}/icon-arrow-up-right.svg`} alt="" width={24} height={24} />
-        <span className="sr-only">(opens {store.name} in a new tab)</span>
-      </a>
     </li>
   );
 }
 
+/** Store type tag (product page Where to Buy panel) */
 export function Badge({ children, tight, className = "" }: { children: string; tight?: boolean; className?: string }) {
   return (
     <span className={`inline-flex overflow-clip rounded-[5px] bg-[#fff0f1] px-[12px] ${tight ? "py-[5px]" : "py-[6px]"} font-lexend text-[12px] leading-[normal] font-medium whitespace-nowrap text-[#e01a2d] ${className}`}>
@@ -275,48 +363,63 @@ export function Badge({ children, tight, className = "" }: { children: string; t
   );
 }
 
+/** Store type tag on the Where to Buy cards (Figma "Store type badge") */
+function TypeBadge({ children }: { children: string }) {
+  return (
+    <span className="inline-flex h-7 items-center rounded-[5px] bg-[#fff0f1] px-2.5 font-lexend-deca text-[11px] leading-[14px] font-medium whitespace-nowrap text-[#e11a2b]">
+      {children}
+    </span>
+  );
+}
+
 /**
- * Physical store row (Figma "Nearby store", 632×112). Desktop pins every element at its
+ * Nearby store row (Figma "Nearby store", 770×112). Desktop pins every element at its
  * design offset; below lg the wrappers become a normal flex layout.
  */
 function OfflineCard({ store, index, active, onSelect }: { store: OfflineStore; index: number; active: boolean; onSelect: () => void }) {
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`;
+  const photo = store.image && store.image !== PLACEHOLDER_PHOTO ? store.image : "";
   return (
     <li
       onClick={onSelect}
-      className="relative flex cursor-pointer gap-3 rounded-[8px] border border-[#e4e5e8] bg-white p-3 transition-colors hover:border-crimson/40 lg:block lg:h-[112px] lg:p-0"
+      className={`relative flex cursor-pointer gap-3 rounded-[8px] border bg-white p-3 transition-colors lg:block lg:h-[112px] lg:p-0 ${
+        active ? "border-[#e11a2b]/50" : "border-[#e4e5e8] hover:border-[#e11a2b]/30"
+      }`}
     >
-      {/* Store logo placeholder + map number */}
-      <div className="relative h-[82px] w-[95px] shrink-0 lg:absolute lg:top-[14px] lg:left-[15px]">
-        <div className="size-full overflow-hidden rounded-[4px]">
-          <Image src={store.image} alt="" width={516} height={387} sizes="95px" className="size-full object-cover" />
-        </div>
+      <div className="relative flex h-[82px] w-[95px] shrink-0 items-center justify-center overflow-hidden rounded-[6px] bg-[#f6f7f9] lg:absolute lg:top-[15px] lg:left-4">
+        {photo ? (
+          <Image src={photo} alt="" width={516} height={387} sizes="95px" className="size-full object-cover" />
+        ) : (
+          <span aria-hidden className="font-lexend-deca text-[13px] font-semibold leading-4 text-[#e11a2b]">
+            STORE
+          </span>
+        )}
       </div>
-      <span className="absolute top-[5px] left-[7px] flex size-[28px] items-center justify-center rounded-full bg-[#e11a2b] font-lexend-deca text-[12px] leading-none font-semibold text-white">
+      <span className="absolute top-1.5 left-2 flex size-7 items-center justify-center rounded-full bg-[#e11a2b] font-lexend-deca text-[12px] leading-none font-semibold text-white">
         {String(index + 1).padStart(2, "0")}
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 lg:contents">
-        <div className="flex flex-col items-start gap-1 lg:contents">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 lg:contents">
           <button
             type="button"
             onClick={onSelect}
             aria-pressed={active}
-            className="cursor-pointer text-left font-lexend-deca text-[17px] leading-[normal] font-semibold text-[#17191c] lg:absolute lg:top-[17px] lg:left-[127px] lg:whitespace-nowrap"
+            className="cursor-pointer text-left font-lexend-deca text-[17px] leading-[21px] font-semibold text-[#17191c] lg:absolute lg:top-[18px] lg:left-[128px] lg:whitespace-nowrap"
           >
             {store.name}
           </button>
-          <Badge tight className="lg:absolute lg:top-[14px] lg:left-[297px]">{store.type}</Badge>
+          <span className="font-lexend-deca text-[11px] leading-[14px] font-medium text-[#666b73] lg:absolute lg:top-5 lg:left-[298px]">{store.type}</span>
         </div>
-        <p className="font-lexend-deca text-[12px] leading-[18px] text-[#666b73] lg:absolute lg:top-[49.5px] lg:left-[127px] lg:whitespace-nowrap">
+        <p className="font-lexend-deca text-[12px] leading-[18px] text-[#666b73] lg:absolute lg:top-[49px] lg:left-[128px] lg:whitespace-nowrap">
           {store.address[0]}
           <br />
           {store.address[1]}
         </p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 lg:contents">
           {store.distanceKm !== undefined && (
-            <p className="font-lexend-deca text-[14px] leading-[normal] font-medium whitespace-nowrap text-[#17191c] lg:absolute lg:top-[29px] lg:left-[502px]">
-              ⌖ {store.distanceKm} km
+            <p className="font-lexend-deca text-[14px] leading-[18px] font-medium whitespace-pre text-[#17191c] lg:absolute lg:top-[30px] lg:left-[602px]">
+              ⌖  {store.distanceKm} km
             </p>
           )}
           <a
@@ -324,10 +427,9 @@ function OfflineCard({ store, index, active, onSelect }: { store: OfflineStore; 
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-[4px] font-lexend-deca text-[12px] leading-[normal] font-semibold whitespace-nowrap text-[#e11a2b] hover:underline lg:absolute lg:top-[61px] lg:left-[502px]"
+            className="font-lexend-deca text-[12px] leading-[15px] font-semibold whitespace-nowrap text-[#e11a2b] hover:underline lg:absolute lg:top-[62px] lg:left-[602px]"
           >
-            Get directions
-            <Image src={`${ICONS}/icon-external.svg`} alt="" width={20} height={20} />
+            Get directions ↗
           </a>
         </div>
       </div>
@@ -335,7 +437,7 @@ function OfflineCard({ store, index, active, onSelect }: { store: OfflineStore; 
   );
 }
 
-/** Google Maps embed of the selected store (Figma "Map placeholder / developer integration", 416×362, r9) */
+/** Google Maps embed of the selected store (Figma "Map placeholder / developer integration", r9) */
 export function StoreMap({
   store,
   className = "h-[300px] w-full lg:sticky lg:top-24 lg:h-[362px] lg:w-[416px] lg:shrink-0",
@@ -346,7 +448,7 @@ export function StoreMap({
   if (!store) return null;
   const q = encodeURIComponent(`${store.name}, ${store.address.join(", ")}`);
   return (
-    <div className={`overflow-hidden rounded-[9px] bg-[#e5e3df] ${className}`}>
+    <div className={`overflow-hidden rounded-[9px] bg-[#eef1f0] ${className}`}>
       <iframe
         key={`${store.lat},${store.lng}`}
         title={`Map showing ${store.name}`}
@@ -360,23 +462,18 @@ export function StoreMap({
   );
 }
 
-/** Figma "NO STORES FOUND" state (42:3117) */
+/** "NO STORES FOUND" state (Figma 42:3117) */
 function NoStores() {
   return (
-    <div className="flex flex-col items-center text-center">
-      <div className="flex flex-col items-center gap-[8px]">
-        <h3 className="font-lexend-exa text-[22px] leading-[1.2] font-bold text-dragon uppercase lg:text-[27px]">No stores found</h3>
-        <p className="font-lexend text-[14px] leading-[1.13] text-[#6f7279]">
-          Search results when no retail partner is available for the selected country.
-        </p>
-      </div>
+    <div className="mt-8 flex flex-col items-center text-center">
+      <p className="font-lexend-deca text-[14px] leading-[18px] text-[#6a6e74]">No stores in this country yet. Try another country or shop online.</p>
       <Image
         src="/images/pages/where-to-buy/no-stores.png"
         alt="Redragon dragon peeking out of an empty box"
         width={1254}
         height={1254}
-        sizes="(min-width: 1024px) 376px, 260px"
-        className="mt-6 size-[260px] lg:mt-[23px] lg:size-[376px]"
+        sizes="(min-width: 1024px) 300px, 220px"
+        className="mt-4 size-[220px] lg:size-[300px]"
       />
     </div>
   );

@@ -42,7 +42,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
         <ProductJsonLd product={product} siteUrl={siteUrl} />
         {/* Mobile opens with the product overview (Figma "Spice detal"), desktop with the hero */}
         <ProductOverview product={product} category={category} special={{ ghost: featured.hero.model }} />
-        <FeaturedHero hero={featured.hero} product={product} />
+        <FeaturedHero hero={featured.hero} product={product} category={category} />
         <FeaturedShowcase showcase={featured.showcase} />
         {featured.exploded && (
           <ExplodedBlueprint

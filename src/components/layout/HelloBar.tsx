@@ -16,7 +16,7 @@ function Announcement({ bar, hidden }: { bar: HelloBarContent; hidden?: boolean 
         target="_blank"
         rel="noopener noreferrer"
         tabIndex={hidden ? -1 : undefined}
-        className="font-geist text-[12px] font-bold leading-normal underline"
+        className="font-geist text-[12px] font-bold leading-normal hover:underline"
       >
         {bar.cta.label}
       </a>
@@ -63,7 +63,7 @@ export default function HelloBar() {
             href={helloBar.cta.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-geist text-[12px] font-bold leading-normal underline"
+            className="font-geist text-[12px] font-bold leading-normal hover:underline"
           >
             {helloBar.cta.label}
           </a>

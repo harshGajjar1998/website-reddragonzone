@@ -486,3 +486,17 @@ body {
     }
   }
 }
+
+/* Pages without a footer in Figma (404) mark themselves with data-hide-footer */
+body:has([data-hide-footer]) .site-footer {
+  display: none;
+}
+
+/* Flag emoji for systems without them (Windows): self-hosted Twemoji Country Flags
+   (country-flag-emoji-polyfill, MIT / CC-BY 4.0 graphics), flag code points only */
+@font-face {
+  font-family: "Twemoji Country Flags";
+  src: url("/fonts/TwemojiCountryFlags.woff2") format("woff2");
+  unicode-range: U+1F1E6-1F1FF, U+1F3F4, U+E0062-E007F;
+  font-display: swap;
+}

@@ -12,15 +12,15 @@ export default function EliteClubNewsletter() {
   return (
     <section className="bg-[#0f1115]">
       <div className="page-frame px-4 py-14 lg:px-[120px] lg:py-16">
-        <div className="relative isolate flex flex-col items-center gap-6 overflow-hidden rounded-2xl px-5 py-10 shadow-[inset_0_0_0_1px_#e01a22] lg:h-[257px] lg:p-12">
+        <div className="relative isolate flex flex-col items-center gap-6 overflow-hidden rounded-2xl border border-[#e01a22] px-5 py-10 lg:h-[257px] lg:p-12">
           <Image src="/images/pages/about/newsletter.jpg" alt="" fill sizes="1200px" className="-z-10 object-cover" />
           <div className="absolute inset-0 -z-10 bg-[#1a1a1a]/95" />
 
           <div className="flex flex-col items-center gap-2 text-center">
-            <p className="font-lexend-giga text-[12px] font-bold uppercase tracking-[2px] text-crimson">
+            <p className="font-lexend-giga text-[10px] font-bold uppercase tracking-[2px] text-crimson lg:text-[12px]">
               REDRAGON ELITE CLUB
             </p>
-            <h2 className="font-lexend-exa text-[24px] font-extrabold text-white lg:text-[32px]">Join the Red Dragonezone</h2>
+            <h2 className="font-lexend-exa text-[25px] font-extrabold text-white lg:text-[32px]">Join the Red Dragonezone</h2>
             <p className="font-lexend-deca text-[14px] text-[#9ba3af]">
               Sign up to receive technical updates, exclusive custom keycap drops, and early access sales.
             </p>

@@ -48,8 +48,12 @@ export type OnlineStore = {
   /** Badge text ("Official store" cards get the grey highlight) */
   type: "Official store" | "Online";
   url: string;
-  /** Unset when there's no logo for the shop; the card shows its name instead */
+  /** Unset when there's no logo for the shop; the card shows its initials instead */
   logo?: { src: string; width: number; height: number };
+  /** Short line about the shop (Where to Buy online card) */
+  description?: string;
+  /** Product categories it sells, e.g. ["Keyboards", "Mice"] */
+  categories?: string[];
 };
 
 /** Physical retailer (Figma "Where to buy" → Offline Shopping / "Nearby store") */

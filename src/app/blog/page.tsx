@@ -28,7 +28,7 @@ export default async function BlogPage() {
       <div className="page-frame relative px-5 pt-10 pb-14 lg:px-16 lg:pt-20 lg:pb-20">
         <CmsSection ids={["singleton:blog_settings"]}>
         <header className="flex flex-col items-center gap-4 text-center lg:gap-3">
-          <p className="flex h-[18px] items-center lg:h-7 gap-1 rounded-[37px] py-0.5 pr-2 pl-3 font-lexend-deca text-[16px] leading-[1.5] text-[#111] shadow-[0_4px_10px_rgb(17_17_17/0.02)]">
+          <p className="flex h-[18px] items-center lg:h-7 gap-1 rounded-[37px] py-0.5 pr-2 pl-3 font-lexend-deca text-[14px] leading-[1.25] text-[#111] lg:text-[16px] lg:leading-[1.5] shadow-[0_4px_10px_rgb(17_17_17/0.02)]">
             {copy.eyebrow}
             <Image src="/icons/pages/sparkle.svg" alt="" width={16} height={16} />
           </p>

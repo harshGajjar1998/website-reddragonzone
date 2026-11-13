@@ -1463,7 +1463,7 @@
    "gridTop": 84,
    "tileWidth": 390,
    "tileHeight": 152,
-   "columns": 2
+   "columns": 3
   }
  },
  "megaTile": {
@@ -1699,6 +1699,20 @@
    "images": [
     {
      "src": "/images/nav/support-where-to-buy.png",
+     "x": 14,
+     "y": 7,
+     "w": 192,
+     "h": 139
+    }
+   ]
+  },
+  "/images/nav/support-press.png": {
+   "labelX": 229,
+   "labelY": 64,
+   "labelAlign": "left",
+   "images": [
+    {
+     "src": "/images/nav/support-press.png",
      "x": 14,
      "y": 7,
      "w": 192,

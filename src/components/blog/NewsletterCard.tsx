@@ -24,7 +24,7 @@ export default function NewsletterCard() {
 
         <form noValidate onSubmit={onSubmit} onChange={onChange} className="relative z-10 flex w-full flex-col gap-4 lg:w-[458px]">
           <Honeypot />
-          <label htmlFor="blog-newsletter-email" className="font-lexend text-[16px] leading-[1.5] text-[#111]">
+          <label htmlFor="blog-newsletter-email" className="font-lexend text-[14px] leading-[1.25] text-[#111] lg:text-[16px] lg:leading-[1.5]">
             Join our newsletter ↓
           </label>
           {/* Mobile stacks a full-width field over a full-width button (Figma "Blog home — Mobile") */}

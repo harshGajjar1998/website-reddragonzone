@@ -1,41 +1,69 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { Swatches } from "@/components/office/OfficeSpecHero";
 import ProductActions from "@/components/product/ProductActions";
 import ProductPointers from "@/components/product/ProductPointers";
-import { ButtonLink } from "@/components/ui/Button";
-import type { FeaturedHero as FeaturedHeroData, GamingProduct } from "@/data/gaming";
+import {
+  categoryHref,
+  type FeaturedHero as FeaturedHeroData,
+  type GamingCategory,
+  type GamingProduct,
+} from "@/data/gaming";
 
-// API: dynamic data – featured product banner (via props)
+/** "PRISM PRO M997" with model "M997" → ["PRISM PRO", "M997", ""]; the model part is shown in red. */
+function splitName(name: string, model: string): [string, string, string] {
+  const at = model ? name.indexOf(model) : -1;
+  if (at <= 0) return [name, "", ""];
+  return [name.slice(0, at).trim(), model, name.slice(at + model.length)];
+}
+
+// API: dynamic data – featured product header (via props)
 /**
- * Featured product hero ("TECHNICAL SPECIFICATIONS", 1440×688 below the header):
- * dark gradient, spotlight panel, outlined model name, product render + thumbnails.
+ * Gaming featured product header – Figma "TECHNICAL SPECIFICATIONS" (3245:1670, 1440×688):
+ * breadcrumb, two-tone name, colour, description and the panel links on the silver background;
+ * spotlight panel on the right with the dragon mark, outlined vertical model name, render and thumbnails.
+ * Desktop only – on mobile ProductOverview opens the page.
  */
-export default function FeaturedHero({ hero, product }: { hero: FeaturedHeroData; product: GamingProduct }) {
+export default function FeaturedHero({
+  hero,
+  product,
+  category,
+}: {
+  hero: FeaturedHeroData;
+  product: GamingProduct;
+  category: GamingCategory;
+}) {
+  const colors = product.colors ?? [];
+  const [color, setColor] = useState(0);
+  const [lead, model, rest] = splitName(product.name, hero.model);
+
   return (
-    // Desktop only – on mobile the page opens with the product overview instead
-    <section className="relative hidden overflow-hidden bg-gradient-to-r from-[#454344] to-[#727071] to-[78.646%] lg:block">
+    <section className="relative hidden overflow-hidden bg-silver lg:block">
       <div className="page-frame h-[688px]">
         {/* Spotlight panel – bleeds to the viewport edge above 1440px */}
-        <div className="bg-hero-panel absolute left-[1025px] right-[min(0px,calc(720px-50vw))] top-0 h-[688px]" />
+        <div className="bg-hero-panel absolute left-[1036px] right-[min(0px,calc(720px-50vw))] top-0 h-[688px]" />
+        <Image
+          src="/images/home/dragon-head-logo.png"
+          alt=""
+          width={524}
+          height={345}
+          className="absolute left-[1142px] top-[492px] h-[196px] w-[297px] max-w-none object-cover opacity-35"
+        />
 
-        <div className="absolute left-[788px] top-[161px] flex h-[344px] w-[166px] items-center justify-center">
-          <p aria-hidden className="-rotate-90 font-lato text-[128px] font-bold leading-[1.3] whitespace-nowrap text-outline-white">
+        {/* Vertical outlined model name (rotated 90° CCW) */}
+        <div className="absolute left-[797px] top-[161px] flex h-[344px] w-[166px] items-center justify-center">
+          <p
+            aria-hidden
+            className="-rotate-90 font-lato text-[128px] font-bold leading-[1.3] whitespace-nowrap text-transparent [-webkit-text-stroke:1px_#1a1a1a]"
+          >
             {hero.model}
           </p>
         </div>
-        <p
-          aria-hidden
-          className="absolute left-[120px] top-[443px] w-[679px] font-lato text-[140px] font-bold leading-none tracking-[-5.6px] text-outline-faint [text-box:trim-both_cap_alphabetic]"
-        >
-          {hero.ghostLines[0]}
-        </p>
-        <p
-          aria-hidden
-          className="absolute left-[120px] top-[585px] w-[679px] font-lato text-[142.947px] font-bold leading-none tracking-[-5.7179px] text-outline-faint [text-box:trim-both_cap_alphabetic]"
-        >
-          {hero.ghostLines[1]}
-        </p>
 
-        <div className="absolute left-[849px] top-[50px] h-[589px] w-[343px] overflow-hidden drop-hero-main">
+        <div className="absolute left-[858px] top-[50px] h-[589px] w-[343px] overflow-hidden drop-hero-main">
           <Image
             src={hero.image.src}
             alt={hero.image.alt}
@@ -46,7 +74,7 @@ export default function FeaturedHero({ hero, product }: { hero: FeaturedHeroData
           />
         </div>
 
-        <ul className="absolute left-[1201px] top-[119px] flex h-[451px] w-[150px] flex-col">
+        <ul className="absolute left-[1210px] top-[119px] flex h-[451px] w-[150px] flex-col">
           {hero.thumbnails.map((t) => (
             <li key={t.src} className="relative aspect-square w-full shrink-0 drop-thumb">
               <Image src={t.src} alt={t.alt} fill sizes="150px" className="object-cover" />
@@ -54,26 +82,55 @@ export default function FeaturedHero({ hero, product }: { hero: FeaturedHeroData
           ))}
         </ul>
 
-        <div className="absolute left-[120px] top-[173px] flex flex-col items-start text-white">
-          <p className="font-lato text-[20px] leading-normal text-white/80">{hero.eyebrow}</p>
-          <h1 className="mt-2 font-lato text-[40px] font-black leading-normal whitespace-nowrap">
-            <span className="sr-only">{product.name} – </span>
-            {hero.title}
-          </h1>
-          <p className="mt-2 w-[592px] font-lato text-[16px] font-light leading-[1.5] text-white/80">
-            {hero.description}
-          </p>
-          <div className="mt-6 flex items-center gap-4">
-            <ButtonLink
-              href="#features"
-              chevron
-              className="px-7 py-[14.5px] font-lato text-[16px] font-semibold leading-normal"
-            >
-              More details
-            </ButtonLink>
-            <ProductActions product={product} dark />
+        {/* Spec column */}
+        <nav aria-label="Breadcrumb" className="absolute left-20 top-16">
+          <ol className="flex gap-[0.25em] font-lato text-[20px] leading-normal whitespace-nowrap text-ink/80">
+            <li>
+              <Link href="/gaming" className="hover:text-dragon">
+                Gaming Products
+              </Link>
+              <span aria-hidden className="ml-[0.25em]">/</span>
+            </li>
+            <li>
+              <Link href={categoryHref(category)} className="hover:text-dragon">
+                Game {category.label}
+              </Link>
+              <span aria-hidden className="ml-[0.25em]">/</span>
+            </li>
+            <li aria-current="page">{product.name}</li>
+          </ol>
+        </nav>
+
+        <h1 className="absolute left-20 top-[101px] w-[640px] font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">
+          {model ? (
+            <>
+              <span className="block">{lead}</span>
+              <span className="block">
+                <span className="text-[#e01a22]">{model}</span>
+                {rest}
+              </span>
+            </>
+          ) : (
+            lead
+          )}
+        </h1>
+
+        {colors.length > 0 && (
+          <div className="absolute left-20 top-[259px]">
+            <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Color {colors[color].name}</p>
+            <Swatches colors={colors} color={color} setColor={setColor} size="size-6" />
           </div>
-          <ProductPointers product={product} dark className="mt-5 w-[640px] flex-row flex-wrap gap-x-6 gap-y-3" />
+        )}
+
+        <hr className="absolute left-20 top-[326px] h-px w-[632px] border-0 bg-ink" />
+
+        <div className="absolute left-20 top-[342px] w-[632px]">
+          <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+          <p className="mt-4 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-ink/75">
+            {product.description ?? hero.description}
+          </p>
+          <ProductPointers product={product} className="mt-4 gap-4" />
+          <ProductActions product={product} className="mt-4" />
         </div>
       </div>
     </section>

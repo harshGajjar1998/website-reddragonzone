@@ -52,8 +52,8 @@ export default function ArticleDetail({
 
           <header className="flex flex-col gap-6">
             {/* API: dynamic data – article category, date, title and author */}
-            <div className="flex items-center gap-2.5 font-lexend-deca text-[16px] font-bold leading-[1.25] tracking-[-0.32px]">
-              <span className="rounded-2xl bg-white px-2 py-1 text-black">{article.category}</span>
+            <div className="flex items-center gap-2.5 font-lexend-deca text-[12px] font-bold leading-[1.25] tracking-[-0.32px] lg:text-[16px]">
+              <span className="rounded-2xl bg-white px-2 py-1 text-[13px] text-black lg:text-[16px]">{article.category}</span>
               <span className="text-black/50">{article.date}</span>
             </div>
             <h1 className="font-lexend-deca text-[32px] leading-[1.1] text-black lg:text-[50px] lg:leading-[1.05]">{article.title}</h1>
@@ -66,8 +66,8 @@ export default function ArticleDetail({
                 className="size-[70px] rounded-full"
               />
               <div className="flex flex-col gap-1 leading-[1.25] tracking-[-0.32px]">
-                <p className="font-lexend-deca text-[16px] font-bold text-black">{article.author.name}</p>
-                <p className="font-lexend text-[16px] text-black/60">{article.author.position}</p>
+                <p className="font-lexend-deca text-[14px] font-bold text-black lg:text-[16px]">{article.author.name}</p>
+                <p className="font-lexend text-[13px] text-black/60 lg:text-[16px]">{article.author.position}</p>
               </div>
             </div>
           </header>
@@ -95,10 +95,10 @@ export default function ArticleDetail({
             ))}
             <figure className="flex flex-col gap-5 rounded-[20px] bg-[#f5f5f5] p-6 lg:p-8">
               <Image src="/icons/pages/quote.svg" alt="" width={20} height={18} />
-              <blockquote className="font-merriweather text-[20px] italic leading-[1.5] text-black">
+              <blockquote className="font-merriweather text-[18px] italic leading-[1.5] text-black lg:text-[20px]">
                 {body.quote.text}
               </blockquote>
-              <figcaption className="font-dm-sans text-[12px] tracking-[0.36px] text-black/48">
+              <figcaption className="font-dm-sans text-[12px] font-bold tracking-[0.36px] text-black/48">
                 {body.quote.author}
               </figcaption>
             </figure>
@@ -109,7 +109,7 @@ export default function ArticleDetail({
 
       <section className="bg-[#f5f5f5] py-14 lg:py-24">
         <div className="page-frame flex flex-col items-center gap-8 px-4 lg:gap-10 lg:px-16">
-          <h2 className="font-lexend-deca text-[28px] leading-[1.05] text-black lg:text-[38px]">{relatedTitle}</h2>
+          <h2 className="font-lexend-deca text-[30px] leading-[1.25] text-black lg:text-[38px] lg:leading-[1.05]">{relatedTitle}</h2>
           <div className="flex w-full flex-col gap-6 lg:w-auto lg:flex-row lg:gap-8">{children}</div>
         </div>
       </section>

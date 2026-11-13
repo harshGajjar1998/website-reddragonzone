@@ -179,7 +179,7 @@ function MobileDownloadCard({ item }: { item: Download }) {
         <p className="font-lexend text-[11px] uppercase leading-[13px] text-ink">{item.keywords}</p>
       </div>
       <div className="relative mt-4 h-[200px] w-full">
-        <Image src={item.image.src} alt={item.name} fill sizes="(max-width: 640px) 80vw, 302px" className="object-contain" />
+        <Image src={item.image.src} alt={item.name} fill sizes="(max-width: 640px) 80vw, 302px" className="object-cover" />
       </div>
       <div className="mt-4 flex gap-3">
         <Link href={supportSearchHref(item.slug, "software")} className={action}>

@@ -15,7 +15,7 @@ export default function MobileFooter() {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
-    <footer className={`lg:hidden ${range === "office" ? "bg-white" : "bg-silver-mobile"}`}>
+    <footer className={`site-footer lg:hidden ${range === "office" ? "bg-white" : "bg-silver-mobile"}`}>
       <div className="mobile-frame px-4 pt-20 pb-14">
         <div className="flex flex-col gap-4">
           <FooterLogo />

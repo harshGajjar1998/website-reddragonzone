@@ -41,7 +41,10 @@ The live site has a JSON API, so everything it shows can be imported. Build one 
 - [ ] **Drivers & firmware**: exists; add an OS value "Both", and a "latest" flag or sort by date
 - [ ] **Blog author** fields already exist; nothing to add
 - [ ] **Footer/legal pages**: a simple "Pages" collection (title, slug, rich text) for Privacy Policy, Careers, Media Kit, Partner programs, so new text pages need no developer
-- [ ] **Support mega menu**: add the Press & Awards tile (3 columns) in Navigation
+- [ ] **Support mega menu**: add the child "Press & Awards" → `/press-and-awards`, image `/images/nav/support-press.png`
+      (the website already has its placement and the 3-column panel); also add "Press & Awards" to the footer Support column
+- [ ] **Stores (online)**: optional `description` (one line) and `categories` (list, e.g. Keyboards, Mice) – the new
+      Where to Buy cards show them when set (the CMS mapping in `src/lib/cms` comes with the store/press work)
 - [ ] **Forms**: add "Become a dealer" and "Product feedback / warranty" forms if the client wants them (the live site has both)
 
 ## 3. Website wiring (website repo, after the CMS fields exist)

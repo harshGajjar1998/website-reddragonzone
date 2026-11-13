@@ -11,7 +11,7 @@ const Q = "/images/office/products/bm4195";
 
 type SwatchProps = { colors: { name: string; hex: string }[]; color: number; setColor: (i: number) => void };
 
-function Swatches({ colors, color, setColor, size }: SwatchProps & { size: string }) {
+export function Swatches({ colors, color, setColor, size }: SwatchProps & { size: string }) {
   return (
     <div role="radiogroup" aria-label="Color" className="mt-2 flex gap-2">
       {colors.map((c, i) => (
