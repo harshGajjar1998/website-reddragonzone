@@ -1,0 +1,80 @@
+# CMS to-do before launch
+
+Status as of 2026-11-13. The CMS lives in `reddragon-cms` (another session is editing it now:
+uncommitted work on offline-store fields, Press articles and Awards). Tick items as they land.
+
+Live-site export (read-only, from the public API of redragonzone.com):
+`C:\Users\harsh\OneDrive\Desktop\sandbox\reddragon-live-export\` (`export.py`, JSON files, `files.csv`).
+
+## 1. Import the current site's content (make it editable in the CMS)
+
+The live site has a JSON API, so everything it shows can be imported. Build one Artisan command
+(e.g. `php artisan import:live-site <export dir>`) that is re-runnable (upsert by the live id, stored in a
+`legacy_id` / `legacy_url` field) and copies every referenced file into Media.
+
+| Live source | CMS target | Mapping notes |
+| --- | --- | --- |
+| `/api/category` (GAMING / OFFICE tree) | Categories | Match by name to the existing CMS categories; create the missing ones (live has a 3rd level, `categoryId3`: map to filter tags) |
+| `/product/itemDetail` per product (653 products, 1,064 variants) | Products | One CMS product per live `productId`; `itemList` → `variants` + `modules`; `colorList` → `colors` + `gallery` (mediaFg/Bg 1–4); `specificationList` → `spec_groups`; `packageList` → `in_box`; `uspList` → `highlights`; `slogan` → `tagline`; `name` → name + `model_number`; `/detail.html?id=<id>` → `legacy_url` |
+| `manualUrl`, `driverUrl` per variant (≈900) | Drivers & firmware (`firmware` collection) | One entry per file: type Manual / Driver, product, file copied to Media, `size` from the download. Version, date, OS, release notes stay empty until the client sends them |
+| `/api/faq` (11) | FAQs | `name` → question, `intro` → answer; topic empty (client to assign) |
+| `/api/store` (43, 17 countries) | Stores | Website-only rows → Online retailer; rows with an address → Retail store with address, lat/lng (needs the offline-store fields in progress) |
+| `/api/area` → `officialStoreList` | Stores (Official store) | With logos from the live site |
+| `/api/banner`, `/api/area` banners | Home / page banners | Review by hand: only reuse images that fit the new design sizes |
+| `about.html` text | About Us page singleton | Philosophy and intro paragraphs |
+
+- [ ] Write the import command + a test with a small fixture from the export
+- [ ] Copy files. The export references 12,316 files, about 18 GB (sampled): 11,084 images ≈ 5.8 GB,
+      705 PDFs ≈ 6.3 GB, 516 driver packages (zip/rar/exe/7z) ≈ 5.6 GB. Check the Hostinger disk quota first.
+      Options: copy only the images the new design uses (gallery: up to 6 per product), and keep manuals/drivers
+      on object storage (Cloudflare R2 / Backblaze B2 / S3) with the CMS storing their URLs.
+- [ ] The website build resizes every image it uses (`scripts/optimize-images.mjs`); with 653 products, check
+      build time and the size of `out/` before switching the import on for all products
+- [ ] Run it on a local CMS, check 10 products by hand against the live site, then run on the hosted CMS (needs OK)
+- [ ] Keep `export.py` + the import re-runnable until launch, so late changes on the live site can be pulled again
+
+## 2. Collections and fields still missing
+
+- [ ] **Offline stores**: address, lat/lng, photo, logo (in progress in the other session) + opening hours, phone
+- [ ] **Press articles + Awards** (in progress in the other session); website must read them instead of `src/data/press.ts`
+- [ ] **FAQ topic**: select field (Compatibility, Setup, Warranty, Firmware) for the Support page filter
+- [ ] **Drivers & firmware**: exists; add an OS value "Both", and a "latest" flag or sort by date
+- [ ] **Blog author** fields already exist; nothing to add
+- [ ] **Footer/legal pages**: a simple "Pages" collection (title, slug, rich text) for Privacy Policy, Careers, Media Kit, Partner programs, so new text pages need no developer
+- [ ] **Support mega menu**: add the Press & Awards tile (3 columns) in Navigation
+- [ ] **Forms**: add "Become a dealer" and "Product feedback / warranty" forms if the client wants them (the live site has both)
+
+## 3. Website wiring (website repo, after the CMS fields exist)
+
+- [ ] Finder + product "Manuals & Software" panel read the `firmware` collection instead of the sample releases in `src/data/pages.ts`
+- [ ] Product spec panels read `spec_groups` / `spec_dimensions` / `in_box` instead of `src/data/productInfo.ts`
+- [ ] Compare reads the `compare_*` fields instead of `sampleSpecs` in `src/data/compare.ts`
+- [ ] Stores: offline cards from CMS stores, drop `sampleOfflineStores`
+- [ ] Press pages from the CMS; drop `src/data/press.ts`
+- [ ] FAQ topic filter from the CMS topic field
+
+## 4. Forms: email and SMS
+
+Finding: **no SMS service is needed.** No form verifies a phone number, and phone is optional on the contact form.
+**Email is needed**, and the CMS only does the first item below today (plain text, and only when `CMS_NOTIFY_EMAIL` and `MAIL_*` are set).
+
+| Email | Today | Needed |
+| --- | --- | --- |
+| Team alert for a new contact message | Plain text, if configured | Use a template; also send for dealer and feedback forms |
+| Confirmation to the visitor ("we got your message") | None | Template with the message copy |
+| Newsletter: confirm subscription (double opt-in) | None | Required in the EU (GDPR) and good practice everywhere; confirm link + token |
+| Newsletter: unsubscribe | None | Link in every newsletter email, and a one-click unsubscribe endpoint |
+| Newsletter campaigns | None | Send through a newsletter tool (Mailchimp / Brevo); the CMS syncs sign-ups to it, rather than sending bulk mail from Hostinger |
+
+- [ ] Mail transport: Hostinger mailbox SMTP is enough for alerts and confirmations (low volume). Use a transactional service (Brevo, Amazon SES, Postmark) if volume or deliverability needs it. Set SPF, DKIM, DMARC on the sending domain.
+- [ ] **Email templates in the CMS**: a "Email templates" singleton or collection, one record per email (subject, heading, body with placeholders such as `{name}`, `{message}`, `{confirm_link}`), a shared header/footer with the logo, and a "Send test" button. Render with Laravel Mailables + Markdown mail components.
+- [ ] Queue the sends (database queue + cron `schedule:run` on Hostinger), so a slow mail server never slows the form
+- [ ] Newsletter: status column (pending / confirmed / unsubscribed) on sign-ups, confirm + unsubscribe routes, export or sync to the chosen newsletter tool
+- [ ] Inbox: reply-to set to the visitor (done for contact), add a "replied" state
+
+## 5. Hosting and operations
+
+- [ ] Real domain for the CMS (e.g. `cms.redragonzone.com`), then `SITE_URL`, `PREVIEW_URL`, `CORS_ALLOWED_ORIGINS` (lock to the site domain instead of `*`)
+- [ ] Daily backup of the SQLite database and `storage/app` media, kept off the server
+- [ ] Admin accounts for the Redragon team, with roles; remove test accounts
+- [ ] Publish webhook points at the production deploy (GitHub Actions `workflow_dispatch` on `main`)
