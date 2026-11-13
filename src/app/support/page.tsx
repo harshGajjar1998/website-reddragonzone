@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import CommunitySection from "@/components/home/CommunitySection";
 import SupportCenter from "@/components/pages/SupportCenter";
+import SupportFaqs from "@/components/pages/SupportFaqs";
 import { getContent } from "@/lib/cms";
 
 export const metadata: Metadata = {
@@ -11,12 +12,15 @@ export const metadata: Metadata = {
 
 /** Figma "Support" */
 export default async function SupportPage() {
-  const { supportTiles, downloads } = (await getContent()).pages;
+  const { supportTiles, downloads, faqs } = (await getContent()).pages;
   return (
     <>
       {/* API: dynamic data – support topics + downloads */}
       <CmsSection ids={[...entryIds(supportTiles.flat()), ...entryIds(downloads)]}>
         <SupportCenter supportTiles={supportTiles} downloads={downloads} />
+      </CmsSection>
+      <CmsSection ids={entryIds(faqs)}>
+        <SupportFaqs faqs={faqs} />
       </CmsSection>
       <CmsSection ids={["shared:community"]}>
         <CommunitySection />

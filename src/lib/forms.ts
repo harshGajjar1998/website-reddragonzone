@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Website forms → the CMS (POST /api/public/forms/{form}); messages land in the CMS Inbox.
  * Every form includes <Honeypot />: people never see or fill it, bots usually do, and the CMS
@@ -5,57 +7,79 @@
  */
 import { useState, type FormEvent } from "react";
 
+export type FeedbackTone = "success" | "error";
+export type Feedback = { tone: FeedbackTone; text: string };
+
+export const FORM_SUCCESS = "Thanks, we'll be in touch";
+export const FORM_ERROR = "Something went wrong, try again";
+export const INVALID_EMAIL = "Please enter a valid email address.";
+export const requiredMessage = (field: string) => `Please fill this in. Your ${field} is required.`;
+
+export const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
 export type FormName = "contact" | "newsletter";
 
-export type SubmitResult = { ok: true } | { ok: false; message: string };
+/** A failed send; `message` is safe to show the visitor. */
+export class FormError extends Error {}
 
-export async function submitForm(form: FormName, el: HTMLFormElement): Promise<SubmitResult> {
-  const data = Object.fromEntries(new FormData(el).entries());
+/** The form's fields (honeypot included) as plain strings. */
+export const formValues = (form: HTMLFormElement) =>
+  Object.fromEntries(new FormData(form)) as Record<string, string>;
+
+/** Sends a form to the CMS and throws a FormError with a visitor-facing message if it wasn't accepted. */
+export async function submitForm(form: FormName, data: Record<string, string>) {
+  let res: Response;
   try {
-    const res = await fetch(`${process.env.CMS_FORMS_URL}/${form}`, {
+    res = await fetch(`${process.env.CMS_FORMS_URL}/${form}`, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({ ...data, page: window.location.pathname }),
     });
-    if (res.ok) return { ok: true };
-    if (res.status === 429) return { ok: false, message: "Too many attempts. Please try again in a few minutes." };
-    const body = await res.json().catch(() => null);
-    const first = body?.errors ? (Object.values(body.errors)[0] as string[])[0] : null;
-    return { ok: false, message: first ?? "Something went wrong. Please try again." };
   } catch {
-    return { ok: false, message: "Couldn't send. Check your connection and try again." };
+    throw new FormError("Couldn't send. Check your connection and try again.");
   }
+  if (res.ok) return;
+  if (res.status === 429) throw new FormError("Too many attempts. Please try again in a few minutes.");
+  const body = await res.json().catch(() => null);
+  const first = body?.errors ? (Object.values(body.errors)[0] as string[])[0] : null;
+  throw new FormError(first ?? FORM_ERROR);
 }
 
-/**
- * onSubmit for a form, plus its state. Newsletter errors show as the browser's own message on the
- * email field (the sign-up designs have no room for an error line); the contact form shows `error`.
- */
-export function useFormSubmit(form: FormName) {
-  const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
-  const [error, setError] = useState<string | null>(null);
+/** The visitor-facing text for an error thrown by submitForm. */
+export const errorText = (err: unknown) => (err instanceof FormError ? err.message : FORM_ERROR);
+
+/** Validation, sending and feedback shared by every newsletter sign-up box. */
+export function useNewsletterForm() {
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [sending, setSending] = useState(false);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (status === "sending") return;
-    const el = e.currentTarget;
-    setStatus("sending");
-    setError(null);
-    const r = await submitForm(form, el);
-    if (r.ok) {
-      setStatus("done");
-      el.reset();
-      return;
-    }
-    setStatus("idle");
-    setError(r.message);
-    const email = el.querySelector<HTMLInputElement>('input[type="email"]');
-    if (form === "newsletter" && email) {
-      email.setCustomValidity(r.message);
-      email.reportValidity();
-      email.addEventListener("input", () => email.setCustomValidity(""), { once: true });
+    if (sending) return;
+    const form = e.currentTarget;
+    const values = formValues(form);
+    const email = (values.email ?? "").trim();
+    if (!email) return setFeedback({ tone: "error", text: requiredMessage("email") });
+    if (!isEmail(email)) return setFeedback({ tone: "error", text: INVALID_EMAIL });
+
+    setSending(true);
+    try {
+      await submitForm("newsletter", { ...values, email });
+      setFeedback({ tone: "success", text: FORM_SUCCESS });
+      form.reset();
+    } catch (err) {
+      setFeedback({ tone: "error", text: errorText(err) });
+    } finally {
+      setSending(false);
     }
   }
 
-  return { onSubmit, done: status === "done", sending: status === "sending", error };
+  return {
+    feedback,
+    sending,
+    onSubmit,
+    /** Clears a message once the visitor starts correcting it */
+    onChange: () => setFeedback(null),
+    invalid: feedback?.tone === "error",
+  };
 }

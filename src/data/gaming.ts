@@ -119,6 +119,13 @@ export type FeaturedDetail = {
   mobileExploded?: string;
 };
 
+export type ProductSpecs = {
+  /** Lines under "Dimensions" */
+  dimensions: string[];
+  /** Titled lists under "Technical Specifications" */
+  technical: { title: string; items: string[] }[];
+};
+
 export type GamingProduct = {
   /** CMS entry id (used by the CMS visual editor's preview) */
   cmsId?: number;
@@ -147,6 +154,8 @@ export type GamingProduct = {
   modules?: { label: string; href?: string }[];
   colors?: { name: string; hex: string }[];
   details?: { title: string; body: string }[];
+  /** Structured "Specifications" panel content; see productSpecs() in data/productInfo.ts */
+  specs?: ProductSpecs;
   keyFeatures?: {
     description: string;
     hero: { src: string; width: number; height: number; crop?: Art["crop"] };
@@ -155,6 +164,13 @@ export type GamingProduct = {
   /** Featured products get the "special" detail page */
   featured?: FeaturedDetail;
 };
+
+/** Every product and category (gaming + office), for client features that span the whole range: Compare, the Finder */
+export type Catalogue = { products: GamingProduct[]; categories: GamingCategory[] };
+
+/** The category a product belongs to, matched within its range */
+export const categoryOf = (catalogue: Catalogue, product: Pick<GamingProduct, "range" | "category">) =>
+  catalogue.categories.find((c) => c.slug === product.category && (c.range ?? "gaming") === (product.range ?? "gaming"));
 
 export const rangeOf = (x: { range?: ProductRange }) => RANGES[x.range ?? "gaming"];
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { fontVariables } from "@/lib/fonts";
+import CompareBar from "@/components/compare/CompareBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/layout/ScrollReveal";
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <CmsSection ids={["type:footer"]}>
             <Footer />
           </CmsSection>
+          <CompareBar />
           <ScrollReveal />
           {isCmsPreview() && <CmsPreviewBridge adminOrigin={process.env.CMS_ADMIN_ORIGIN ?? "http://localhost:5174"} />}
         </ChromeProvider>

@@ -3,38 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import Collapse from "@/components/ui/Collapse";
+import ProductActions from "@/components/product/ProductActions";
+import ProductPointers from "@/components/product/ProductPointers";
 import { categoryHref, type GamingCategory, type GamingProduct } from "@/data/gaming";
 
 const Q = "/images/office/products/bm4195";
-
-function Accordion({ title, body }: { title: string; body: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className="flex cursor-pointer items-center gap-3"
-      >
-        <span className="font-lexend text-[16px] font-medium leading-[1.2] whitespace-nowrap text-ink">{title}</span>
-        <Image
-          src="/icons/gaming/accordion-chevron.svg"
-          alt=""
-          width={16}
-          height={16}
-          className={`transition-transform ${open ? "rotate-90" : ""}`}
-        />
-      </button>
-      <Collapse open={open} className={open ? "mt-2" : ""}>
-        <p className="font-lexend text-[14px] font-light leading-[1.4] tracking-[0.84px] text-ink/75 lg:w-[632px]">
-          {body}
-        </p>
-      </Collapse>
-    </div>
-  );
-}
 
 type SwatchProps = { colors: { name: string; hex: string }[]; color: number; setColor: (i: number) => void };
 
@@ -117,11 +90,8 @@ function MobileSpecHero({
         <p className="mt-2.5 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
           {product.description ?? product.tagline}
         </p>
-        <div className="mt-5 flex flex-col gap-5">
-          {(product.details ?? []).map((d) => (
-            <Accordion key={d.title} title={d.title} body={d.body} />
-          ))}
-        </div>
+        <ProductPointers product={product} className="mt-5 gap-5" />
+        <ProductActions product={product} className="mt-6" />
       </div>
 
       {/* Outlined model name, cropped by the section edge */}
@@ -237,11 +207,8 @@ export default function OfficeSpecHero({ product, category }: { product: GamingP
           <p className="mt-2 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-ink/75">
             {product.description ?? product.tagline}
           </p>
-          <div className="mt-4 flex flex-col gap-4">
-            {(product.details ?? []).map((d) => (
-              <Accordion key={d.title} title={d.title} body={d.body} />
-            ))}
-          </div>
+          <ProductPointers product={product} className="mt-4 gap-4" />
+          <ProductActions product={product} className="mt-4" />
         </div>
       </div>
     </section>

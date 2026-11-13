@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import CompareToggle from "@/components/compare/CompareToggle";
 import { productHref, type FilterGroup, type GamingCategory, type GamingProduct } from "@/data/gaming";
 import Collapse from "@/components/ui/Collapse";
 import ProductCard from "./ProductCard";
@@ -187,26 +188,29 @@ function Pagination({
 function MobileProductCard({ product }: { product: GamingProduct }) {
   const office = product.range === "office";
   return (
-    <Link href={productHref(product)} className="group block">
-      <div
-        className={`relative aspect-[171/168] overflow-hidden border-[1.2px] border-white ${office ? "bg-[#f6f6f6]" : "bg-white"}`}
-      >
-        <Image
-          src={product.image.src}
-          alt={product.name}
-          fill
-          sizes="45vw"
-          className="object-contain p-[9%] transition-transform duration-300 group-hover:scale-[1.03]"
-        />
-        <p className="absolute right-4 top-3 font-lexend text-[12px] uppercase leading-[1.2] text-ink">{product.keywords}</p>
-      </div>
-      <h3 className="mt-4 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] text-ink">
-        {product.name}
-      </h3>
-      <p className="mt-1 font-lexend text-[12px] font-light capitalize leading-[14px] tracking-[0.72px] text-ink/75">
-        {product.tagline}
-      </p>
-    </Link>
+    <div>
+      <Link href={productHref(product)} className="group block">
+        <div
+          className={`relative aspect-[171/168] overflow-hidden border-[1.2px] border-white ${office ? "bg-[#f6f6f6]" : "bg-white"}`}
+        >
+          <Image
+            src={product.image.src}
+            alt={product.name}
+            fill
+            sizes="45vw"
+            className="object-contain p-[9%] transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+          <p className="absolute right-4 top-3 font-lexend text-[12px] uppercase leading-[1.2] text-ink">{product.keywords}</p>
+        </div>
+        <h3 className="mt-4 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] text-ink">
+          {product.name}
+        </h3>
+        <p className="mt-1 font-lexend text-[12px] font-light capitalize leading-[14px] tracking-[0.72px] text-ink/75">
+          {product.tagline}
+        </p>
+      </Link>
+      <CompareToggle product={product} className="mt-2 py-1" />
+    </div>
   );
 }
 

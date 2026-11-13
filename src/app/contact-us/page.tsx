@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
+import { Suspense } from "react";
 import CenteredHeading from "@/components/gaming/CenteredHeading";
 import CommunitySection from "@/components/home/CommunitySection";
-import ContactForm from "@/components/pages/ContactForm";
+import ContactForm, { ContactFormFromUrl } from "@/components/pages/ContactForm";
 import FaqList from "@/components/pages/FaqList";
 import { getContent } from "@/lib/cms";
 
@@ -29,7 +30,10 @@ export default async function ContactPage() {
           <p className="mt-3 font-lexend-deca text-[18px] leading-[1.4] tracking-[0.54px] text-white/80 lg:absolute lg:left-20 lg:top-[166px] lg:mt-0 lg:text-[24px] lg:tracking-[0.72px]">
             {c.subtitle}
           </p>
-          <ContactForm enquiryTypes={enquiryTypes} />
+          {/* The plain form is prerendered; the URL is only readable in the browser */}
+          <Suspense fallback={<ContactForm enquiryTypes={enquiryTypes} />}>
+            <ContactFormFromUrl enquiryTypes={enquiryTypes} />
+          </Suspense>
         </div>
       </section>
       </CmsSection>

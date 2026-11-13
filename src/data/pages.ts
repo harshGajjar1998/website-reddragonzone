@@ -2,7 +2,11 @@
    About, Contact, Where to buy and Support page content types.
    Content comes from the CMS (Content → About Us, FAQs, Stores,
    Support topics, Downloads, Contact page); see src/lib/cms.
+   Sample data below is only for what the CMS can't hold yet
+   (offline stores, the Firmware & Software Finder).
    ================================================================== */
+
+import { categoryOf, type Catalogue, type GamingProduct } from "@/data/gaming";
 
 export type AboutSection = {
   /** CMS entry id (used by the CMS visual editor's preview) */
@@ -17,9 +21,126 @@ export type AboutSection = {
 
 export type AboutValue = { cmsId?: number; title: string; text: string };
 
-export type Faq = { cmsId?: number; q: string; a: string[] };
+/** `topic` drives the Support page FAQ filter */
+export type Faq = { cmsId?: number; topic?: string; q: string; a: string[] };
 
-export type Store = { cmsId?: number; name: string; type: "Official store" | "Online retailer" | "Retail store"; url: string };
+/* ---------------- Contact ---------------- */
+
+/** Enquiry types come from the CMS Contact page; links use these names to pre-select one. */
+export type EnquiryType = string;
+
+const enquirySlug = (enquiry: string) => enquiry.toLowerCase().replace(/[^a-z]+/g, "-");
+
+/** Contact page link that pre-selects the enquiry. Header and footer links stay plain so nothing is selected. */
+export const contactHref = (enquiry: EnquiryType) => `/contact-us/?enquiry=${enquirySlug(enquiry)}`;
+
+/** Reads the ?enquiry= value back; anything not in the CMS list selects nothing. */
+export const enquiryFromSlug = (slug: string | null, enquiryTypes: string[]) =>
+  enquiryTypes.find((enquiry) => enquirySlug(enquiry) === slug);
+
+/* ---------------- Where to buy ---------------- */
+
+/** Online shop / marketplace (Figma "Where to buy" → Online Shopping) */
+export type OnlineStore = {
+  /** CMS entry id (used by the CMS visual editor's preview) */
+  cmsId?: number;
+  name: string;
+  /** Badge text ("Official store" cards get the grey highlight) */
+  type: "Official store" | "Online";
+  url: string;
+  /** Unset when there's no logo for the shop; the card shows its name instead */
+  logo?: { src: string; width: number; height: number };
+};
+
+/** Physical retailer (Figma "Where to buy" → Offline Shopping / "Nearby store") */
+export type OfflineStore = {
+  name: string;
+  type: "Retail Store" | "Authorized Retailer";
+  /** Two address lines, as on the card */
+  address: [string, string];
+  lat: number;
+  lng: number;
+  image: string;
+  /** API: dynamic data – distance from the shopper. Replaced by a live value once "Find stores near me" has the user's location. */
+  distanceKm?: number;
+};
+
+export type CountryStores = { online: OnlineStore[]; offline: OfflineStore[] };
+
+export const redragonLogo = { src: "/images/pages/where-to-buy/redragon-logo.png", width: 1845, height: 1260 };
+export const amazonLogo = { src: "/images/pages/where-to-buy/amazon-logo.png", width: 934, height: 350 };
+const storePhoto = "/images/pages/where-to-buy/store-gamers-hub.png";
+
+// API: dynamic data – offline stores. Sample until the CMS Stores entries have addresses and coordinates.
+export const sampleOfflineStores: Record<string, OfflineStore[]> = {
+  India: [
+    {
+      name: "Gamer's Hub",
+      type: "Retail Store",
+      address: ["DLF Mall of India, Sector 18", "Noida, Uttar Pradesh 201301"],
+      lat: 28.5672,
+      lng: 77.3211,
+      image: storePhoto,
+      distanceKm: 2.8,
+    },
+    {
+      name: "Tech World",
+      type: "Authorized Retailer",
+      address: ["Pacific Mall, Tagore Garden", "New Delhi, Delhi 110027"],
+      lat: 28.643,
+      lng: 77.106,
+      image: storePhoto,
+      distanceKm: 4.1,
+    },
+    {
+      name: "Digital Zone",
+      type: "Retail Store",
+      address: ["Select Citywalk Mall, Saket", "New Delhi, Delhi 110017"],
+      lat: 28.5286,
+      lng: 77.219,
+      image: storePhoto,
+      distanceKm: 7.6,
+    },
+  ],
+};
+
+/** Stores selling a product in a country. */
+// API: dynamic data – replace with the per-product store endpoint; for now every store sells every product
+export const storesForProduct = (
+  storesByCountry: Record<string, CountryStores>,
+  productSlug: string | null,
+  country: string,
+): CountryStores | undefined => storesByCountry[country];
+
+/** Where to Buy page filtered to one product */
+export const whereToBuyHref = (product: { slug: string; name: string }) =>
+  `/where-to-buy/?product=${encodeURIComponent(product.slug)}&name=${encodeURIComponent(product.name)}`;
+
+// API: dynamic data – countries shown in the selector (ones without stores show "No stores found")
+export const storeCountries = [
+  "Australia",
+  "Brazil",
+  "Canada",
+  "France",
+  "Germany",
+  "India",
+  "Indonesia",
+  "Italy",
+  "Japan",
+  "Malaysia",
+  "Mexico",
+  "Netherlands",
+  "Philippines",
+  "Saudi Arabia",
+  "Singapore",
+  "South Africa",
+  "Spain",
+  "Thailand",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "Vietnam",
+];
 
 /** Category tiles (Figma "Desktop - 8" on the Support page). Art is pre-rendered with shadow + 85% opacity. */
 export type SupportTile = {
@@ -41,13 +162,188 @@ export type SupportTile = {
 export type Download = {
   /** CMS entry id (used by the CMS visual editor's preview) */
   cmsId?: number;
+  /** Product the card opens in the Firmware & Software Finder (see supportProducts) */
+  slug: string;
   name: string;
   category: string;
   keywords: string;
-  image: { src: string; width: number; height: number; crop?: { w: number; h: number; left: number; top: number }; box: { top: number; h: number } };
+  image: {
+    src: string;
+    width: number;
+    height: number;
+    crop?: { w: number; h: number; left: number; top: number };
+    box: { top: number; h: number };
+    /** Show the whole render instead of filling the box */
+    contain?: boolean;
+  };
   software: string;
   manual: string;
 };
+
+const GP = "/images/gaming/products";
+
+const k768 = { src: `${GP}/k768vi-pro.png`, width: 1600, height: 1600, box: { top: 122, h: 182 } };
+const k668 = {
+  src: `${GP}/k668wbo-wl.png`,
+  width: 1600,
+  height: 1600,
+  box: { top: 122, h: 182 },
+  crop: { w: 103.65, h: 156.04, left: -1.82, top: -28.02 },
+};
+const k769 = {
+  src: `${GP}/k769bam-m.png`,
+  width: 1600,
+  height: 1600,
+  box: { top: 154, h: 89 },
+  crop: { w: 100, h: 307.87, left: 0, top: -85.39 },
+};
+
+
+/* ---------------- Firmware & Software Finder ---------------- */
+
+export type DownloadOs = "windows" | "mac";
+export type DownloadType = "driver" | "firmware" | "software" | "manual";
+
+export type DownloadRelease = {
+  version: string;
+  date: string;
+  os: DownloadOs[];
+  /** "What's changed" note */
+  notes: string;
+  /** File URL for the Download button */
+  href: string;
+  /** Shown in the product page "Manuals & Software" panel */
+  file?: { size: string; format: string };
+  /** Figma placeholder: shows the "sample" labels. Leave unset for real releases. */
+  sample?: boolean;
+};
+
+export type DownloadGroup = {
+  type: DownloadType;
+  title: string;
+  description: string;
+  /** Newest first: the first release for the chosen OS is "latest", the rest are "Previous versions" */
+  releases: DownloadRelease[];
+};
+
+export type SupportProduct = {
+  slug: string;
+  name: string;
+  model: string;
+  category: string;
+  image: Download["image"];
+  /** Empty = the "No downloads available" state */
+  downloads: DownloadGroup[];
+};
+
+const sample = (
+  version: string,
+  date: string,
+  os: DownloadOs[],
+  notes: string,
+  file?: DownloadRelease["file"],
+): DownloadRelease => ({
+  version: `Sample ${version}`,
+  date,
+  os,
+  notes,
+  href: "#",
+  file,
+  sample: true,
+});
+
+const OLDER_NOTE = "Earlier example of key-mapping settings.";
+const LATEST = "01 Feb 20XX";
+const OLDER = "01 Jan 20XX";
+const EXE = { size: "12.5 MB", format: "EXE" };
+const PDF = { size: "4.8 MB", format: "PDF" };
+
+// API: dynamic data – sample releases from the Figma design, replace with real files
+const sampleDownloads: DownloadGroup[] = [
+  {
+    type: "driver",
+    title: "Driver",
+    description: "Device connection and recognition",
+    releases: [
+      sample("v1.0.0", LATEST, ["windows"], "Example update to device recognition and connection stability."),
+      sample("v1.0.0", LATEST, ["mac"], "Example update to device recognition and connection stability."),
+      sample("v0.9.0", OLDER, ["windows"], OLDER_NOTE),
+      sample("v0.9.0", OLDER, ["mac"], OLDER_NOTE),
+    ],
+  },
+  {
+    type: "firmware",
+    title: "Firmware",
+    description: "On-device performance updates",
+    releases: [
+      sample("v2.0.0", LATEST, ["windows"], "Example update to key response and onboard profile behavior."),
+      sample("v1.9.0", OLDER, ["windows"], OLDER_NOTE),
+    ],
+  },
+  {
+    type: "software",
+    title: "Software",
+    description: "Customize your keyboard settings",
+    releases: [
+      sample("v3.0.0", LATEST, ["windows"], "Example update to lighting controls and custom key mappings.", EXE),
+      sample("v3.0.0", LATEST, ["mac"], "Example update to lighting controls and custom key mappings.", EXE),
+      sample("v2.9.0", OLDER, ["windows"], OLDER_NOTE),
+      sample("v2.9.0", OLDER, ["mac"], OLDER_NOTE),
+    ],
+  },
+  {
+    type: "manual",
+    title: "Manual",
+    description: "Setup and product documentation",
+    releases: [
+      sample("v1.0.0", LATEST, ["windows", "mac"], "Example revision to setup instructions and shortcut reference.", PDF),
+      sample("v0.9.0", OLDER, ["windows", "mac"], OLDER_NOTE),
+    ],
+  },
+];
+
+// API: dynamic data – Finder products. K769BAM-M has no downloads so the empty state can be previewed.
+const curatedProducts: SupportProduct[] = [
+  { slug: "k768vi-pro", name: "EISA 100 PRO", model: "K768VI-PRO", category: "Keyboards", image: k768, downloads: sampleDownloads },
+  { slug: "k668wbo-wl", name: "TRUNDLE", model: "K668WBO-WL", category: "Keyboards", image: k668, downloads: sampleDownloads },
+  { slug: "k769bam-m", name: "NUBULA", model: "K769BAM-M", category: "Keyboards", image: k769, downloads: [] },
+];
+
+const fromCatalogue = (product: GamingProduct, category = ""): SupportProduct => ({
+  slug: product.slug,
+  name: product.name,
+  model: product.slug.toUpperCase(),
+  category,
+  image: { ...product.image, box: { top: 0, h: 182 }, contain: true },
+  downloads: sampleDownloads,
+});
+
+// API: dynamic data – every catalogue product (CMS) has a Finder entry, so product pages can link straight to it.
+// Downloads are sample releases until the CMS holds them per product.
+export const supportProducts = (catalogue: Catalogue): SupportProduct[] => [
+  ...curatedProducts,
+  ...catalogue.products
+    .filter((p) => !curatedProducts.some((c) => c.slug === p.slug))
+    .map((p) => fromCatalogue(p, categoryOf(catalogue, p)?.label)),
+];
+
+const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** Matches a search term or card slug to one product. */
+// API: dynamic data – replace with the product search endpoint
+export function findSupportProduct(catalogue: Catalogue, query: string): SupportProduct | undefined {
+  const term = normalize(query);
+  if (!term) return undefined;
+  const all = supportProducts(catalogue);
+  return (
+    all.find((p) => normalize(p.slug) === term) ??
+    all.find((p) => normalize(`${p.slug} ${p.name} ${p.model}`).includes(term))
+  );
+}
+
+/** Finder URL for a search term or slug; `section` jumps to a download group. */
+export const supportSearchHref = (query: string, section?: DownloadType) =>
+  `/support/search/?q=${encodeURIComponent(query)}${section ? `#${section}` : ""}`;
 
 /** Fixed copy of the About / Contact / Where to Buy pages (CMS single-record content) */
 export type PageCopy = {
@@ -65,7 +361,7 @@ export type PagesContent = {
   aboutValues: AboutValue[];
   enquiryTypes: string[];
   faqs: Faq[];
-  storesByCountry: Record<string, Store[]>;
+  storesByCountry: Record<string, CountryStores>;
   /** Rows of tiles, top to bottom */
   supportTiles: SupportTile[][];
   downloads: Download[];

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
+import { Suspense } from "react";
 import CenteredHeading from "@/components/gaming/CenteredHeading";
 import CommunitySection from "@/components/home/CommunitySection";
 import StoreFinder from "@/components/pages/StoreFinder";
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 export default async function WhereToBuyPage() {
   const { storesByCountry, copy } = (await getContent()).pages;
   const c = copy.whereToBuy;
-  const stores = Object.values(storesByCountry).flat();
+  const stores = Object.values(storesByCountry).flatMap((s) => s.online);
   return (
     <>
       <CmsSection ids={["singleton:where_to_buy_page"]}>
@@ -30,10 +31,13 @@ export default async function WhereToBuyPage() {
 
       <CmsSection ids={["singleton:where_to_buy_page", ...entryIds(stores)]}>
       <section className="bg-white">
-        <div className="page-frame flex min-h-[350px] flex-col items-center px-4 pt-14 pb-14 lg:px-20 lg:pt-[88px] lg:pb-[88px]">
+        <div className="page-frame pt-14 pb-14 lg:pt-[72px] lg:pb-[72px]">
           <CenteredHeading title={c.heading} subtitle={c.subtitle} />
-          {/* API: dynamic data – Where to Buy store list */}
-          <StoreFinder storesByCountry={storesByCountry} />
+          {/* Reads ?product= from the URL, so it renders on the client */}
+          <Suspense>
+            {/* API: dynamic data – Where to Buy store list */}
+            <StoreFinder storesByCountry={storesByCountry} />
+          </Suspense>
         </div>
       </section>
       </CmsSection>

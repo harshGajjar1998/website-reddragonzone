@@ -4,7 +4,9 @@
    bar, Settings, Content → Search); see src/lib/cms.
    ================================================================== */
 
+import type { Catalogue } from "./gaming";
 import type { Community } from "./home";
+import type { CountryStores } from "./pages";
 
 export type NavItem = {
   label: string;
@@ -88,6 +90,10 @@ export type ChromeContent = {
   helloBar: HelloBarContent | null;
   mainNav: NavItem[];
   megaMenus: Record<string, MegaMenu>;
+  /** All products and categories (Compare, Firmware & Software Finder) */
+  catalogue: Catalogue;
+  /** Where to Buy stores, also shown on product pages */
+  storesByCountry: Record<string, CountryStores>;
   search: { suggestions: string[]; pages: { label: string; href: string }[]; products: SearchProduct[] };
   footerColumns: FooterColumn[];
   footerBlurb: string;

@@ -14,7 +14,7 @@ import type {
 import type { Community, HomeBlock, HomeContent, Img } from "@/data/home";
 import { SOCIAL_NETWORKS, type ChromeContent, type MegaMenu, type SearchProduct } from "@/data/navigation";
 import type { OfficeCategory, OfficeContent, OfficeTile } from "@/data/office";
-import type { Download, PagesContent, Store, SupportTile } from "@/data/pages";
+import { amazonLogo, redragonLogo, sampleOfflineStores, type CountryStores, type Download, type PagesContent, type SupportTile } from "@/data/pages";
 import { fetchBundle, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLatest, type CmsProduct } from "./api";
 import { layout, placed } from "./layout";
 
@@ -59,14 +59,16 @@ function adapt(b: CmsBundle): SiteContent {
   };
   const products = b.products.map((p) => product(p, dims));
   const home = homeContent(b);
+  const gaming = gamingContent(b, products, dims);
+  const office = officeContent(b, products, dims);
 
   return {
     siteUrl: (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, ""),
     seo: { title: b.site.settings.title, description: b.site.settings.description, favicon: b.site.settings.favicon_url },
-    chrome: chrome(b, home.community),
+    chrome: { ...chrome(b, home.community), catalogue: { products, categories: [...gaming.categories, ...office.categories] } },
     home,
-    gaming: gamingContent(b, products, dims),
-    office: officeContent(b, products, dims),
+    gaming,
+    office,
     pages: pagesContent(b, dims),
     blog: {
       copy: { eyebrow: b.singletons.blog_settings.eyebrow, title: b.singletons.blog_settings.title, description: b.singletons.blog_settings.description },
@@ -384,9 +386,30 @@ function homeContent(b: CmsBundle): HomeContent {
   return { blocks, community: first?.type === "community" ? first.community : null };
 }
 
+/* ---------------- stores ---------------- */
+
+/** Where to Buy stores by country (Where to Buy page and product pages). */
+function storesByCountry(b: CmsBundle): Record<string, CountryStores> {
+  const c = b.collections;
+  // CMS stores are all online shops (no address yet); offline ones are sample data until the CMS has them.
+  const out: Record<string, CountryStores> = {};
+  for (const [country, offline] of Object.entries(sampleOfflineStores)) out[country] = { online: [], offline };
+  for (const st of c.stores) {
+    const official = st.type === "Official store";
+    (out[st.country] ??= { online: [], offline: [] }).online.push({
+      cmsId: st.id,
+      name: st.name,
+      type: official ? "Official store" : "Online",
+      url: st.url,
+      logo: official ? redragonLogo : /amazon/i.test(st.name) ? amazonLogo : undefined,
+    });
+  }
+  return out;
+}
+
 /* ---------------- site chrome ---------------- */
 
-function chrome(b: CmsBundle, community: HomeContent["community"]): ChromeContent {
+function chrome(b: CmsBundle, community: HomeContent["community"]): Omit<ChromeContent, "catalogue"> {
   const { announcement: a, navigation, settings } = b.site;
   const search = b.singletons.search;
   const home = b.pages.find((p) => p.slug === "home");
@@ -418,6 +441,7 @@ function chrome(b: CmsBundle, community: HomeContent["community"]): ChromeConten
     helloBar: a ? { tag: a.tag ? `[ ${a.tag} ]` : "", message: a.text, cta: { label: a.cta_text, href: a.cta_url } } : null,
     mainNav: navigation.header.map((m) => ({ label: m.label, href: m.url, ...(m.children.length ? { hasDropdown: true } : {}) })),
     megaMenus,
+    storesByCountry: storesByCountry(b),
     search: {
       suggestions: search.suggestions,
       pages: search.pages.map((p) => ({ label: p.label, href: p.url })),
@@ -452,8 +476,6 @@ function chrome(b: CmsBundle, community: HomeContent["community"]): ChromeConten
 function pagesContent(b: CmsBundle, dims: Dims): PagesContent {
   const c = b.collections;
 
-  const storesByCountry: Record<string, Store[]> = {};
-  for (const st of c.stores) (storesByCountry[st.country] ??= []).push({ cmsId: st.id, name: st.name, type: st.type, url: st.url });
 
   // Rows follow the design's pattern (3, 3, 2); extra topics continue in rows of three.
   const pattern = layout("supportRows", "pattern") ?? [3, 3, 2];
@@ -504,11 +526,13 @@ function pagesContent(b: CmsBundle, dims: Dims): PagesContent {
     aboutValues: c.about_values.map((v) => ({ cmsId: v.id, title: v.title, text: v.text })),
     enquiryTypes: b.singletons.contact_page.enquiry_types,
     faqs: c.faqs.map((f) => ({ cmsId: f.id, q: f.question, a: f.answer })),
-    storesByCountry,
+    storesByCountry: storesByCountry(b),
     supportTiles,
     downloads: c.downloads.map(
       (d): Download => ({
         cmsId: d.id,
+        // The model code ends the name ("EISA 100 PRO K768VI-PRO") and is the Finder slug
+        slug: d.name.trim().split(/\s+/).pop()?.toLowerCase() ?? "",
         name: d.name,
         category: d.category,
         keywords: d.keywords,

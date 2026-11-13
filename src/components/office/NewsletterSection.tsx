@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useFormSubmit } from "@/lib/forms";
 import Honeypot from "@/components/ui/Honeypot";
 import { Button } from "@/components/ui/Button";
+import FormFeedback from "@/components/ui/FormFeedback";
+import { useNewsletterForm } from "@/lib/forms";
 
 type NewsletterSectionProps = {
   eyebrow: string;
@@ -15,15 +16,16 @@ type NewsletterSectionProps = {
 // API: dynamic data – newsletter block content (via props)
 /** Office "Section 9" (top half) – newsletter sign-up on #bebebe (375px). */
 export default function NewsletterSection({ eyebrow, title, description, images }: NewsletterSectionProps) {
-  const { onSubmit, done: submitted } = useFormSubmit("newsletter");
+  const { feedback, sending, onSubmit, onChange, invalid } = useNewsletterForm();
 
   const signUp = (
     <Button
       type="submit"
       chevron
+      disabled={sending}
       className="h-12 w-[118px] shrink-0 font-outfit text-[12px] font-bold leading-normal tracking-[1px]"
     >
-      {submitted ? "Thanks" : "Sign Up"}
+      Sign Up
     </Button>
   );
 
@@ -36,21 +38,23 @@ export default function NewsletterSection({ eyebrow, title, description, images 
         <p className="mt-6 font-lexend-deca text-[16px] font-light leading-[1.4] tracking-[0.48px] text-ink/70">
           {description}
         </p>
-        <form onSubmit={onSubmit} className="mt-6 flex gap-3">
+        <form noValidate onSubmit={onSubmit} onChange={onChange} className="mt-6 flex gap-3">
           <Honeypot />
           <label htmlFor="office-newsletter-email-mobile" className="sr-only">
             Email address
           </label>
           <input
             id="office-newsletter-email-mobile"
-            type="email"
             name="email"
+            type="email"
             required
+            aria-invalid={invalid || undefined}
             placeholder="Enter your email address..."
-            className="h-12 min-w-0 flex-1 rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.36px] text-ink outline-none placeholder:text-[12px] placeholder:text-white focus:border-dragon"
+            className={`h-12 min-w-0 flex-1 rounded-[4px] border bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.36px] text-ink outline-none placeholder:text-[12px] placeholder:text-white focus:border-dragon ${invalid ? "border-[#d32632]" : "border-black"}`}
           />
           {signUp}
         </form>
+        {feedback && <FormFeedback feedback={feedback} compact className="mt-3" />}
         <ul className="mt-6 grid grid-cols-3 gap-4">
           <li className="relative col-span-3 h-[192px] overflow-hidden rounded-[6px]">
             <Image
@@ -78,26 +82,30 @@ export default function NewsletterSection({ eyebrow, title, description, images 
           <p className="font-lexend-deca text-[16px] font-light leading-[1.4] tracking-[0.48px] text-ink/70">
             {description}
           </p>
-          <form onSubmit={onSubmit} className="flex items-start gap-4">
+          <form noValidate onSubmit={onSubmit} onChange={onChange} className="relative flex items-start gap-4">
             <Honeypot />
             <label htmlFor="office-newsletter-email" className="sr-only">
               Email address
             </label>
             <input
               id="office-newsletter-email"
-              type="email"
               name="email"
+              type="email"
               required
+              aria-invalid={invalid || undefined}
               placeholder="Enter your email address..."
-              className="h-12 w-[271px] rounded-[4px] border border-black bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.48px] text-ink outline-none placeholder:text-ink focus:border-dragon"
+              className={`h-12 w-[271px] rounded-[4px] border bg-transparent px-4 font-lexend-deca text-[16px] font-light tracking-[0.48px] text-ink outline-none placeholder:text-ink focus:border-dragon ${invalid ? "border-[#d32632]" : "border-black"}`}
             />
             <Button
               type="submit"
               chevron
+              disabled={sending}
               className="px-7 py-[14px] font-outfit text-[14px] font-bold leading-normal tracking-[1px]"
             >
-              {submitted ? "Thanks" : "Sign Up"}
+              Sign Up
             </Button>
+            {/* Absolute so a message doesn't change the fixed section height */}
+            {feedback && <FormFeedback feedback={feedback} compact className="absolute top-full right-0 left-0 mt-2" />}
           </form>
         </div>
 
