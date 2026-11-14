@@ -1,4 +1,6 @@
 import type { Art } from "@/components/gaming/ArtImage";
+import type { SpecKey } from "@/data/compare";
+import type { DownloadGroup } from "@/data/pages";
 import type { ProductRange } from "@/lib/useProductRange";
 
 export type { ProductRange };
@@ -156,6 +158,10 @@ export type GamingProduct = {
   details?: { title: string; body: string }[];
   /** Structured "Specifications" panel content; see productSpecs() in data/productInfo.ts */
   specs?: ProductSpecs;
+  /** Compare-table values set in the CMS (only the filled-in ones) */
+  compare?: Partial<Record<SpecKey | "summary", string>>;
+  /** Finder / "Manuals & Software" files from the CMS (Drivers & firmware), grouped by type */
+  downloads?: DownloadGroup[];
   keyFeatures?: {
     description: string;
     hero: { src: string; width: number; height: number; crop?: Art["crop"] };

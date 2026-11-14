@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroSection from "@/components/home/HeroSection";
 import CategorySplitSection from "@/components/home/CategorySplitSection";
 import ExplodedViewSection from "@/components/home/ExplodedViewSection";
@@ -8,6 +9,13 @@ import TextBlock from "@/components/home/TextBlock";
 import CmsSection from "@/components/cms/CmsSection";
 import type { HomeBlock } from "@/data/home";
 import { getContent } from "@/lib/cms";
+import { pageMetadata } from "@/lib/seo";
+
+/** Homepage title and description: CMS Pages → Home (SEO), else Settings. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getContent();
+  return pageMetadata("/", { title: seo.title, description: seo.description });
+}
 
 // API: dynamic data – one component per CMS homepage section
 function Block({ block: b }: { block: HomeBlock }) {

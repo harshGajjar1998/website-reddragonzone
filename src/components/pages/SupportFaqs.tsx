@@ -17,7 +17,7 @@ const TOPICS = [
 ];
 
 /** Support page FAQ block (Figma "Frame 167"): search, topic filter and accordion. */
-// API: dynamic data – FAQs (CMS FAQs, via props). CMS FAQs have no topic yet, so they only show under "All".
+// FAQs from the CMS, via props. A FAQ's CMS category (e.g. "Firmware") is its topic here.
 export default function SupportFaqs({ faqs }: { faqs: Faq[] }) {
   const [query, setQuery] = useState("");
   const [applied, setApplied] = useState("");

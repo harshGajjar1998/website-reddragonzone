@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, productTitle } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import { notFound } from "next/navigation";
 import KeyFeatures from "@/components/gaming/KeyFeatures";
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/office/[category]
   // API: dynamic data – office product (page metadata)
   const product = findProduct((await getContent()).office.products, category, slug);
   if (!product) return {};
-  return { title: `${product.name} | Redragon`, description: product.description ?? product.tagline };
+  return pageMetadata(`/office/${category}/${slug}/`, { title: productTitle(product), description: product.description ?? product.tagline, image: product.image.src });
 }
 
 /**
@@ -38,7 +39,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
   if (product.featured) {
     return (
       <CmsSection ids={entryIds([product], "product")}>
-        <ProductJsonLd product={product} siteUrl={siteUrl} />
+        <ProductJsonLd product={product} siteUrl={siteUrl} categoryName={category.listing.title} />
         <OfficeSpecHero product={product} category={category} />
         <OfficeShowcase showcase={product.featured.showcase} />
         <BlueprintSection
@@ -60,7 +61,7 @@ export default async function OfficeProductPage({ params }: PageProps<"/office/[
 
   return (
     <CmsSection ids={entryIds([product], "product")}>
-      <ProductJsonLd product={product} siteUrl={siteUrl} />
+      <ProductJsonLd product={product} siteUrl={siteUrl} categoryName={category.listing.title} />
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} light />}
       {/* API: dynamic data – office newsletter content */}

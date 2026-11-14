@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import CommunitySection from "@/components/home/CommunitySection";
 import CategorySlider from "@/components/gaming/CategorySlider";
@@ -10,7 +11,7 @@ import { getContent } from "@/lib/cms";
 export async function generateMetadata(): Promise<Metadata> {
   const { gaming } = await getContent();
   // API: dynamic data – gaming page description
-  return { title: "Gaming Products | Redragon", description: gaming.hero.description };
+  return pageMetadata("/gaming/", { title: "Gaming Products | Redragon", description: gaming.hero.description });
 }
 
 /** Figma "Gaming Landing page" */

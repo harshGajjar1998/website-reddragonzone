@@ -4,16 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import RevealOnView from "@/components/ui/RevealOnView";
-import { pressArticles, pressHref, type PressArticle } from "@/data/press";
+import { pressHref, type PressArticle } from "@/data/press";
 
 const ALL = "all";
 const ROW = 64;
 /** A year counts as current once its first article passes this far down the viewport */
 const SPY_LINE = 200;
 
-// API: dynamic data – one rail entry per year that has articles
-const years = [...new Set(pressArticles.map((a) => a.year))].sort((a, b) => b - a);
-const railItems = [{ id: ALL, label: "All Years" }, ...years.map((y) => ({ id: String(y), label: String(y) }))];
+type RailItem = { id: string; label: string };
 
 const smooth = (): ScrollBehavior =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
@@ -54,7 +52,7 @@ function ArticleCard({ article }: { article: PressArticle }) {
 }
 
 /** Figma "Year filter": the dot glides between years as the list scrolls. */
-function YearRail({ active, onSelect }: { active: string; onSelect: (id: string) => void }) {
+function YearRail({ railItems, active, onSelect }: { railItems: RailItem[]; active: string; onSelect: (id: string) => void }) {
   const index = railItems.findIndex((item) => item.id === active);
   return (
     <nav aria-label="Articles by year" className="sticky top-[46px] mt-[22px] hidden h-fit w-[136px] shrink-0 lg:block">
@@ -91,7 +89,7 @@ function YearRail({ active, onSelect }: { active: string; onSelect: (id: string)
 }
 
 /** Mobile version of the rail: a pinned strip of year chips. */
-function YearChips({ active, onSelect }: { active: string; onSelect: (id: string) => void }) {
+function YearChips({ railItems, active, onSelect }: { railItems: RailItem[]; active: string; onSelect: (id: string) => void }) {
   const stripRef = useRef<HTMLDivElement>(null);
 
   // Keeps the current year in view as the page scrolls
@@ -130,7 +128,10 @@ function YearChips({ active, onSelect }: { active: string; onSelect: (id: string
 }
 
 /** "Latest Press Coverage": articles grouped by year, with a rail that follows the scroll. */
-export default function PressCoverage() {
+export default function PressCoverage({ articles, title, text }: { articles: PressArticle[]; title: string; text: string }) {
+  // One rail entry per year that has articles (CMS press articles, newest first)
+  const years = [...new Set(articles.map((a) => a.year))].sort((a, b) => b - a);
+  const railItems: RailItem[] = [{ id: ALL, label: "All Years" }, ...years.map((y) => ({ id: String(y), label: String(y) }))];
   const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(ALL);
@@ -170,21 +171,21 @@ export default function PressCoverage() {
     <section ref={sectionRef} className="bg-[#fafafb]">
       <div className="page-frame px-4 pt-10 pb-10 lg:px-[120px] lg:pt-14 lg:pb-14">
         <h2 className="font-lexend-deca text-[28px] leading-9 font-semibold text-ink lg:text-[37px] lg:leading-[46px]">
-          Latest Press Coverage
+          {title}
         </h2>
         <p className="mt-2 font-lexend-deca text-[15px] leading-[22px] text-[#626466] lg:mt-[11px]">
-          Featured articles, reviews, and perspectives from the gaming community.
+          {text}
         </p>
 
-        <YearChips active={active} onSelect={goTo} />
+        <YearChips railItems={railItems} active={active} onSelect={goTo} />
 
         <div className="flex lg:mt-[49px]">
-          <YearRail active={active} onSelect={goTo} />
+          <YearRail railItems={railItems} active={active} onSelect={goTo} />
           <div ref={listRef} className="flex min-w-0 flex-1 flex-col gap-3.5">
             {years.map((year) => (
               <div key={year} data-year={year} className="flex scroll-mt-[60px] flex-col gap-3.5 lg:scroll-mt-6">
                 {/* API: dynamic data – articles for this year */}
-                {pressArticles
+                {articles
                   .filter((article) => article.year === year)
                   .map((article) => (
                     <ArticleCard key={article.slug} article={article} />

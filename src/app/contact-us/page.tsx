@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -8,10 +9,9 @@ import ContactForm, { ContactFormFromUrl } from "@/components/pages/ContactForm"
 import FaqList from "@/components/pages/FaqList";
 import { getContent } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "Contact Us | Redragon",
-  description: "Get in touch with Redragon – product support, warranty, partnerships and press enquiries.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/contact-us/", { title: "Contact Us | Redragon", description: "Get in touch with Redragon – product support, warranty, partnerships and press enquiries." });
+}
 
 /** Figma "Contact us" */
 export default async function ContactPage() {

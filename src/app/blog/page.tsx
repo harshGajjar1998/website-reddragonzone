@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -7,7 +8,7 @@ import NewsletterCard from "@/components/blog/NewsletterCard";
 import { getContent } from "@/lib/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Blog | Redragon", description: (await getContent()).blog.copy.description };
+  return pageMetadata("/blog/", { title: "Blog | Redragon", description: (await getContent()).blog.copy.description });
 }
 
 /** Figma "Blog Home Page" */

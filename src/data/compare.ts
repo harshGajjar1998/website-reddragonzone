@@ -21,7 +21,7 @@ export function productLabels(product: GamingProduct) {
 const NOT_SPECIFIED = "Not specified";
 const CHECK_PAGE = "Check product page";
 
-type SpecKey =
+export type SpecKey =
   | "type"
   | "connectivity"
   | "layout"
@@ -60,51 +60,14 @@ const SECTIONS: { title: string; rows: { key: SpecKey; label: string }[] }[] = [
 
 const details = { rgb: CHECK_PAGE, software: CHECK_PAGE, warranty: CHECK_PAGE };
 
-// API: dynamic data – sample values from the Figma design, replace with each product's real specs
-const sampleSpecs: Record<string, ProductSpecs> = {
-  "k768vi-pro": {
-    summary: "Tri-mode · 100-key gasket design",
-    type: "Mechanical keyboard",
-    connectivity: "Tri-mode",
-    layout: "100 keys",
-    hotSwap: "Yes · listing",
-    switch: "Mechanical",
-    polling: NOT_SPECIFIED,
-    build: "Gasket-mounted",
-    ...details,
-  },
-  "k668wbo-wl": {
-    summary: "Tri-mode · Hot-swappable",
-    type: "Mechanical keyboard",
-    connectivity: "Tri-mode wireless",
-    layout: NOT_SPECIFIED,
-    hotSwap: "Yes · listing",
-    switch: "Mechanical",
-    polling: NOT_SPECIFIED,
-    build: NOT_SPECIFIED,
-    ...details,
-  },
-  "k769bam-m": {
-    summary: "Wired · Magnetic switches",
-    type: "Magnetic keyboard",
-    connectivity: "Wired",
-    layout: NOT_SPECIFIED,
-    hotSwap: NOT_SPECIFIED,
-    switch: "HE magnetic",
-    polling: "8K · listing",
-    build: "Aluminum construction",
-    ...details,
-  },
-};
-
 const firstTag = (tags: string[], pattern: RegExp) => tags.find((tag) => pattern.test(tag));
 
-/** Products without real specs show what their catalogue tags can tell us. */
-// API: dynamic data – product specs for the comparison table
+/** The product's compare values from the CMS ("Compare table" in the product editor); empty rows fall back to what its catalogue tags can tell us. */
 export function compareSpecs(catalogue: Catalogue, product: GamingProduct): ProductSpecs {
-  const sample = sampleSpecs[product.slug];
-  if (sample) return sample;
+  return { ...derivedSpecs(catalogue, product), ...product.compare };
+}
 
+function derivedSpecs(catalogue: Catalogue, product: GamingProduct): ProductSpecs {
   const tags = product.tags ?? [];
   const switchType = firstTag(tags, /mechanical|membrane|magnetic/i);
   const connectivity =

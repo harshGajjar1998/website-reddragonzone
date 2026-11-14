@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, productTitle } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import { notFound } from "next/navigation";
 import CommunitySection from "@/components/home/CommunitySection";
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/gaming/[category]
   // API: dynamic data – gaming product (page metadata)
   const product = findProduct((await getContent()).gaming.products, category, slug);
   if (!product) return {};
-  return { title: `${product.name} | Redragon`, description: product.description ?? product.tagline };
+  return pageMetadata(`/gaming/${category}/${slug}/`, { title: productTitle(product), description: product.description ?? product.tagline, image: product.image.src });
 }
 
 /**
@@ -39,7 +40,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
     const { featured } = product;
     return (
       <CmsSection ids={entryIds([product], "product")}>
-        <ProductJsonLd product={product} siteUrl={siteUrl} />
+        <ProductJsonLd product={product} siteUrl={siteUrl} categoryName={category.listing.title} />
         {/* Mobile opens with the product overview (Figma "Spice detal"), desktop with the hero */}
         <ProductOverview product={product} category={category} special={{ ghost: featured.hero.model }} />
         <FeaturedHero hero={featured.hero} product={product} category={category} />
@@ -52,9 +53,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
           />
         )}
         <CmsSection ids={["shared:community"]}>
-          <CmsSection ids={["shared:community"]}>
-        <CommunitySection />
-      </CmsSection>
+          <CommunitySection />
         </CmsSection>
       </CmsSection>
     );
@@ -62,7 +61,7 @@ export default async function GamingProductPage({ params }: PageProps<"/gaming/[
 
   return (
     <CmsSection ids={entryIds([product], "product")}>
-      <ProductJsonLd product={product} siteUrl={siteUrl} />
+      <ProductJsonLd product={product} siteUrl={siteUrl} categoryName={category.listing.title} />
       <ProductOverview product={product} category={category} />
       {product.keyFeatures && <KeyFeatures data={product.keyFeatures} productName={product.name} />}
       <CmsSection ids={["shared:community"]}>

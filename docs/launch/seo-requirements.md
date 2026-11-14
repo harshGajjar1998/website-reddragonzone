@@ -1,6 +1,7 @@
 # SEO requirements and steps for launch
 
-Status as of 2026-11-13. Do the steps in order; each says where the change goes.
+Status as of 2026-11-14: steps 1–7 and 11 are done (`docs/change-requests/2026-11-14-seo-metadata-from-cms.md`, `2026-11-14-self-hosted-fonts-jsonld-text-pages.md`, `2026-11-14-old-site-redirects-htaccess.md`). Product photos use the product name as alt text. Redirects come from the CMS: `out/.htaccess` at build time for Apache, and an nginx include on the China server. Open: step 12 (ask the client for other old links), then the launch-day checks.
+Do the steps in order; each says where the change goes.
 Today: sitemap.xml and robots.txt are generated from `SITE_URL`; there are no Open Graph tags, no canonical
 links, and the temporary domain can be indexed.
 
@@ -16,7 +17,7 @@ links, and the temporary domain can be indexed.
    Product titles: `<Model> <Name> | Redragon`.
 4. **Open Graph and Twitter cards.** `openGraph` + `twitter` metadata per page: title, description, image
    (1200×630; product image or a CMS default share image), site name, `og:type` article for blog and press.
-5. **Structured data (JSON-LD).** Product JSON-LD exists; add `Organization` (logo, social profiles) on the home
+5. ✅ **Structured data (JSON-LD).** Product JSON-LD exists; add `Organization` (logo, social profiles) on the home
    page, `BreadcrumbList` on category and product pages, `Article` on blog/press posts, `FAQPage` on Support/Contact.
 6. **Sitemap.** Include every product, category, blog and press page with `lastModified` from the CMS
    `updated_at`; leave out the compare page and `/support/search/`. Check it lists all 653 products after the import.

@@ -10,6 +10,9 @@ import { unstable_rethrow } from "next/navigation";
 type Str = string;
 export type CmsImage = { image: Str; alt: Str };
 
+/** CMS "Search engines & sharing" fields (pages, products, categories, blog and press posts) and the entry's last change */
+export type CmsSeo = { seo_title?: Str; seo_description?: Str; share_image?: Str; updated_at?: Str | null };
+
 export type CmsCategory = {
   id: number;
   slug: Str;
@@ -78,6 +81,10 @@ export type CmsProduct = {
   exploded: boolean;
   exploded_parts: Str[];
   exploded_mobile: Str;
+  spec_dimensions: Str[];
+  spec_groups: { title: Str; items: Str[] }[];
+  compare_summary: Str; compare_type: Str; compare_connectivity: Str; compare_layout: Str; compare_hot_swap: Str;
+  compare_switch: Str; compare_polling: Str; compare_build: Str; compare_rgb: Str; compare_software: Str; compare_warranty: Str;
 };
 
 export type CmsMenuItem = { id: Str; label: Str; url: Str; image?: Str; children: CmsMenuItem[] };
@@ -99,6 +106,8 @@ export type CmsBundle = {
       office_logo_url?: Str;
       footer_logo_url: Str;
       favicon_url: Str;
+      /** Default link-preview picture, 1200 × 630 */
+      share_image_url?: Str;
       footer_text: Str;
       social: Record<string, Str>;
     };
@@ -114,8 +123,25 @@ export type CmsBundle = {
       author_name: Str; author_position: Str; author_avatar: Str;
       lead: Str; paragraphs: Str[]; quote: Str; quote_author: Str; closing: Str;
     }[];
-    faqs: { id: number; question: Str; answer: Str[] }[];
-    stores: { id: number; country: Str; name: Str; type: "Official store" | "Online retailer" | "Retail store"; url: Str }[];
+    faqs: { id: number; category: Str; question: Str; answer: Str[] }[];
+    stores: {
+      id: number; country: Str; name: Str; type: "Official store" | "Online retailer" | "Retail store" | "Authorized retailer"; url: Str; logo: Str;
+      address_line1: Str; address_line2: Str; lat: number | null; lng: number | null; photo: Str;
+      /** Where to Buy online card: CMS "Short description" (max 120) and "Products sold" (max 3) */
+      description?: Str; categories?: Str[];
+    }[];
+    firmware: {
+      id: number; product: Str; type: "Firmware" | "Driver" | "Software" | "Manual"; title: Str; version: Str; release_date: Str;
+      os: "" | "Windows" | "Mac" | "Windows & Mac" | "Any"; file: Str; size: Str; release_notes: Str;
+    }[];
+    press: {
+      id: number; slug: Str; kicker: Str; title: Str; excerpt: Str; date: Str; read_time: Str; image: Str;
+      author_name: Str; author_position: Str; author_avatar: Str;
+      lead: Str; paragraphs: Str[]; quote: Str; quote_author: Str; closing: Str;
+    }[];
+    awards: { id: number; title: Str; publication: Str; date: Str; description: Str }[];
+    /** CMS "Text pages": Privacy Policy, Careers, …, each at /<slug>/ */
+    text_pages?: (CmsSeo & { id: number; slug: Str; title: Str; intro: Str; updated: Str; sections: { heading: Str; paragraphs: Str[] }[] })[];
     downloads: { id: number; name: Str; category: Str; keywords: Str; image: Str; software_url: Str; manual_url: Str }[];
     support_topics: { id: number; slug: Str; label: Str; label_lines: Str[]; ghost: Str; image: Str }[];
     about_sections: { id: number; eyebrow: Str; title: Str; paragraphs: Str[]; image: Str; alt: Str; media_left: boolean; tinted: boolean }[];
@@ -140,6 +166,10 @@ export type CmsBundle = {
     contact_page: { title: Str; subtitle: Str; hero_image: Str; enquiry_types: Str[]; faq_title: Str; faq_subtitle: Str };
     where_to_buy_page: { title: Str; hero_image: Str; heading: Str; subtitle: Str };
     blog_settings: { eyebrow: Str; title: Str; description: Str; categories: Str[] };
+    press_page: {
+      hero_eyebrow: Str; hero_title: Str; hero_text: Str; hero_image: Str; coverage_title: Str; coverage_text: Str;
+      awards_title: Str; awards_text: Str; contact_title: Str; contact_text: Str;
+    };
     search: {
       suggestions: Str[];
       pages: { label: Str; url: Str }[];

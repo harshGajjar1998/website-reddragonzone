@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -6,6 +7,8 @@ import CategoryListing, { CategoryListingFromUrl } from "@/components/gaming/Cat
 import NewsletterSection from "@/components/office/NewsletterSection";
 import OfficeCategoryHero from "@/components/office/OfficeCategoryHero";
 import { findCategory, getContent, productsIn } from "@/lib/cms";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbs } from "@/lib/structured-data";
 
 export async function generateStaticParams() {
   // API: dynamic data – office category slugs
@@ -16,12 +19,12 @@ export async function generateMetadata({ params }: PageProps<"/office/[category]
   // API: dynamic data – office category (page metadata)
   const category = findCategory((await getContent()).office.categories, (await params).category);
   if (!category) return {};
-  return { title: `${category.listing.title} | Redragon`, description: category.listing.description };
+  return pageMetadata(`/office/${category.slug}/`, { title: `${category.listing.title} | Redragon`, description: category.listing.description });
 }
 
 /** Figma "Mice PAGE" – shared by every office category. `?page=2` shows the next grid. */
 export default async function OfficeCategoryPage({ params }: PageProps<"/office/[category]">) {
-  const { office } = await getContent();
+  const { office, siteUrl } = await getContent();
   // API: dynamic data – office category
   const category = findCategory(office.categories, (await params).category);
   if (!category) notFound();
@@ -31,6 +34,7 @@ export default async function OfficeCategoryPage({ params }: PageProps<"/office/
 
   return (
     <>
+      <JsonLd data={breadcrumbs(siteUrl, [{ name: "Office", path: "/office/" }, { name: category.listing.title, path: `/office/${category.slug}/` }])} />
       <CmsSection ids={entryIds([category])}>
         <OfficeCategoryHero slides={category.spotlights} />
       </CmsSection>

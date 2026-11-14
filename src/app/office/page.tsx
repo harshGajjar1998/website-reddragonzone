@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection from "@/components/cms/CmsSection";
 import FeaturedProductsGrid from "@/components/gaming/FeaturedProductsGrid";
 import LatestGearSection from "@/components/gaming/LatestGearSection";
@@ -11,7 +12,7 @@ import { getContent } from "@/lib/cms";
 export async function generateMetadata(): Promise<Metadata> {
   const { office } = await getContent();
   // API: dynamic data – office page description
-  return { title: "Office Products | Redragon", description: office.description };
+  return pageMetadata("/office/", { title: "Office Products | Redragon", description: office.description });
 }
 
 /** Figma "Office landing page" */

@@ -73,40 +73,6 @@ export type CountryStores = { online: OnlineStore[]; offline: OfflineStore[] };
 
 export const redragonLogo = { src: "/images/pages/where-to-buy/redragon-logo.png", width: 1845, height: 1260 };
 export const amazonLogo = { src: "/images/pages/where-to-buy/amazon-logo.png", width: 934, height: 350 };
-const storePhoto = "/images/pages/where-to-buy/store-gamers-hub.png";
-
-// API: dynamic data – offline stores. Sample until the CMS Stores entries have addresses and coordinates.
-export const sampleOfflineStores: Record<string, OfflineStore[]> = {
-  India: [
-    {
-      name: "Gamer's Hub",
-      type: "Retail Store",
-      address: ["DLF Mall of India, Sector 18", "Noida, Uttar Pradesh 201301"],
-      lat: 28.5672,
-      lng: 77.3211,
-      image: storePhoto,
-      distanceKm: 2.8,
-    },
-    {
-      name: "Tech World",
-      type: "Authorized Retailer",
-      address: ["Pacific Mall, Tagore Garden", "New Delhi, Delhi 110027"],
-      lat: 28.643,
-      lng: 77.106,
-      image: storePhoto,
-      distanceKm: 4.1,
-    },
-    {
-      name: "Digital Zone",
-      type: "Retail Store",
-      address: ["Select Citywalk Mall, Saket", "New Delhi, Delhi 110017"],
-      lat: 28.5286,
-      lng: 77.219,
-      image: storePhoto,
-      distanceKm: 7.6,
-    },
-  ],
-};
 
 /** Stores selling a product in a country. */
 // API: dynamic data – replace with the per-product store endpoint; for now every store sells every product
@@ -240,96 +206,21 @@ export type SupportProduct = {
   downloads: DownloadGroup[];
 };
 
-const sample = (
-  version: string,
-  date: string,
-  os: DownloadOs[],
-  notes: string,
-  file?: DownloadRelease["file"],
-): DownloadRelease => ({
-  version: `Sample ${version}`,
-  date,
-  os,
-  notes,
-  href: "#",
-  file,
-  sample: true,
-});
-
-const OLDER_NOTE = "Earlier example of key-mapping settings.";
-const LATEST = "01 Feb 20XX";
-const OLDER = "01 Jan 20XX";
-const EXE = { size: "12.5 MB", format: "EXE" };
-const PDF = { size: "4.8 MB", format: "PDF" };
-
-// API: dynamic data – sample releases from the Figma design, replace with real files
-const sampleDownloads: DownloadGroup[] = [
-  {
-    type: "driver",
-    title: "Driver",
-    description: "Device connection and recognition",
-    releases: [
-      sample("v1.0.0", LATEST, ["windows"], "Example update to device recognition and connection stability."),
-      sample("v1.0.0", LATEST, ["mac"], "Example update to device recognition and connection stability."),
-      sample("v0.9.0", OLDER, ["windows"], OLDER_NOTE),
-      sample("v0.9.0", OLDER, ["mac"], OLDER_NOTE),
-    ],
-  },
-  {
-    type: "firmware",
-    title: "Firmware",
-    description: "On-device performance updates",
-    releases: [
-      sample("v2.0.0", LATEST, ["windows"], "Example update to key response and onboard profile behavior."),
-      sample("v1.9.0", OLDER, ["windows"], OLDER_NOTE),
-    ],
-  },
-  {
-    type: "software",
-    title: "Software",
-    description: "Customize your keyboard settings",
-    releases: [
-      sample("v3.0.0", LATEST, ["windows"], "Example update to lighting controls and custom key mappings.", EXE),
-      sample("v3.0.0", LATEST, ["mac"], "Example update to lighting controls and custom key mappings.", EXE),
-      sample("v2.9.0", OLDER, ["windows"], OLDER_NOTE),
-      sample("v2.9.0", OLDER, ["mac"], OLDER_NOTE),
-    ],
-  },
-  {
-    type: "manual",
-    title: "Manual",
-    description: "Setup and product documentation",
-    releases: [
-      sample("v1.0.0", LATEST, ["windows", "mac"], "Example revision to setup instructions and shortcut reference.", PDF),
-      sample("v0.9.0", OLDER, ["windows", "mac"], OLDER_NOTE),
-    ],
-  },
-];
-
-// API: dynamic data – Finder products. K769BAM-M has no downloads so the empty state can be previewed.
-const curatedProducts: SupportProduct[] = [
-  { slug: "k768vi-pro", name: "EISA 100 PRO", model: "K768VI-PRO", category: "Keyboards", image: k768, downloads: sampleDownloads },
-  { slug: "k668wbo-wl", name: "TRUNDLE", model: "K668WBO-WL", category: "Keyboards", image: k668, downloads: sampleDownloads },
-  { slug: "k769bam-m", name: "NUBULA", model: "K769BAM-M", category: "Keyboards", image: k769, downloads: [] },
-];
+/** Finder card placement from the design for these renders; other products use the default box. */
+const finderArt: Record<string, SupportProduct["image"]> = { "k768vi-pro": k768, "k668wbo-wl": k668, "k769bam-m": k769 };
 
 const fromCatalogue = (product: GamingProduct, category = ""): SupportProduct => ({
   slug: product.slug,
   name: product.name,
   model: product.slug.toUpperCase(),
   category,
-  image: { ...product.image, box: { top: 0, h: 182 }, contain: true },
-  downloads: sampleDownloads,
+  image: finderArt[product.slug] ?? { ...product.image, box: { top: 0, h: 182 }, contain: true },
+  downloads: product.downloads ?? [],
 });
 
-// API: dynamic data – every catalogue product (CMS) has a Finder entry, so product pages can link straight to it.
-// Downloads are sample releases until the CMS holds them per product.
-export const supportProducts = (catalogue: Catalogue): SupportProduct[] => [
-  ...curatedProducts,
-  ...catalogue.products
-    .filter((p) => !curatedProducts.some((c) => c.slug === p.slug))
-    .map((p) => fromCatalogue(p, categoryOf(catalogue, p)?.label)),
-];
+/** Every catalogue product (CMS) has a Finder entry, so product pages can link straight to it. Files come from the CMS (Drivers & firmware). */
+export const supportProducts = (catalogue: Catalogue): SupportProduct[] =>
+  catalogue.products.map((p) => fromCatalogue(p, categoryOf(catalogue, p)?.label));
 
 const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
 

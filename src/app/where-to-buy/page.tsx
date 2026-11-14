@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -6,10 +7,9 @@ import CommunitySection from "@/components/home/CommunitySection";
 import StoreFinder from "@/components/pages/StoreFinder";
 import { getContent } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "Where to Buy | Redragon",
-  description: "Locate authorized Redragon stores and online retailers for individual purchases.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/where-to-buy/", { title: "Where to Buy | Redragon", description: "Locate authorized Redragon stores and online retailers for individual purchases." });
+}
 
 /** Figma "Where to buy" (revised: 3222:1643 Online, 3222:1488 Nearby) */
 export default async function WhereToBuyPage() {

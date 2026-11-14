@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CmsSection, { entryIds } from "@/components/cms/CmsSection";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,11 +7,13 @@ import EliteClubNewsletter from "@/components/pages/EliteClubNewsletter";
 import SectionIntro from "@/components/pages/SectionIntro";
 import { getContent } from "@/lib/cms";
 
-export const metadata: Metadata = {
-  title: "About Us | Redragon",
-  description:
-    "Redragon builds high-quality, cost-effective gaming peripherals for gamers worldwide since 2013. Learn about our brand, philosophy and the spirit of the dragon.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/about-us/", {
+    title: "About Us | Redragon",
+    description:
+      "Redragon builds high-quality, cost-effective gaming peripherals for gamers worldwide since 2013. Learn about our brand, philosophy and the spirit of the dragon.",
+  });
+}
 
 const A = "/images/pages/about";
 

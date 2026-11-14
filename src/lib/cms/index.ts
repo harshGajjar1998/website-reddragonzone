@@ -14,8 +14,9 @@ import type {
 import type { Community, HomeBlock, HomeContent, Img } from "@/data/home";
 import { SOCIAL_NETWORKS, type ChromeContent, type MegaMenu, type SearchProduct } from "@/data/navigation";
 import type { OfficeCategory, OfficeContent, OfficeTile } from "@/data/office";
-import { amazonLogo, redragonLogo, sampleOfflineStores, type CountryStores, type Download, type PagesContent, type SupportTile } from "@/data/pages";
-import { fetchBundle, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLatest, type CmsProduct } from "./api";
+import { amazonLogo, redragonLogo, type CountryStores, type Download, type DownloadGroup, type DownloadOs, type PagesContent, type SupportTile } from "@/data/pages";
+import type { PressContent } from "@/data/press";
+import { fetchBundle, isCmsPreview, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLatest, type CmsProduct, type CmsSeo } from "./api";
 import { layout, placed } from "./layout";
 
 /* ==================================================================
@@ -27,14 +28,32 @@ import { layout, placed } from "./layout";
 export type SiteContent = {
   /** Absolute site address without a trailing slash, for the sitemap, canonical links and structured data */
   siteUrl: string;
-  seo: { title: string; description: string; favicon: string };
+  seo: {
+    title: string;
+    description: string;
+    favicon: string;
+    /** Default link-preview picture (CMS Settings) */
+    shareImage?: string;
+    /** False on staging domains and the draft preview: pages get noindex and robots.txt blocks crawlers */
+    index: boolean;
+    /** Per page, keyed by its path with a trailing slash ("/gaming/mice/") */
+    pages: Record<string, PageSeo>;
+  };
   chrome: ChromeContent;
   home: HomeContent;
   gaming: GamingContent;
   office: OfficeContent;
   pages: PagesContent;
   blog: { copy: { eyebrow: string; title: string; description: string }; categories: string[]; posts: BlogPost[] };
+  press: PressContent;
+  textPages: TextPage[];
 };
+
+/** CMS text page (Privacy Policy, Careers, …) at /<slug>/ */
+export type TextPage = { slug: string; title: string; intro: string; updated?: string; sections: { heading: string; paragraphs: string[] }[] };
+
+/** Search-engine and link-preview text for one page. Empty CMS fields are left out, so pages fall back to their own text. */
+export type PageSeo = { title?: string; description?: string; image?: string; updated?: string };
 
 /** The whole site, fetched once per build and shared by every page. */
 export const getContent = cache(async (): Promise<SiteContent> => adapt(await fetchBundle()));
@@ -57,19 +76,36 @@ function adapt(b: CmsBundle): SiteContent {
     const d = b.media[src];
     return d ? { width: d[0], height: d[1] } : { width: 1600, height: 1600 };
   };
-  const products = b.products.map((p) => product(p, dims));
+  const files = firmwareByProduct(b);
+  const products = b.products.map((p) => product(p, dims, files[p.slug]));
   const home = homeContent(b);
   const gaming = gamingContent(b, products, dims);
   const office = officeContent(b, products, dims);
+  const siteUrl = (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, "");
 
   return {
-    siteUrl: (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, ""),
-    seo: { title: b.site.settings.title, description: b.site.settings.description, favicon: b.site.settings.favicon_url },
+    siteUrl,
+    seo: {
+      title: b.site.settings.title,
+      description: b.site.settings.description,
+      favicon: b.site.settings.favicon_url,
+      ...(b.site.settings.share_image_url ? { shareImage: b.site.settings.share_image_url } : {}),
+      index: indexable(siteUrl),
+      pages: seoPages(b),
+    },
     chrome: { ...chrome(b, home.community), catalogue: { products, categories: [...gaming.categories, ...office.categories] } },
     home,
     gaming,
     office,
     pages: pagesContent(b, dims),
+    press: pressContent(b, dims),
+    textPages: (b.collections.text_pages ?? []).map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      intro: p.intro ?? "",
+      ...(p.updated ? { updated: longDate(p.updated) } : {}),
+      sections: (p.sections ?? []).map((s) => ({ heading: s.heading ?? "", paragraphs: (s.paragraphs ?? []).filter(Boolean) })),
+    })),
     blog: {
       copy: { eyebrow: b.singletons.blog_settings.eyebrow, title: b.singletons.blog_settings.title, description: b.singletons.blog_settings.description },
       categories: b.singletons.blog_settings.categories,
@@ -127,7 +163,7 @@ function category(c: CmsCategory, dims: Dims): GamingCategory {
   };
 }
 
-function product(p: CmsProduct, dims: Dims): GamingProduct {
+function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): GamingProduct {
   const main = p.images[0] ?? "";
   const smallArt = layout("product.small", main);
   const largeArt = layout("product.large", main);
@@ -158,6 +194,11 @@ function product(p: CmsProduct, dims: Dims): GamingProduct {
     modules: nonEmpty(p.modules.map((m) => ({ label: m.label, ...(m.url ? { href: m.url } : {}) }))),
     colors: nonEmpty(p.colors),
     details: nonEmpty(p.details),
+    ...(p.spec_dimensions?.length || p.spec_groups?.length
+      ? { specs: { dimensions: p.spec_dimensions ?? [], technical: (p.spec_groups ?? []).map((g) => ({ title: g.title, items: g.items })) } }
+      : {}),
+    ...compareValues(p),
+    ...(downloads ? { downloads } : {}),
     keyFeatures: hasFeatures
       ? {
           description: p.features_description,
@@ -203,6 +244,63 @@ function product(p: CmsProduct, dims: Dims): GamingProduct {
         }
       : undefined,
   };
+}
+
+const COMPARE_KEYS = {
+  summary: "compare_summary", type: "compare_type", connectivity: "compare_connectivity", layout: "compare_layout",
+  hotSwap: "compare_hot_swap", switch: "compare_switch", polling: "compare_polling", build: "compare_build",
+  rgb: "compare_rgb", software: "compare_software", warranty: "compare_warranty",
+} as const satisfies Record<string, keyof CmsProduct>;
+
+/** Compare-table values the CMS has for this product (empty ones are left to the derived values). */
+function compareValues(p: CmsProduct): Pick<GamingProduct, "compare"> {
+  const compare = Object.fromEntries(Object.entries(COMPARE_KEYS).flatMap(([key, field]) => (p[field] ? [[key, p[field]]] : [])));
+  return Object.keys(compare).length ? { compare } : {};
+}
+
+/* ---------------- drivers & firmware ---------------- */
+
+const DOWNLOAD_GROUPS: { type: DownloadGroup["type"]; cms: string; title: string; description: string }[] = [
+  { type: "driver", cms: "Driver", title: "Driver", description: "Device connection and recognition" },
+  { type: "firmware", cms: "Firmware", title: "Firmware", description: "On-device performance updates" },
+  { type: "software", cms: "Software", title: "Software", description: "Customize your device settings" },
+  { type: "manual", cms: "Manual", title: "Manual", description: "Setup and product documentation" },
+];
+
+const OS: Record<string, DownloadOs[]> = { Windows: ["windows"], Mac: ["mac"] };
+
+/** "2026-02-01" → "01 Feb 2026", as the Finder shows dates */
+const shortDate = (d: string) => {
+  const t = Date.parse(`${d}T00:00:00Z`);
+  return Number.isNaN(t) ? d : new Date(t).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+};
+
+/** CMS "Drivers & firmware" files per product slug, grouped by type, newest first. */
+function firmwareByProduct(b: CmsBundle): Record<string, DownloadGroup[]> {
+  const bySlug: Record<string, CmsBundle["collections"]["firmware"]> = {};
+  for (const f of b.collections.firmware ?? []) (bySlug[f.product] ??= []).push(f);
+
+  const out: Record<string, DownloadGroup[]> = {};
+  for (const [slug, files] of Object.entries(bySlug)) {
+    const sorted = [...files].sort((x, y) => y.release_date.localeCompare(x.release_date));
+    out[slug] = DOWNLOAD_GROUPS.flatMap((g) => {
+      const releases = sorted
+        .filter((f) => f.type === g.cms)
+        .map((f) => {
+          const ext = f.file.split("?")[0].split(".").pop() ?? "";
+          return {
+            version: f.version || f.title,
+            date: shortDate(f.release_date),
+            os: OS[f.os] ?? (["windows", "mac"] as DownloadOs[]),
+            notes: f.release_notes,
+            href: f.file,
+            ...(f.size ? { file: { size: f.size, format: ext.length <= 4 ? ext.toUpperCase() : "" } } : {}),
+          };
+        });
+      return releases.length ? [{ type: g.type, title: g.title, description: g.description, releases }] : [];
+    });
+  }
+  return out;
 }
 
 function latest(items: CmsLatest[], dims: Dims): LatestItem[] {
@@ -390,18 +488,30 @@ function homeContent(b: CmsBundle): HomeContent {
 
 /** Where to Buy stores by country (Where to Buy page and product pages). */
 function storesByCountry(b: CmsBundle): Record<string, CountryStores> {
-  const c = b.collections;
-  // CMS stores are all online shops (no address yet); offline ones are sample data until the CMS has them.
   const out: Record<string, CountryStores> = {};
-  for (const [country, offline] of Object.entries(sampleOfflineStores)) out[country] = { online: [], offline };
-  for (const st of c.stores) {
+  for (const st of b.collections.stores) {
+    const country = (out[st.country] ??= { online: [], offline: [] });
+    // Retail stores and authorized retailers with an address are shops to visit; the rest sell online.
+    if ((st.type === "Retail store" || st.type === "Authorized retailer") && st.address_line1) {
+      country.offline.push({
+        name: st.name,
+        type: st.type === "Authorized retailer" ? "Authorized Retailer" : "Retail Store",
+        address: [st.address_line1, st.address_line2],
+        lat: st.lat ?? 0,
+        lng: st.lng ?? 0,
+        image: st.photo || "/images/pages/where-to-buy/store-gamers-hub.png",
+      });
+      continue;
+    }
     const official = st.type === "Official store";
-    (out[st.country] ??= { online: [], offline: [] }).online.push({
+    country.online.push({
       cmsId: st.id,
       name: st.name,
       type: official ? "Official store" : "Online",
       url: st.url,
-      logo: official ? redragonLogo : /amazon/i.test(st.name) ? amazonLogo : undefined,
+      logo: st.logo ? { src: st.logo, width: 420, height: 288 } : official ? redragonLogo : /amazon/i.test(st.name) ? amazonLogo : undefined,
+      ...(st.description ? { description: st.description } : {}),
+      ...(st.categories?.length ? { categories: st.categories } : {}),
     });
   }
   return out;
@@ -525,7 +635,8 @@ function pagesContent(b: CmsBundle, dims: Dims): PagesContent {
     }),
     aboutValues: c.about_values.map((v) => ({ cmsId: v.id, title: v.title, text: v.text })),
     enquiryTypes: b.singletons.contact_page.enquiry_types,
-    faqs: c.faqs.map((f) => ({ cmsId: f.id, q: f.question, a: f.answer })),
+    // The CMS category is the Support page topic (Firmware, Setup, Compatibility, Warranty)
+    faqs: c.faqs.map((f) => ({ cmsId: f.id, q: f.question, a: f.answer, ...(f.category ? { topic: f.category.trim().toLowerCase() } : {}) })),
     storesByCountry: storesByCountry(b),
     supportTiles,
     downloads: c.downloads.map(
@@ -542,4 +653,94 @@ function pagesContent(b: CmsBundle, dims: Dims): PagesContent {
       }),
     ),
   };
+}
+
+/* ---------------- press ---------------- */
+
+/** "2026-10-19" → "October 19, 2026" */
+const longDate = (d: string) => {
+  const t = Date.parse(`${d}T00:00:00Z`);
+  return Number.isNaN(t) ? d : new Date(t).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+};
+
+function pressContent(b: CmsBundle, dims: Dims): PressContent {
+  const p = b.singletons.press_page;
+  const articles = [...(b.collections.press ?? [])].sort((x, y) => y.date.localeCompare(x.date));
+  return {
+    copy: {
+      heroEyebrow: p.hero_eyebrow,
+      heroTitle: p.hero_title,
+      heroText: p.hero_text,
+      heroImage: p.hero_image || "/images/pages/press/hero.png",
+      coverageTitle: p.coverage_title,
+      coverageText: p.coverage_text,
+      awardsTitle: p.awards_title,
+      awardsText: p.awards_text,
+      contactTitle: p.contact_title,
+      contactText: p.contact_text,
+    },
+    articles: articles.map((a) => ({
+      cmsId: a.id,
+      slug: a.slug,
+      kicker: a.kicker,
+      title: a.title,
+      excerpt: a.excerpt,
+      date: longDate(a.date),
+      year: Number(a.date.slice(0, 4)) || new Date().getFullYear(),
+      readTime: a.read_time,
+      image: { src: a.image, ...dims(a.image) },
+      author: { name: a.author_name, position: a.author_position, avatar: a.author_avatar },
+      body: { lead: a.lead, paragraphs: a.paragraphs, quote: { text: a.quote, author: a.quote_author }, closing: a.closing },
+    })),
+    awards: (b.collections.awards ?? []).map((a) => ({ cmsId: a.id, title: a.title, publication: a.publication, date: a.date, description: a.description })),
+  };
+}
+
+/* ---------------- SEO ---------------- */
+
+/** CMS singletons that are a page of their own, by path (same paths as the CMS schema). */
+const SEO_SINGLETONS: Record<string, string> = {
+  "/gaming/": "gaming_page",
+  "/office/": "office_page",
+  "/support/": "support_page",
+  "/where-to-buy/": "where_to_buy_page",
+  "/about-us/": "about_page",
+  "/contact-us/": "contact_page",
+  "/blog/": "blog_settings",
+  "/press-and-awards/": "press_page",
+};
+
+function seoPages(b: CmsBundle): Record<string, PageSeo> {
+  const one = (o: unknown): PageSeo => {
+    const s = (o ?? {}) as CmsSeo;
+    return {
+      ...(s.seo_title ? { title: s.seo_title } : {}),
+      ...(s.seo_description ? { description: s.seo_description } : {}),
+      ...(s.share_image ? { image: s.share_image } : {}),
+      ...(s.updated_at ? { updated: s.updated_at } : {}),
+    };
+  };
+  const out: Record<string, PageSeo> = {};
+  const home = b.pages.find((p) => p.path === "/");
+  // The homepage's SEO fields live on the page itself (CMS Pages → page settings)
+  if (home) out["/"] = one({ seo_title: home.seo_title, seo_description: home.seo_description });
+  const singletons = b.singletons as unknown as Record<string, unknown>;
+  for (const [path, key] of Object.entries(SEO_SINGLETONS)) out[path] = one(singletons[key]);
+  for (const c of b.categories) out[`/${c.range}/${c.slug}/`] = one(c);
+  for (const p of b.products) out[`/${p.range}/${p.category}/${p.slug}/`] = one(p);
+  for (const p of b.collections.blog_posts) out[`/blog/${p.slug}/`] = one(p);
+  for (const p of b.collections.press) out[`/press-and-awards/${p.slug}/`] = one(p);
+  for (const p of b.collections.text_pages ?? []) out[`/${p.slug}/`] = one(p);
+  return out;
+}
+
+/**
+ * Search engines may index the site only on the production domain. SITE_INDEX=1 / 0 overrides
+ * (e.g. a China domain); the CMS draft preview is never indexed.
+ */
+function indexable(siteUrl: string): boolean {
+  if (isCmsPreview()) return false;
+  const flag = process.env.SITE_INDEX;
+  if (flag === "1" || flag === "0") return flag === "1";
+  return /(^|\.)redragonzone\.com$/i.test(new URL(siteUrl).hostname);
 }

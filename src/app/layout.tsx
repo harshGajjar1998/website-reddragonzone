@@ -10,6 +10,8 @@ import CmsSection from "@/components/cms/CmsSection";
 import CmsPreviewBridge from "@/components/cms/CmsPreviewBridge";
 import { isCmsPreview } from "@/lib/cms/api";
 import { getContent } from "@/lib/cms";
+import JsonLd from "@/components/JsonLd";
+import { organization } from "@/lib/structured-data";
 
 /** Site title and description from the CMS (Settings & SEO); pages override them. */
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,6 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     title: seo.title,
     description: seo.description,
+    openGraph: { siteName: "Redragon", type: "website", ...(seo.shareImage ? { images: [{ url: seo.shareImage }] } : {}) },
+    // Staging domains and the draft preview stay out of search engines (SITE_INDEX, lib/cms indexable())
+    ...(seo.index ? {} : { robots: { index: false, follow: false } }),
     // Browser icon from Settings & SEO; app/favicon.ico otherwise
     ...(seo.favicon ? { icons: { icon: seo.favicon } } : {}),
   };
@@ -27,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const desktopZoom = `(function(){var d=document.documentElement;function f(){d.style.setProperty("--desktop-zoom",Math.min(1,d.clientWidth/1440))}f();new ResizeObserver(f).observe(d)})()`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { chrome } = await getContent();
+  const { chrome, siteUrl } = await getContent();
   return (
     <html
       lang="en"
@@ -37,6 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: desktopZoom }} />
+        <JsonLd data={organization(siteUrl, chrome.logos.main, chrome.socialLinks.map((l) => l.href))} />
       </head>
       <body className="flex min-h-full flex-col">
         <ChromeProvider value={chrome}>

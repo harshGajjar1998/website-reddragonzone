@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 import CommunitySection from "@/components/home/CommunitySection";
 import ProductDownloads from "@/components/pages/ProductDownloads";
 
-export const metadata: Metadata = {
-  title: "Product downloads – Support | Redragon",
-  description: "Find drivers, firmware, software and manuals for your Redragon product.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/support/search/", { title: "Product downloads – Support | Redragon", description: "Find drivers, firmware, software and manuals for your Redragon product." });
+}
 
 /**
  * Figma "Support — Product Search Results", "No Downloads Available" and "Product Not Found".
