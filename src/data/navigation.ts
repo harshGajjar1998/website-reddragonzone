@@ -97,6 +97,8 @@ export type ChromeContent = {
   search: { suggestions: string[]; pages: { label: string; href: string }[]; products: SearchProduct[] };
   footerColumns: FooterColumn[];
   footerBlurb: string;
+  /** Footer's bottom line (CMS Site-wide › Footer) */
+  copyright: string;
   socialLinks: SocialLink[];
   community: Community | null;
   /** Settings & SEO logos; each is drawn in a fixed box (object-contain), so a new file can't move the layout */

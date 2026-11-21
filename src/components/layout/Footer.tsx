@@ -9,7 +9,7 @@ import MobileFooter from "./MobileFooter";
 
 /** Desktop footer: silver on gaming/shared pages, white on Office pages (Figma Office frames). */
 export default function Footer() {
-  const { footerColumns, footerBlurb, socialLinks } = useChrome();
+  const { footerColumns, footerBlurb, socialLinks, copyright } = useChrome();
   const office = useProductRange() === "office";
   return (
     <>
@@ -51,7 +51,7 @@ export default function Footer() {
 
           {/* Bottom: copyright + socials */}
           <div className="flex items-center justify-between">
-            <p className="font-lexend text-[12px] leading-normal text-ink/80">© 2026 REDRAGON</p>
+            <p className="font-lexend text-[12px] leading-normal text-ink/80">{copyright}</p>
             <ul className="flex items-center gap-4">
               {/* API: dynamic data – social links */}
               {socialLinks.map((s) => (

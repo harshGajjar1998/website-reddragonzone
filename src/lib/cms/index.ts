@@ -568,6 +568,7 @@ function chrome(b: CmsBundle, community: HomeContent["community"]): Omit<ChromeC
     },
     footerColumns: navigation.footer.map((c) => ({ title: c.title, links: c.links.map((l) => ({ label: l.label, href: l.url })) })),
     footerBlurb: settings.footer_text || s(home?.sections.find((x) => x.type === "footer")?.data.blurb),
+    copyright: (settings.copyright || "© {year} REDRAGON").replace(/\{year\}/g, String(new Date().getFullYear())),
     socialLinks: Object.entries(settings.social).flatMap(([key, href]) =>
       href && SOCIAL_NETWORKS[key] ? [{ ...SOCIAL_NETWORKS[key], href }] : [],
     ),

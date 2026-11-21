@@ -109,6 +109,8 @@ export type CmsBundle = {
       /** Default link-preview picture, 1200 × 630 */
       share_image_url?: Str;
       footer_text: Str;
+      /** Footer's bottom line; {year} becomes the current year */
+      copyright?: Str;
       social: Record<string, Str>;
     };
     announcement: { tag: Str; text: Str; cta_text: Str; cta_url: Str } | null;

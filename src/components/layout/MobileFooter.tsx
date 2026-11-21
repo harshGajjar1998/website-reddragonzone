@@ -10,7 +10,7 @@ import Collapse from "@/components/ui/Collapse";
 
 /** Mobile footer (Figma "iPhone 13 & 14 - 7"): logo + blurb, link columns as an accordion, socials. */
 export default function MobileFooter() {
-  const { footerColumns, footerBlurb, socialLinks } = useChrome();
+  const { footerColumns, footerBlurb, socialLinks, copyright } = useChrome();
   const range = useProductRange();
   const [open, setOpen] = useState<string | null>(null);
 
@@ -81,7 +81,7 @@ export default function MobileFooter() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-center font-lexend text-[12px] leading-normal text-ink/80">© 2026 REDRAGON</p>
+        <p className="mt-6 text-center font-lexend text-[12px] leading-normal text-ink/80">{copyright}</p>
       </div>
     </footer>
   );
