@@ -78,3 +78,16 @@ export function removeFromCompare(id: string) {
 export function setCompareReturn(returnTo: string) {
   write({ ...read(), returnTo });
 }
+
+/** Puts a product in a column (0-based); a column past the end adds it. */
+export function setCompareAt(index: number, id: string) {
+  const current = read();
+  const ids = current.ids.filter((item) => item !== id);
+  if (index < ids.length) ids[index] = id;
+  else if (ids.length < COMPARE_MAX) ids.push(id);
+  write({ ...current, ids });
+}
+
+export function clearCompare() {
+  write({ ...read(), ids: [] });
+}

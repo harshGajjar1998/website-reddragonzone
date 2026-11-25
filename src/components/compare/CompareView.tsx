@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import AddProductModal from "@/components/compare/AddProductModal";
+import { useEffect, useRef, useState } from "react";
+import CompareHero from "@/components/compare/CompareHero";
+import ComparePicker, { COMPARE_CATEGORIES } from "@/components/compare/ComparePicker";
 import { ButtonLink } from "@/components/ui/Button";
-import { categoryOf, compareId, compareSections, compareSpecs, findCompareProduct, productLabels } from "@/data/compare";
-import { categoryHref, productHref, rangeOf, type GamingProduct } from "@/data/gaming";
+import { compareId, compareSections, compareSpecs, findCompareProduct, productLabels } from "@/data/compare";
+import { productHref, type GamingProduct } from "@/data/gaming";
 import { whereToBuyHref } from "@/data/pages";
 import { COMPARE_MAX, removeFromCompare, useCompareReady, useCompareState } from "@/lib/compare";
 import { useCatalogue } from "@/lib/catalogue";
@@ -37,9 +37,13 @@ function ProductHeader({ product, index }: { product: GamingProduct; index: numb
           type="button"
           aria-label={`Remove ${product.name}`}
           onClick={() => removeFromCompare(compareId(product))}
-          className="cursor-pointer font-lexend-deca text-[12px] leading-[17px] font-medium whitespace-pre text-[#626466] hover:text-crimson lg:absolute lg:top-4 lg:left-[194px]"
+          className="flex cursor-pointer items-center gap-0.5 font-lexend-deca text-[12px] leading-[14px] font-medium text-[#626466] hover:text-crimson lg:absolute lg:top-[18px] lg:left-[206px]"
         >
-          ×{"  "}Remove
+          {/* Figma 3367:3019: 14 px cross */}
+          <svg aria-hidden width="14" height="14" viewBox="0 0 14 14">
+            <path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          Remove
         </button>
       </div>
       {/* API: dynamic data – product image, name, model and summary */}
@@ -118,7 +122,7 @@ function DesktopTable({
   products: GamingProduct[];
   sections: Sections;
   noun: string;
-  onAdd: () => void;
+  onAdd: (column: number) => void;
 }) {
   return (
     <div className="relative mt-[38px] hidden rounded-[14px] border border-[#e3e5e8] bg-white pb-[49px] lg:block">
@@ -130,7 +134,7 @@ function DesktopTable({
           products[column] ? (
             <ProductHeader key={compareId(products[column])} product={products[column]} index={column} />
           ) : (
-            <AddSlot key={column} position={column} noun={noun} onAdd={onAdd} />
+            <AddSlot key={column} position={column} noun={noun} onAdd={() => onAdd(column)} />
           ),
         )}
       </div>
@@ -179,7 +183,7 @@ function MobileTable({
   products: GamingProduct[];
   sections: Sections;
   noun: string;
-  onAdd: () => void;
+  onAdd: (column: number) => void;
 }) {
   const cell = "snap-start border-b border-[#e6e8eb] px-3 pb-3";
   // The track is 150% wide, so the labels are sized back to the visible width
@@ -198,7 +202,7 @@ function MobileTable({
               {products[column] ? (
                 <ProductHeader product={products[column]} index={column} />
               ) : (
-                <AddSlot position={column} noun={noun} onAdd={onAdd} />
+                <AddSlot position={column} noun={noun} onAdd={() => onAdd(column)} />
               )}
             </div>
           ))}
@@ -240,74 +244,81 @@ function MobileTable({
   );
 }
 
-/** Compare page (Figma "Compare Keyboards · Two / Three Products"). */
+/**
+ * Compare page (Figma "SCREEN 01 · CONCEPT C", 3314:1757): "Perfect Match" hero, step 01 category,
+ * step 02 up to three searchable model fields, then the side-by-side table on the same page.
+ */
 export default function CompareView() {
-  const router = useRouter();
   const ready = useCompareReady();
-  const { ids, returnTo } = useCompareState();
-  const [adding, setAdding] = useState(false);
+  const { ids } = useCompareState();
+  const [picked, setPicked] = useState<string | null>(null);
+  const [openField, setOpenField] = useState<number | null>(null);
 
   // API: dynamic data – selected products
   const { catalogue, loaded } = useCatalogue();
   const products = ids.map((id) => findCompareProduct(catalogue, id)).filter((p) => p !== undefined);
-  const empty = ready && loaded && products.length === 0;
 
-  // Removing the last product returns to the page the comparison was opened from
-  useEffect(() => {
-    if (empty) router.replace(returnTo ?? "/gaming/");
-  }, [empty, returnTo, router]);
-
-  if (products.length === 0) return <div className="min-h-[600px] bg-[#f7f8fa]" />;
-
-  const first = products[0];
-  const category = categoryOf(catalogue, first);
-  const sameCategory = products.every((p) => p.category === first.category && p.range === first.range);
-  const range = rangeOf(first);
-  const label = sameCategory && category ? category.label : "Products";
-  const noun = label.toLowerCase().replace("mice", "mouse").replace(/s$/, "");
+  // The selected products' category wins (they may come from a category page's Compare boxes)
+  const category =
+    COMPARE_CATEGORIES.find((c) => c.slug === products[0]?.category) ??
+    COMPARE_CATEGORIES.find((c) => c.slug === picked) ??
+    COMPARE_CATEGORIES[0];
   const sections = compareSections(catalogue, products);
-  const count = `${products.length} PRODUCT${products.length > 1 ? "S" : ""} SELECTED`;
-  const props = { products, sections, noun, onAdd: () => setAdding(true) };
+  const props = { products, sections, noun: category.noun, onAdd: (column: number) => setOpenField(Math.min(column, products.length)) };
+
+  // Opening a field from the table scrolls the pickers into view
+  const pickers = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (openField !== null) pickers.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [openField]);
 
   return (
-    <section className="bg-[#f7f8fa]">
-      <div className="page-frame px-4 pt-6 pb-10 lg:px-[120px] lg:pt-[38px] lg:pb-20">
-        <nav aria-label="Breadcrumb" className="font-lexend-deca text-[13px] leading-[18px] font-semibold whitespace-pre text-crimson uppercase">
-          <Link href={range.base}>{range.label}</Link>
-          {"  /  "}
-          {sameCategory && category && (
+    <>
+      <CompareHero />
+      <section className="bg-[#f8f8f8]">
+        <div className="page-frame px-4 pt-10 pb-12 lg:px-[120px] lg:pt-[58px] lg:pb-16">
+          <p className="font-lexend-deca text-[12px] leading-none font-bold whitespace-pre text-[#e60012]">
+            PERFECT MATCH{"  /  "}COMPARE YOUR GEAR
+          </p>
+          <h2 className="mt-4 font-lexend-deca text-[32px] leading-none font-bold text-ink lg:mt-[22px] lg:text-[45px]">
+            Compare your favorites.
+          </h2>
+          <p className="mt-4 font-lexend-deca text-[15px] leading-[1.4] text-[#666] lg:mt-[28px] lg:leading-none">
+            Choose a category, search or select your models, then compare. The third product is optional.
+          </p>
+
+          <div ref={pickers} className="mt-8 lg:mt-[30px]">
+            {ready && loaded ? (
+              <ComparePicker
+                catalogue={catalogue}
+                products={products}
+                category={category}
+                onCategory={setPicked}
+                openField={openField}
+                setOpenField={setOpenField}
+              />
+            ) : (
+              <div className="h-[420px]" />
+            )}
+          </div>
+
+          {/* Room for the open model list, and a hint, before anything is picked */}
+          {products.length === 0 && (
+            <p className="mt-10 flex h-60 items-center justify-center rounded-[14px] border border-dashed border-[#c8cdd2] bg-white px-6 text-center font-lexend-deca text-[14px] leading-[1.5] text-[#626466]">
+              Pick a model above to start. The specifications appear here, side by side.
+            </p>
+          )}
+          {products.length > 0 && (
             <>
-              <Link href={categoryHref(category)}>{category.label}</Link>
-              {"  /  "}
+              <DesktopTable {...props} />
+              <MobileTable {...props} />
+              <p className="mt-3 text-center font-lexend-deca text-[12px] leading-[18px] text-[#626466] lg:hidden">
+                Swipe the table to see all three columns
+              </p>
             </>
           )}
-          <span aria-current="page">Compare</span>
-        </nav>
-        <h1 className="mt-3 font-lexend-deca text-[32px] leading-10 font-semibold text-ink lg:mt-5 lg:text-[47px] lg:leading-[62px]">
-          Compare {label}
-        </h1>
-        <p className="mt-3 font-lexend-deca text-[15px] leading-[23px] text-[#626466] lg:mt-[19px] lg:text-[16px] lg:leading-[25px]">
-          Review the differences between selected {label.toLowerCase()} before choosing the right fit.
-        </p>
-        <div className="mt-5 flex items-center justify-between gap-3 lg:mt-[38px]">
-          <Link
-            href={returnTo ?? (category ? categoryHref(category) : range.base)}
-            className="font-lexend-deca text-[15px] leading-[21px] font-medium whitespace-pre text-crimson"
-          >
-            ←{"  "}Back to {label}
-          </Link>
-          <p className="font-lexend-deca text-[12px] leading-[18px] font-semibold text-[#626466] lg:w-[235px] lg:text-[13px]">
-            {count}
-          </p>
         </div>
-
-        <DesktopTable {...props} />
-        <MobileTable {...props} />
-        <p className="mt-3 text-center font-lexend-deca text-[12px] leading-[18px] text-[#626466] lg:hidden">
-          Swipe the table to see all three columns
-        </p>
-      </div>
-      {adding && <AddProductModal onClose={() => setAdding(false)} />}
-    </section>
+      </section>
+    </>
   );
 }
