@@ -174,7 +174,13 @@ export type GamingProduct = {
 };
 
 /** Every product and category (gaming + office), for client features that span the whole range: Compare, the Finder */
-export type Catalogue = { products: GamingProduct[]; categories: GamingCategory[] };
+export type Catalogue = { products: CatalogueProduct[]; categories: CatalogueCategory[] };
+/** What Compare and the Finder need of a product (kept small: it is one file for the whole range) */
+export type CatalogueProduct = Pick<
+  GamingProduct,
+  "range" | "slug" | "category" | "name" | "model" | "series" | "keywords" | "tagline" | "image" | "smallArt" | "tags" | "compare" | "downloads"
+>;
+export type CatalogueCategory = Pick<GamingCategory, "range" | "slug" | "label">;
 
 /** The category a product belongs to, matched within its range */
 export const categoryOf = (catalogue: Catalogue, product: Pick<GamingProduct, "range" | "category">) =>

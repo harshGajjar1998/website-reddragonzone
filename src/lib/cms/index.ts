@@ -3,6 +3,7 @@ import { cache } from "react";
 import type { Art } from "@/components/gaming/ArtImage";
 import type { BlogPost } from "@/data/blog";
 import type {
+  Catalogue,
   FeaturedCard,
   FilterGroup,
   GamingCategory,
@@ -40,6 +41,8 @@ export type SiteContent = {
     pages: Record<string, PageSeo>;
   };
   chrome: ChromeContent;
+  /** Compare and the Finder: served as /catalogue.json */
+  catalogue: Catalogue;
   home: HomeContent;
   gaming: GamingContent;
   office: OfficeContent;
@@ -109,6 +112,7 @@ function adapt(b: CmsBundle): SiteContent {
   const home = homeContent(b);
   const gaming = gamingContent(b, products, dims);
   const office = officeContent(b, products, dims);
+  const catalogue = slimCatalogue(products, [...gaming.categories, ...office.categories]);
   const siteUrl = (b.site.url || process.env.SITE_URL || "https://www.redragonzone.com").replace(/\/$/, "");
 
   return {
@@ -121,7 +125,9 @@ function adapt(b: CmsBundle): SiteContent {
       index: indexable(siteUrl),
       pages: seoPages(b),
     },
-    chrome: { ...chrome(b, home.community), catalogue: { products, categories: [...gaming.categories, ...office.categories] } },
+    // The draft preview renders per request, so it gets the catalogue inline (always current); the static site fetches the file
+    chrome: { ...chrome(b, home.community), ...(isCmsPreview() ? { catalogue } : {}) },
+    catalogue,
     home,
     gaming,
     office,
@@ -154,6 +160,16 @@ function adapt(b: CmsBundle): SiteContent {
 }
 
 type Dims = (src: string) => { width: number; height: number };
+
+function slimCatalogue(products: GamingProduct[], categories: GamingCategory[]): Catalogue {
+  return {
+    products: products.map((p) => ({
+      range: p.range, slug: p.slug, category: p.category, name: p.name, model: p.model, series: p.series, keywords: p.keywords,
+      tagline: p.tagline, image: p.image, smallArt: p.smallArt, tags: p.tags, compare: p.compare, downloads: p.downloads,
+    })),
+    categories: categories.map((c) => ({ range: c.range, slug: c.slug, label: c.label })),
+  };
+}
 
 /* ---------------- catalogue ---------------- */
 

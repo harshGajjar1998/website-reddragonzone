@@ -90,8 +90,8 @@ export type ChromeContent = {
   helloBar: HelloBarContent | null;
   mainNav: NavItem[];
   megaMenus: Record<string, MegaMenu>;
-  /** All products and categories (Compare, Firmware & Software Finder) */
-  catalogue: Catalogue;
+  /** CMS draft preview only: the catalogue inline. The static site loads /catalogue.json instead (useCatalogue()). */
+  catalogue?: Catalogue;
   /** Where to Buy stores, also shown on product pages */
   storesByCountry: Record<string, CountryStores>;
   search: { suggestions: string[]; pages: { label: string; href: string }[]; products: SearchProduct[] };

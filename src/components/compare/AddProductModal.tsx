@@ -3,11 +3,11 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useChrome } from "@/components/layout/ChromeProvider";
 import { compareId, compareSpecs, findCompareProduct, productLabels } from "@/data/compare";
 import type { GamingProduct } from "@/data/gaming";
 import { COMPARE_MAX, addToCompare, removeFromCompare, useCompareState } from "@/lib/compare";
 import { useModalLock } from "@/lib/useModalLock";
+import { useCatalogue } from "@/lib/catalogue";
 
 const CATEGORIES = [
   { slug: "keyboards", label: "Keyboards", singular: "keyboard" },
@@ -19,7 +19,7 @@ const CATEGORIES = [
 const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 function ResultRow({ product, full }: { product: GamingProduct; full: boolean }) {
-  const { catalogue } = useChrome();
+  const { catalogue } = useCatalogue();
   const { title, model } = productLabels(product);
   return (
     <li className="relative flex min-h-[122px] items-center gap-3 rounded-[9px] border border-[#e0e3e7] bg-white p-3 md:gap-[19px] md:pr-8">
@@ -64,7 +64,7 @@ export default function AddProductModal({ onClose }: { onClose: () => void }) {
 
   const { ids } = useCompareState();
   // API: dynamic data – selected products
-  const { catalogue } = useChrome();
+  const { catalogue } = useCatalogue();
   const selected = ids.map((id) => findCompareProduct(catalogue, id)).filter((p) => p !== undefined);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(() => {

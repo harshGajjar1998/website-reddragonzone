@@ -9,7 +9,6 @@ import { Badge, StoreMap, localeCountry } from "@/components/pages/StoreFinder";
 import SegmentedControl from "@/components/ui/SegmentedControl";
 import type { GamingProduct } from "@/data/gaming";
 import {
-  findSupportProduct,
   storeCountries,
   storesForProduct,
   type DownloadGroup,
@@ -173,8 +172,7 @@ function Manuals({ product, titleId }: { product: GamingProduct; titleId: string
   const { os, label } = OS_CHOICES[choice];
 
   // API: dynamic data – this product's software and manuals for the chosen OS
-  const { catalogue } = useChrome();
-  const groups = (findSupportProduct(catalogue, product.slug)?.downloads ?? [])
+  const groups = (product.downloads ?? [])
     .filter((group) => group.type === "software" || group.type === "manual")
     .map((group) => ({ group, releases: group.releases.filter((release) => release.os.includes(os)) }))
     .filter(({ releases }) => releases.length > 0);

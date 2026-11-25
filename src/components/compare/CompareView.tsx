@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AddProductModal from "@/components/compare/AddProductModal";
 import { ButtonLink } from "@/components/ui/Button";
-import { useChrome } from "@/components/layout/ChromeProvider";
 import { categoryOf, compareId, compareSections, compareSpecs, findCompareProduct, productLabels } from "@/data/compare";
 import { categoryHref, productHref, rangeOf, type GamingProduct } from "@/data/gaming";
 import { whereToBuyHref } from "@/data/pages";
 import { COMPARE_MAX, removeFromCompare, useCompareReady, useCompareState } from "@/lib/compare";
+import { useCatalogue } from "@/lib/catalogue";
 
 const ORDINALS = ["FIRST", "SECOND", "THIRD"];
 const COLUMNS = Array.from({ length: COMPARE_MAX }, (_, i) => i);
@@ -25,7 +25,7 @@ type Sections = ReturnType<typeof compareSections>;
 
 /** Figma "Product header": index, Remove, image, name, model and summary. */
 function ProductHeader({ product, index }: { product: GamingProduct; index: number }) {
-  const { catalogue } = useChrome();
+  const { catalogue } = useCatalogue();
   const { title, model } = productLabels(product);
   return (
     <div className="relative h-full rounded-[10px] border border-[#eaebed] bg-[#f9fafb] p-3 lg:h-[330px] lg:w-[288px] lg:p-0">
@@ -248,9 +248,9 @@ export default function CompareView() {
   const [adding, setAdding] = useState(false);
 
   // API: dynamic data – selected products
-  const { catalogue } = useChrome();
+  const { catalogue, loaded } = useCatalogue();
   const products = ids.map((id) => findCompareProduct(catalogue, id)).filter((p) => p !== undefined);
-  const empty = ready && products.length === 0;
+  const empty = ready && loaded && products.length === 0;
 
   // Removing the last product returns to the page the comparison was opened from
   useEffect(() => {

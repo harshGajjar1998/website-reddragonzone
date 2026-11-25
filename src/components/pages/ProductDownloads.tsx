@@ -1,6 +1,5 @@
 "use client";
 
-import { useChrome } from "@/components/layout/ChromeProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,6 +13,7 @@ import {
   type DownloadRelease,
   type SupportProduct,
 } from "@/data/pages";
+import { useCatalogue } from "@/lib/catalogue";
 
 const OS_OPTIONS: { value: DownloadOs; label: string }[] = [
   { value: "windows", label: "Windows" },
@@ -363,7 +363,10 @@ function ProductNotFound() {
 export default function ProductDownloads() {
   const query = useSearchParams().get("q") ?? "";
   // API: dynamic data – product lookup by search term or slug
-  const product = findSupportProduct(useChrome().catalogue, query);
+  const { catalogue, loaded } = useCatalogue(query !== "");
+  const product = findSupportProduct(catalogue, query);
+
+  if (query && !loaded) return <Intro />;
 
   if (!product) {
     return (

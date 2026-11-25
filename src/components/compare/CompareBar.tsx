@@ -3,10 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import AddProductModal from "@/components/compare/AddProductModal";
-import { useChrome } from "@/components/layout/ChromeProvider";
 import { compareId, findCompareProduct } from "@/data/compare";
 import type { GamingProduct } from "@/data/gaming";
 import { COMPARE_MAX, COMPARE_MIN, removeFromCompare, setCompareReturn, useCompareState } from "@/lib/compare";
+import { useCatalogue } from "@/lib/catalogue";
 
 const STATUS: Record<number, string> = {
   1: "1 selected · Select 2–3 to compare",
@@ -41,7 +41,7 @@ export default function CompareBar() {
   const [adding, setAdding] = useState(false);
 
   // API: dynamic data – selected products
-  const { catalogue } = useChrome();
+  const { catalogue } = useCatalogue(ids.length > 0);
   const products = ids.map((id) => findCompareProduct(catalogue, id)).filter((p) => p !== undefined);
   if (products.length === 0 || pathname.startsWith("/compare")) return null;
 
