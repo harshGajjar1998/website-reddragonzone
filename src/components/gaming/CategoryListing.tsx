@@ -9,10 +9,13 @@ import { productHref, type FilterGroup, type GamingCategory, type GamingProduct 
 import Collapse from "@/components/ui/Collapse";
 import ProductCard from "./ProductCard";
 
-/** Page 1 shows 2 large + 3 small cards under the banner; later pages a 3×3 grid */
-const FIRST_PAGE = 5;
-const OTHER_PAGES = 9;
-const SHOW_OPTIONS = [5, 9, 18];
+/**
+ * "Show N": later pages hold N small cards (rows of 3), page 1 the 2 large cards on top plus N small ones.
+ * N is a multiple of 6, so rows fill on desktop (3 across) and mobile (2 across).
+ */
+const SHOW_OPTIONS = [12, 24, 36];
+const DEFAULT_SHOW = SHOW_OPTIONS[0];
+const LARGE_CARDS = 2;
 
 type Sort = "featured" | "az" | "za";
 
@@ -246,8 +249,8 @@ export default function CategoryListing({ category, products, page }: CategoryLi
     };
   }, [filtersOpen]);
 
-  const firstSize = show ?? FIRST_PAGE;
-  const otherSize = show ?? OTHER_PAGES;
+  const otherSize = show ?? DEFAULT_SHOW;
+  const firstSize = otherSize + LARGE_CARDS;
 
   const resetPage = () => {
     if (page !== 1) router.replace(pathname, { scroll: false });
@@ -280,8 +283,8 @@ export default function CategoryListing({ category, products, page }: CategoryLi
   const current = Math.min(Math.max(page, 1), total);
   const start = current === 1 ? 0 : firstSize + (current - 2) * otherSize;
   const pageItems = visible.slice(start, start + (current === 1 ? firstSize : otherSize));
-  const large = current === 1 ? pageItems.slice(0, 2) : [];
-  const small = current === 1 ? pageItems.slice(2) : pageItems;
+  const large = current === 1 ? pageItems.slice(0, LARGE_CARDS) : [];
+  const small = current === 1 ? pageItems.slice(LARGE_CARDS) : pageItems;
 
   const href = (p: number) => (p === 1 ? pathname : `${pathname}?page=${p}`);
   const { listing } = category;
@@ -290,7 +293,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
   const filterControls = (idPrefix?: string) => (
     <>
       <div className="flex items-end justify-between border-b border-[rgba(230,0,18,0.8)] pb-6 leading-none whitespace-nowrap">
-        <p className="font-lexend text-[24px] font-medium tracking-[-0.24px] text-ink">Category</p>
+        <p className="font-lexend text-[24px] font-medium tracking-[-0.24px] text-ink">Filters</p>
         <button
           type="button"
           onClick={() => {
@@ -418,7 +421,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
         )}
       </div>
 
-      <div className="page-frame hidden min-h-[1680px] items-start gap-4 px-20 pt-20 pb-12 lg:flex">
+      <div className="page-frame hidden items-start gap-4 px-20 pt-20 pb-12 lg:flex">
         {/* ---------- Filters ---------- */}
         <aside
           aria-label="Filters"
@@ -477,7 +480,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
             <label className="relative ml-3 flex h-10 w-[120px] items-center justify-center gap-1.5 px-2">
               <span className={`${toolbarText} ${office ? "text-ink" : "text-ink/70"}`}>Show</span>
               <select
-                value={show ?? FIRST_PAGE}
+                value={show ?? DEFAULT_SHOW}
                 onChange={(e) => {
                   setShow(Number(e.target.value));
                   resetPage();
@@ -497,7 +500,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
           </div>
 
           {/* Products */}
-          <div className={`flex min-h-[1290px] flex-col gap-4 ${current === 1 ? "pt-5" : "pt-10"}`}>
+          <div className={`flex flex-col gap-4 ${current === 1 ? "pt-5" : "pt-10"}`}>
             {current === 1 && listing.banner && (
               <div
                 className={`relative h-[439px] w-[956px] shrink-0 border ${office ? "border-ink/50" : "border-white/50"}`}
