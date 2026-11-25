@@ -6,14 +6,13 @@ import ProductPanel, { type PanelId } from "@/components/product/ProductPanel";
 import type { GamingProduct } from "@/data/gaming";
 
 const POINTERS: { id: PanelId; label: string }[] = [
-  { id: "specifications", label: "Specifications" },
-  { id: "materials", label: "Materials & Sustainability" },
-  { id: "box", label: "In the Box" },
+  // Specifications, Materials & Sustainability and In the Box, as sections of one panel
+  { id: "details", label: "Product Details" },
   { id: "manuals", label: "Manuals & Software" },
   { id: "buy", label: "WHERE TO BUY" },
 ];
 
-/** The five product page links (Figma "Frame 109–113"); each opens its side panel. */
+/** The product page links (Figma "Frame 109–113", first three merged into "Product Details"); each opens its side panel. */
 export default function ProductPointers({
   product,
   dark,

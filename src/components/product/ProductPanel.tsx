@@ -20,7 +20,7 @@ import {
 import { productBoxContents, productMaterials, productSpecs } from "@/data/productInfo";
 import { useModalLock } from "@/lib/useModalLock";
 
-export type PanelId = "specifications" | "materials" | "box" | "manuals" | "buy";
+export type PanelId = "details" | "manuals" | "buy";
 type Mode = "online" | "offline";
 
 const ICONS = "/images/pages/where-to-buy";
@@ -73,53 +73,86 @@ function ProductCard({ product, tall, children }: { product: GamingProduct; tall
   );
 }
 
-/* ---------------- Specifications ---------------- */
+/* ---------------- Product details: specifications, materials, box ---------------- */
 
-function Specifications({ product, titleId }: { product: GamingProduct; titleId: string }) {
-  // API: dynamic data – specifications
+const DETAIL_SECTIONS = [
+  { id: "specifications", label: "Specifications" },
+  { id: "materials", label: "Materials & Sustainability" },
+  { id: "box", label: "In the Box" },
+] as const;
+
+/**
+ * One panel for the product's Specifications, Materials & Sustainability and In the Box, each its own
+ * section. The links under the title jump to a section (the panel scrolls, not the page).
+ */
+function ProductDetails({ product, titleId }: { product: GamingProduct; titleId: string }) {
+  // API: dynamic data – specifications, materials, box contents
   const { dimensions, technical } = productSpecs(product);
   const body = "font-lexend-deca text-[16px] leading-[26px] text-[#626466]";
+  const sub = `${body} font-semibold text-ink`;
+  const uid = useId();
+  const sectionId = (id: string) => `${uid}-${id}`;
   return (
     <>
       <h2 id={titleId} className={title}>
-        Specifications
+        Product Details
       </h2>
-      {dimensions.length > 0 && (
-        <>
-          <h3 className={`mt-6 ${sectionTitle}`}>Dimensions</h3>
-          <ul className={`mt-3 ${body}`}>
-            {dimensions.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-          <div aria-hidden className={`mt-6 ${rule}`} />
-        </>
-      )}
-      <h3 className={`mt-6 ${sectionTitle}`}>Technical Specifications</h3>
-      <div className="mt-4 flex flex-col gap-2.5">
-        {technical.map((group) => (
-          <div key={group.title}>
-            <h4 className={`${body} font-semibold`}>{group.title}</h4>
+      <nav aria-label="Sections" className="mt-4 flex flex-wrap gap-2">
+        {DETAIL_SECTIONS.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => document.getElementById(sectionId(s.id))?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="cursor-pointer rounded-full border border-[#e6e7ea] px-3 py-1.5 font-lexend-deca text-[14px] leading-none text-ink transition-colors hover:border-ink"
+          >
+            {s.label}
+          </button>
+        ))}
+      </nav>
+
+      <section id={sectionId("specifications")} aria-labelledby={`${sectionId("specifications")}-h`} className="mt-8 scroll-mt-6">
+        <h3 id={`${sectionId("specifications")}-h`} className={sectionTitle}>
+          Specifications
+        </h3>
+        {dimensions.length > 0 && (
+          <>
+            <h4 className={`mt-5 ${sub}`}>Dimensions</h4>
             <ul className={`mt-2 ${body}`}>
-              {group.items.map((item) => (
-                <li key={item}>• {item}</li>
+              {dimensions.map((line) => (
+                <li key={line}>{line}</li>
               ))}
             </ul>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
+          </>
+        )}
+        <div className="mt-5 flex flex-col gap-2.5">
+          {technical.map((group) => (
+            <div key={group.title}>
+              <h4 className={sub}>{group.title}</h4>
+              <ul className={`mt-2 ${body}`}>
+                {group.items.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
-/** Materials & Sustainability / In the Box: no Figma frame, so they follow the Specifications layout. */
-function TextPanel({ heading, text, titleId }: { heading: string; text: string; titleId: string }) {
-  return (
-    <>
-      <h2 id={titleId} className={title}>
-        {heading}
-      </h2>
-      <p className="mt-6 font-lexend-deca text-[16px] leading-[1.6] text-[#626466]">{text}</p>
+      <div aria-hidden className={`mt-8 ${rule}`} />
+      <section id={sectionId("materials")} aria-labelledby={`${sectionId("materials")}-h`} className="mt-8 scroll-mt-6">
+        <h3 id={`${sectionId("materials")}-h`} className={sectionTitle}>
+          Materials &amp; Sustainability
+        </h3>
+        <p className={`mt-4 ${body}`}>{productMaterials(product)}</p>
+      </section>
+
+      <div aria-hidden className={`mt-8 ${rule}`} />
+      <section id={sectionId("box")} aria-labelledby={`${sectionId("box")}-h`} className="mt-8 scroll-mt-6">
+        <h3 id={`${sectionId("box")}-h`} className={sectionTitle}>
+          In the Box
+        </h3>
+        <p className={`mt-4 ${body}`}>{productBoxContents(product)}</p>
+      </section>
     </>
   );
 }
@@ -515,11 +548,7 @@ export default function ProductPanel({
           <Image src="/icons/pages/close.svg" alt="" width={32} height={32} />
         </button>
         <div className="h-full overflow-y-auto overscroll-contain px-4 pt-6 pb-8 [scrollbar-width:none] md:px-10 md:pt-8 [&::-webkit-scrollbar]:hidden">
-          {panel === "specifications" && <Specifications product={product} titleId={titleId} />}
-          {panel === "materials" && (
-            <TextPanel heading="Materials & Sustainability" text={productMaterials(product)} titleId={titleId} />
-          )}
-          {panel === "box" && <TextPanel heading="In the Box" text={productBoxContents(product)} titleId={titleId} />}
+          {panel === "details" && <ProductDetails product={product} titleId={titleId} />}
           {panel === "manuals" && <Manuals product={product} titleId={titleId} />}
           {panel === "buy" && <WhereToBuy product={product} titleId={titleId} />}
         </div>
