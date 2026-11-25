@@ -62,7 +62,7 @@ export default function ProductOverview({
   special?: { ghost: string };
 }) {
   const baseGallery: GalleryImage[] = product.gallery ?? [
-    { ...product.image, alt: product.name, bg: "#f6f6f6" },
+    { ...product.image, alt: product.image.alt || product.name, bg: "#f6f6f6" },
   ];
   const modules = product.modules ?? [{ label: product.name }];
   const colors = product.colors ?? [];

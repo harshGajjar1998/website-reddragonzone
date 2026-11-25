@@ -45,6 +45,8 @@ export type CmsProduct = {
   range: "gaming" | "office";
   category: Str;
   images: Str[];
+  /** CMS "Image description" per photo, same order as `images` ('' = none) */
+  image_alts?: Str[];
   tagline: Str;
   description: Str;
   specs: { k: Str; v: Str }[];
@@ -57,7 +59,7 @@ export type CmsProduct = {
   tags: Str[];
   gallery: (CmsImage & { bg: Str })[];
   modules: { label: Str; url: Str }[];
-  colors: { name: Str; hex: Str; image?: Str }[];
+  colors: { name: Str; hex: Str; image?: Str; image_alt?: Str }[];
   details: { title: Str; body: Str }[];
   features_description: Str;
   features_image: Str;

@@ -144,8 +144,8 @@ export type GamingProduct = {
   /** Hover tagline on cards */
   tagline: string;
   description?: string;
-  /** Primary render used on cards */
-  image: { src: string; width: number; height: number };
+  /** Primary render used on cards; `alt` = the CMS image description, when set */
+  image: { src: string; width: number; height: number; alt?: string };
   /** Placement inside a 308×384 card (default: 274px square at 17,76) */
   smallArt?: ArtSpec;
   /** Placement inside a 470×416 card (default: 422px square at 24,-3) */

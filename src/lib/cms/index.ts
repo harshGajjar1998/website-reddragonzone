@@ -223,7 +223,7 @@ function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): Gaming
     keywords: p.keywords,
     tagline: p.tagline,
     description: opt(p.description),
-    image: { src: main, ...(layout("product.image", main) ?? dims(main)) },
+    image: { src: main, ...(layout("product.image", main) ?? dims(main)), ...(p.image_alts?.[0] ? { alt: p.image_alts[0] } : {}) },
     ...(smallArt ? { smallArt } : {}),
     ...(largeArt ? { largeArt } : {}),
     tags: nonEmpty(p.tags),
@@ -237,11 +237,11 @@ function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): Gaming
     ),
     modules: nonEmpty(p.modules.map((m) => ({ label: m.label, ...(m.url ? { href: m.url } : {}) }))),
     colors: nonEmpty(
-      p.colors.map(({ name, hex, image }) => ({
+      p.colors.map(({ name, hex, image, image_alt }) => ({
         name,
         hex,
         // Same slot as the gallery: picking the colour shows this photo in the first cell
-        ...(image ? { image: { src: image, ...(layout("product.gallery", image) ?? dims(image)), alt: `${p.name} ${name}` } } : {}),
+        ...(image ? { image: { src: image, ...(layout("product.gallery", image) ?? dims(image)), alt: image_alt || `${p.name} ${name}` } } : {}),
       })),
     ),
     details: nonEmpty(p.details),
