@@ -8,6 +8,7 @@ import ScrollReveal from "@/components/layout/ScrollReveal";
 import ChromeProvider from "@/components/layout/ChromeProvider";
 import CmsSection from "@/components/cms/CmsSection";
 import CmsPreviewBridge from "@/components/cms/CmsPreviewBridge";
+import EditThisPage from "@/components/cms/EditThisPage";
 import { isCmsPreview } from "@/lib/cms/api";
 import { getContent } from "@/lib/cms";
 import JsonLd from "@/components/JsonLd";
@@ -54,6 +55,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <CompareBar />
           <ScrollReveal />
           {isCmsPreview() && <CmsPreviewBridge adminOrigin={process.env.CMS_ADMIN_ORIGIN ?? "http://localhost:5174"} />}
+          {/* "Edit this page" for CMS users who opted in (renders nothing for visitors) */}
+          {!isCmsPreview() && process.env.CMS_ADMIN_ORIGIN && <EditThisPage adminUrl={process.env.CMS_ADMIN_ORIGIN} />}
         </ChromeProvider>
       </body>
     </html>
