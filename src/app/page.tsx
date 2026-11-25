@@ -6,8 +6,10 @@ import ProductCategoriesSection from "@/components/home/ProductCategoriesSection
 import FeaturedProductsSection from "@/components/home/FeaturedProductsSection";
 import CommunitySection from "@/components/home/CommunitySection";
 import TextBlock from "@/components/home/TextBlock";
+import SocialWall from "@/components/social/SocialWall";
 import CmsSection from "@/components/cms/CmsSection";
 import type { HomeBlock } from "@/data/home";
+import type { SocialWall as Wall } from "@/data/social";
 import { getContent } from "@/lib/cms";
 import { pageMetadata } from "@/lib/seo";
 
@@ -18,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // API: dynamic data – one component per CMS homepage section
-function Block({ block: b }: { block: HomeBlock }) {
+function Block({ block: b, social }: { block: HomeBlock; social: Wall | null }) {
   switch (b.type) {
     case "hero":
       return <HeroSection slides={b.slides} />;
@@ -32,6 +34,9 @@ function Block({ block: b }: { block: HomeBlock }) {
       return <FeaturedProductsSection products={b.products} />;
     case "community":
       return <CommunitySection community={b.community} />;
+    case "social":
+      // Nothing to show until a post with a cover is published
+      return social ? <SocialWall wall={social} heading={b.heading} /> : null;
     case "text":
       return <TextBlock title={b.title} body={b.body} />;
   }
@@ -39,12 +44,12 @@ function Block({ block: b }: { block: HomeBlock }) {
 
 /** Homepage – the sections of the CMS visual editor (Pages → Homepage), in its order. */
 export default async function Home() {
-  const { home } = await getContent();
+  const { home, social } = await getContent();
   return (
     <>
       {home.blocks.map((b) => (
         <CmsSection key={b.ids[0]} ids={b.ids}>
-          <Block block={b} />
+          <Block block={b} social={social} />
         </CmsSection>
       ))}
     </>

@@ -6,6 +6,7 @@ import CategorySlider from "@/components/gaming/CategorySlider";
 import FeaturedProductsGrid from "@/components/gaming/FeaturedProductsGrid";
 import GamingHero from "@/components/gaming/GamingHero";
 import LatestGearSection from "@/components/gaming/LatestGearSection";
+import SocialWall from "@/components/social/SocialWall";
 import { getContent } from "@/lib/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,7 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Figma "Gaming Landing page" */
 export default async function GamingPage() {
-  const { hero, categories, latest, featuredCards, featuredGrid } = (await getContent()).gaming;
+  const { gaming, social } = await getContent();
+  const { hero, categories, latest, featuredCards, featuredGrid } = gaming;
   return (
     <>
       {/* API: dynamic data – gaming banner */}
@@ -35,6 +37,12 @@ export default async function GamingPage() {
       <CmsSection ids={["singleton:gaming_page"]}>
         <FeaturedProductsGrid cards={featuredCards} mobileCards={featuredGrid} />
       </CmsSection>
+      {/* API: dynamic data – community wall (CMS Community wall: "Show on the Gaming page") */}
+      {social?.showOnGaming && (
+        <CmsSection ids={["singleton:social_wall"]}>
+          <SocialWall wall={social} />
+        </CmsSection>
+      )}
       <CmsSection ids={["shared:community"]}>
         <CommunitySection />
       </CmsSection>

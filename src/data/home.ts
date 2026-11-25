@@ -1,3 +1,4 @@
+import type { SocialHeading } from "./social";
 /* ==================================================================
    Homepage content types. The content itself comes from the CMS
    (homepage sections, see src/lib/cms) – these are the shapes the
@@ -65,6 +66,8 @@ export type HomeBlock =
   | { type: "gears"; ids: string[]; gears: HomeGears }
   | { type: "featured"; ids: string[]; products: FeaturedProduct[] }
   | { type: "community"; ids: string[]; community: Community }
+  /** Community wall; empty heading fields use the CMS "Community wall" settings */
+  | { type: "social"; ids: string[]; heading: Partial<SocialHeading> }
   | { type: "text"; ids: string[]; title: string; body: string };
 
 export type HomeContent = {

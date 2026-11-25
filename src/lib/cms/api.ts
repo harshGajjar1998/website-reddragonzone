@@ -153,6 +153,7 @@ export type CmsBundle = {
     support_topics: { id: number; slug: Str; label: Str; label_lines: Str[]; ghost: Str; image: Str }[];
     about_sections: { id: number; eyebrow: Str; title: Str; paragraphs: Str[]; image: Str; alt: Str; media_left: boolean; tinted: boolean }[];
     about_values: { id: number; title: Str; text: Str }[];
+    social_posts?: { id: number; url: Str; platform: Str; title: Str; caption: Str; thumbnail: Str; alt: Str; video_url: Str }[];
   };
   singletons: {
     gaming_page: {
@@ -176,6 +177,9 @@ export type CmsBundle = {
     press_page: {
       hero_eyebrow: Str; hero_title: Str; hero_text: Str; hero_image: Str; coverage_title: Str; coverage_text: Str;
       awards_title: Str; awards_text: Str; contact_title: Str; contact_text: Str;
+    };
+    social_wall?: {
+      eyebrow: Str; title: Str; intro: Str; instagram: Str; tiktok: Str; youtube: Str; show_on_gaming: boolean; show_on_office: boolean;
     };
     search: {
       suggestions: Str[];

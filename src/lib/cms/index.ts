@@ -17,6 +17,7 @@ import { SOCIAL_NETWORKS, type ChromeContent, type MegaMenu, type SearchProduct 
 import type { OfficeCategory, OfficeContent, OfficeTile } from "@/data/office";
 import { amazonLogo, redragonLogo, type CountryStores, type Download, type DownloadGroup, type DownloadOs, type PagesContent, type SupportTile } from "@/data/pages";
 import type { PressContent } from "@/data/press";
+import type { SocialPlatform, SocialWall } from "@/data/social";
 import { fetchBundle, isCmsPreview, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLatest, type CmsProduct, type CmsSeo } from "./api";
 import { layout, placed } from "./layout";
 
@@ -50,6 +51,8 @@ export type SiteContent = {
   blog: { copy: { eyebrow: string; title: string; description: string }; categories: string[]; posts: BlogPost[] };
   press: PressContent;
   textPages: TextPage[];
+  /** Community wall: null when no post is published */
+  social: SocialWall | null;
 };
 
 /** CMS text page (Privacy Policy, Careers, …) at /<slug>/ */
@@ -133,6 +136,7 @@ function adapt(b: CmsBundle): SiteContent {
     office,
     pages: pagesContent(b, dims),
     press: pressContent(b, dims),
+    social: socialWall(b, dims),
     textPages: (b.collections.text_pages ?? []).map((p) => ({
       slug: p.slug,
       title: p.title,
@@ -528,6 +532,9 @@ function homeContent(b: CmsBundle): HomeContent {
       case "text":
         blocks.push({ type: "text", ids: [id], title: s(d.title), body: s(d.body) });
         break;
+      case "social":
+        blocks.push({ type: "social", ids: [id], heading: { eyebrow: s(d.eyebrow), title: s(d.title), intro: s(d.intro) } });
+        break;
     }
   }
 
@@ -705,6 +712,36 @@ function pagesContent(b: CmsBundle, dims: Dims): PagesContent {
         manual: d.manual_url,
       }),
     ),
+  };
+}
+
+/* ---------------- community wall ---------------- */
+
+const PLATFORMS: SocialPlatform[] = ["Instagram", "TikTok", "YouTube"];
+
+function socialWall(b: CmsBundle, dims: Dims): SocialWall | null {
+  const w = b.singletons.social_wall;
+  const posts = (b.collections.social_posts ?? [])
+    // A post needs its link and a cover to be shown
+    .filter((p) => p.url && p.thumbnail && PLATFORMS.includes(p.platform as SocialPlatform))
+    .map((p) => ({
+      cmsId: p.id,
+      platform: p.platform as SocialPlatform,
+      url: p.url,
+      title: p.title || p.platform,
+      caption: p.caption ?? "",
+      thumbnail: { src: p.thumbnail, ...dims(p.thumbnail), alt: p.alt || p.title || "" },
+      ...(p.video_url ? { video: p.video_url } : {}),
+    }));
+  if (!posts.length) return null;
+  return {
+    eyebrow: w?.eyebrow || "THE REDRAGON COMMUNITY",
+    title: w?.title || "SEE WHAT WE CREATE.",
+    intro: w?.intro ?? "",
+    profiles: PLATFORMS.map((platform) => ({ platform, url: (w?.[platform.toLowerCase() as "instagram" | "tiktok" | "youtube"] ?? "").trim() })).filter((p) => p.url),
+    posts,
+    showOnGaming: !!w?.show_on_gaming,
+    showOnOffice: !!w?.show_on_office,
   };
 }
 
