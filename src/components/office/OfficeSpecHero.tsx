@@ -137,14 +137,10 @@ export default function OfficeSpecHero({ product, category }: { product: GamingP
           {hero.model}
         </p>
 
-        <Image
-          src={hero.image.src}
-          alt={hero.image.alt}
-          width={1092}
-          height={1308}
-          preload
-          className="absolute left-[666px] top-[34px] h-[654px] w-[546px] max-w-none"
-        />
+        {/* Image frame: 48px clear of the section's top and bottom edges; any CMS image fits inside */}
+        <div className="absolute left-[692px] top-12 h-[592px] w-[494px]">
+          <Image src={hero.image.src} alt={hero.image.alt} fill sizes="494px" preload className="object-contain" />
+        </div>
 
         {/* Faint outlined wordmark */}
         <p
