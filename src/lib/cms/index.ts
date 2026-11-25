@@ -212,6 +212,13 @@ function category(c: CmsCategory, dims: Dims): GamingCategory {
 }
 
 function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): GamingProduct {
+  // Same slot as the gallery: picking a colour shows its photo in the first cell
+  const colorsOf = (list: CmsProduct["colors"], owner: string) =>
+    list.map(({ name, hex, image, image_alt }) => ({
+      name,
+      hex,
+      ...(image ? { image: { src: image, ...(layout("product.gallery", image) ?? dims(image)), alt: image_alt || `${owner} ${name}` } } : {}),
+    }));
   const main = p.images[0] ?? "";
   const smallArt = layout("product.small", main);
   const largeArt = layout("product.large", main);
@@ -239,15 +246,21 @@ function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): Gaming
         ...(g.bg ? { bg: g.bg } : {}),
       })),
     ),
-    modules: nonEmpty(p.modules.map((m) => ({ label: m.label, ...(m.url ? { href: m.url } : {}) }))),
-    colors: nonEmpty(
-      p.colors.map(({ name, hex, image, image_alt }) => ({
-        name,
-        hex,
-        // Same slot as the gallery: picking the colour shows this photo in the first cell
-        ...(image ? { image: { src: image, ...(layout("product.gallery", image) ?? dims(image)), alt: image_alt || `${p.name} ${name}` } } : {}),
-      })),
+    modules: nonEmpty(
+      p.modules.map((m) => {
+        const name = m.name || "";
+        const gallery = (m.gallery ?? []).filter((g) => g.image).map((g) => ({ src: g.image, ...dims(g.image), alt: g.alt || name || m.label }));
+        const versionColors = colorsOf(m.colors ?? [], name || m.label);
+        return {
+          label: m.label,
+          ...(m.url ? { href: m.url } : {}),
+          ...(name ? { name } : {}),
+          ...(gallery.length ? { gallery } : {}),
+          ...(versionColors.length ? { colors: versionColors } : {}),
+        };
+      }),
     ),
+    colors: nonEmpty(colorsOf(p.colors, p.name)),
     details: nonEmpty(p.details),
     ...(p.spec_dimensions?.length || p.spec_groups?.length
       ? { specs: { dimensions: p.spec_dimensions ?? [], technical: (p.spec_groups ?? []).map((g) => ({ title: g.title, items: g.items })) } }

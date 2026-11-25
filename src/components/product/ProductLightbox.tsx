@@ -107,7 +107,7 @@ export default function ProductLightbox({
                   fill
                   sizes="(max-width: 640px) 100vw, 90vh"
                   preload={i === start}
-                  className={image.bg ? "object-cover" : "object-contain p-[6%] drop-product"}
+                  className={image.bg ? "object-cover" : "object-scale-down p-[6%] drop-product"}
                 />
               </div>
             </li>

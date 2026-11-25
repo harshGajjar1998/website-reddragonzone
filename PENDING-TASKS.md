@@ -7,9 +7,18 @@ Design source: Figma "Red Dragonzone V1" (`CJElvK5XeCWL1a7hc9QnOZ`), section "Ch
 
 ## Next: CMS deploy to staging, then live steps
 - Committed and pushed 2026-11-26 (both repos, feature/cms-integration). The website push started its deploy.
-- [ ] Deploy the CMS to staging: `deploy/hostinger.sh` over SSH (code changed: social posts, module links). Needs the
-  Redragon Hostinger SSH details (not in `Documents/Hostinger/` yet); ask the owner first.
-- [ ] Then on the CMS: `php artisan products:link-modules --dry-run`, review with the owner, run without `--dry-run`.
+- [x] CMS deployed to staging (5eed263); `products:link-modules` run on staging: 150 products saved, only 5 link
+  to another product (BM-4131/BM-4235, M690, K732WLB, K526SP, K769OFL); 220 versions have no page of their own.
+- [x] D8 = (a) on-page version switch (owner, 2026-11-26), built, not committed. Website:
+  `src/components/gaming/ProductOverview.tsx`, `src/components/product/ProductLightbox.tsx`, `src/data/gaming.ts`,
+  `src/lib/cms/{api,index}.ts`, `docs/change-requests/2026-11-26-product-version-switch.md`. CMS:
+  `backend/app/Content/{Schema,ImageSpecs,ModuleLinks}.php`, `backend/app/Import/LiveSite.php`,
+  `docs/change-requests/2026-11-26-product-versions.md`.
+- [ ] Then (owner's OK): commit, push, deploy the CMS, and on the server run
+  `import:live-site <export> --only=versions --files=images --dry-run`, then without `--dry-run` (export path on
+  the server: check `storage/app/import-cache` notes). Only products with 2-4 versions have a switch (max 4 buttons).
+- [ ] Ask the client for HD photos of the versions (export photos are 482 x 320); HD exists for 54 of 597 versions.
+  The `mediaBg` images are 1920 x 515 dark banners, not usable as gallery tiles.
 - [ ] Set `META_OEMBED_TOKEN` on the CMS server for Instagram covers (optional).
 Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-design-update.md` (another session's).
 
@@ -25,6 +34,12 @@ Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-de
 - Colour swatches switch the gallery's first photo when the colour has a "Photo in this colour". Field added in
   the CMS and deployed.
 - Product page: Specifications, Materials & Sustainability and In the Box merged into one "Product Details" panel.
+- CMS ease of use (UX audit `reddragon-cms/docs/ux/`): U3 help text, limits explained, "Request a change",
+  "Edit this page" from the site; U4 honest save labels, readable errors, character counters; U5 accessibility,
+  History everywhere, auto-redirects, "Used on", crop preview, alt text, build status; U6 fast product list, CMS
+  search, phone layout, Duplicate; browser-check fixes; U7.1 Website map in the sidebar; U7.2 Save draft → Publish
+  everywhere (drafts table, Discard, preview shows drafts); U7.4 phone and email in the footer and on Contact Us.
+  Change requests: `reddragon-cms/docs/change-requests/2026-11-25-*` and `2026-11-26-*`.
 - Figma section reviewed. Already built before: Where to buy, Support states, product side panels, Support FAQ,
   Press & Awards, Contact message field, form messages.
 
@@ -67,7 +82,7 @@ Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-de
 - [ ] C6 Editor guide chapters for the quiz, social posts, compare page and colour photos.
 - [ ] U7.5 Landing pages: "Product launch" and "Promotion" templates built from existing website sections
   (approved 2026-11-26, `reddragon-cms/docs/ux/2026-11-26-u7-website-tree-and-publishing-proposal.md`).
-- [ ] Homepage "Discard changes" (U7.2 gap: the homepage keeps its own draft copy; needs a reset-to-published endpoint).
+- [x] Homepage "Discard changes" (done 2026-11-26, not committed: `reddragon-cms/docs/change-requests/2026-11-26-homepage-discard.md`).
 - **Next phase release:** U7.3 review and scheduling: Send for review, field-by-field changes, Send back, publish at a
   set time. Deferred by the owner on 2026-11-26. Until then, the Dashboard's "Not published yet" list shows drafts
   waiting for an Editor.

@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import ProductActions from "@/components/product/ProductActions";
 import ProductLightbox from "@/components/product/ProductLightbox";
 import ProductPointers from "@/components/product/ProductPointers";
-import { categoryHref, rangeOf, type GalleryImage, type GamingCategory, type GamingProduct } from "@/data/gaming";
+import { categoryHref, rangeOf, type GalleryImage, type GamingCategory, type GamingProduct, type ProductModule } from "@/data/gaming";
 
 /**
  * The gallery with the picked colour's photo in the first cell. The number of cells stays the same
@@ -63,6 +63,29 @@ function GalleryCell({ image, priority, onOpen }: { image: GalleryImage; priorit
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+/** Every run of whole words, normalised: "AATROX M811W- RGB-PRO manual" → aatrox, m811w, m811wrgbpro, … */
+const runs = (text: string) => {
+  const words = text.split(/\s+/).filter(Boolean);
+  return words.flatMap((_, i) => words.slice(i).map((__, j) => norm(words.slice(i, i + j + 1).join(" "))));
+};
+
+/**
+ * The product as the page shows it while a version is picked (`version`, a module without a page):
+ * its name, and the manuals and drivers of that version only. Files are matched by the version's
+ * model in their title ("AATROX M811W-RGB-PRO manual"); a group with no match keeps all its files.
+ * `module` is the highlighted module, which also narrows the files on the product's own version.
+ */
+function withVersion(product: GamingProduct, version: ProductModule | undefined, module: ProductModule | undefined): GamingProduct {
+  const label = module ? norm(module.label) : "";
+  const downloads = label
+    ? product.downloads?.map((g) => {
+        const mine = g.releases.filter((r) => runs(r.version).includes(label));
+        return mine.length ? { ...g, releases: mine } : g;
+      })
+    : product.downloads;
+  return { ...product, ...(version?.name ? { name: version.name } : {}), ...(downloads ? { downloads } : {}) };
+}
+
 // API: dynamic data – product details, gallery, specs (via props)
 /**
  * KEWBOARD DETAIL PAGE "Desktop - 16" – breadcrumb, 2-column gallery (337×368 cells)
@@ -82,30 +105,36 @@ export default function ProductOverview({
    */
   special?: { ghost: string };
 }) {
-  const baseGallery: GalleryImage[] = product.gallery ?? [
-    { ...product.image, alt: product.image.alt || product.name },
-  ];
-  const colors = product.colors ?? [];
-
   const office = product.range === "office";
   const range = rangeOf(product);
   const [color, setColor] = useState(0);
   const [viewer, setViewer] = useState<number | null>(null);
+  const [picked, setPicked] = useState<number | null>(null);
 
   /*
-   * Module (model) switch: each module is another version of the product with its own page.
-   * The highlighted one is this page – the module linking here, else the one named like this
-   * product, else the one without a link. Others are links; a module without a page is greyed out.
-   * With no other page to go to, the switch is hidden (it would do nothing).
+   * Module (model) switch: the versions of this product. The highlighted one is this page: the
+   * module linking here, else the one named like this product, else the first without a link.
+   * Another version either links to its own page, or (no link) has its own name, photos and
+   * colours, and picking it shows those here. A version with neither is greyed out; with no
+   * other version to show, the switch is hidden (it would do nothing).
    */
   const modules = product.modules ?? [];
   const here = `/${product.slug}/`;
   const names = [product.name, product.model].filter(Boolean).map((s) => norm(s!));
-  const linksHere = (m: { href?: string }) => !!m.href && (m.href.endsWith(here) || m.href.endsWith(here.slice(0, -1)));
+  const linksHere = (m: ProductModule) => !!m.href && (m.href.endsWith(here) || m.href.endsWith(here.slice(0, -1)));
   let current = modules.findIndex(linksHere);
   if (current < 0) current = modules.findIndex((m) => names.includes(norm(m.label)));
   if (current < 0) current = modules.findIndex((m) => !m.href);
-  const showModules = modules.some((m, i) => i !== current && !!m.href);
+  const onPage = (m: ProductModule) => !m.href && !!(m.name || m.gallery?.length || m.colors?.length);
+  const showModules = modules.some((m, i) => i !== current && (!!m.href || onPage(m)));
+  const active = picked ?? current;
+  const version = active !== current ? modules[active] : undefined;
+
+  // What the page shows: this product, or the picked version's name, photos and colours
+  const shown = withVersion(product, version, modules[active]);
+  const baseGallery: GalleryImage[] = version?.gallery ??
+    product.gallery ?? [{ ...product.image, alt: product.image.alt || product.name }];
+  const colors = version?.colors ?? product.colors ?? [];
   const gallery = withColour(baseGallery, colors[color]?.image);
   const carousel = useRef<HTMLUListElement>(null);
   const pickColor = (i: number) => {
@@ -113,25 +142,38 @@ export default function ProductOverview({
     // Phone carousel: bring the colour's photo (now first) into view
     if (colors[i]?.image) carousel.current?.scrollTo({ left: 0, behavior: "smooth" });
   };
+  const pickVersion = (i: number) => {
+    setPicked(i === current ? null : i);
+    setColor(0);
+    carousel.current?.scrollTo({ left: 0, behavior: "smooth" });
+  };
 
   const moduleSwitch = (className = "mt-2") => (
-    <nav aria-label="Model versions" className={`${className} flex border border-ink/50`}>
+    <div role="group" aria-label="Model versions" className={`${className} flex border border-ink/50`}>
       {modules.map((m, i) => {
-        const active = i === current;
+        const on = i === active;
+        const usable = i === current || !!m.href || onPage(m);
         const cls = `flex flex-1 items-center justify-center px-2 py-[10px] font-lexend text-[12px] leading-none whitespace-nowrap ${
-          active ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : m.href ? "text-ink hover:bg-black/5" : "text-ink/35"
+          on ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : usable ? "cursor-pointer text-ink hover:bg-black/5" : "text-ink/35"
         } ${i > 0 ? "border-l border-ink/50" : ""}`;
-        return m.href && !active ? (
-          <Link key={m.label} href={m.href} className={cls}>
+        if (m.href && i !== current) {
+          return (
+            <Link key={m.label} href={m.href} className={cls}>
+              {m.label}
+            </Link>
+          );
+        }
+        return usable ? (
+          <button key={m.label} type="button" aria-pressed={on} onClick={() => pickVersion(i)} className={cls}>
             {m.label}
-          </Link>
+          </button>
         ) : (
-          <span key={m.label} aria-current={active ? "page" : undefined} aria-disabled={active ? undefined : true} className={cls}>
+          <span key={m.label} aria-disabled className={cls}>
             {m.label}
           </span>
         );
       })}
-    </nav>
+    </div>
   );
 
   const colorSwatches = (className = "mt-2 gap-3") => (
@@ -191,12 +233,12 @@ export default function ProductOverview({
 
         <div className="relative px-4">
           {breadcrumb("flex flex-wrap gap-x-[0.3em] font-lato text-[14px] leading-normal text-ink/80")}
-          <h1 className="mt-2 font-lexend-exa text-[32px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
+          <h1 className="mt-2 font-lexend-exa text-[32px] font-semibold leading-[1.2] text-ink">{shown.name}</h1>
         </div>
 
         <ul
           ref={carousel}
-          aria-label={`${product.name} gallery`}
+          aria-label={`${shown.name} gallery`}
           className="relative mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {gallery.map((image, i) => (
@@ -239,8 +281,8 @@ export default function ProductOverview({
           <p className="mt-3 font-lexend text-[14px] font-light capitalize leading-[18px] tracking-[0.84px] text-ink/75">
             {product.description ?? product.tagline}
           </p>
-          <ProductPointers product={product} className="mt-5 gap-5" />
-          <ProductActions product={product} className="mt-6" />
+          <ProductPointers product={shown} className="mt-5 gap-5" />
+          <ProductActions product={shown} className="mt-6" />
         </div>
 
         {/* Ghost model name, cut off by the section's bottom edge */}
@@ -260,7 +302,7 @@ export default function ProductOverview({
           )}
 
           <div className="mt-8 flex items-start gap-[65px]">
-            <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${product.name} gallery`}>
+            <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${shown.name} gallery`}>
               {gallery.map((image, i) => (
                 <GalleryCell key={image.src + i} image={image} priority={i < 2} onOpen={() => setViewer(i)} />
               ))}
@@ -270,7 +312,7 @@ export default function ProductOverview({
               {product.series && (
                 <p className="font-lexend-giga text-[24px] leading-[1.2] text-ink/80">{product.series}</p>
               )}
-              <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
+              <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{shown.name}</h1>
 
               {showModules && (
                 <>
@@ -295,15 +337,15 @@ export default function ProductOverview({
                 {product.description ?? product.tagline}
               </p>
 
-              <ProductPointers product={product} className="mt-6 gap-6" />
-              <ProductActions product={product} className="mt-8" />
+              <ProductPointers product={shown} className="mt-6 gap-6" />
+              <ProductActions product={shown} className="mt-8" />
             </div>
           </div>
         </div>
       )}
 
       {viewer !== null && (
-        <ProductLightbox images={gallery} start={viewer} title={product.name} onClose={() => setViewer(null)} />
+        <ProductLightbox images={gallery} start={viewer} title={shown.name} onClose={() => setViewer(null)} />
       )}
     </section>
   );

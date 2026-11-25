@@ -58,7 +58,11 @@ export type CmsProduct = {
   keywords: Str;
   tags: Str[];
   gallery: (CmsImage & { bg: Str })[];
-  modules: { label: Str; url: Str }[];
+  modules: {
+    label: Str; url: Str;
+    /** A version without a page of its own: shown on this page when picked */
+    name?: Str; gallery?: { image: Str; alt: Str }[]; colors?: { name: Str; hex: Str; image?: Str; image_alt?: Str }[];
+  }[];
   colors: { name: Str; hex: Str; image?: Str; image_alt?: Str }[];
   details: { title: Str; body: Str }[];
   features_description: Str;

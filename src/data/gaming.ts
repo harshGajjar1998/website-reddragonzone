@@ -81,6 +81,18 @@ export type GalleryImage = {
   crop?: Art["crop"];
 };
 
+/**
+ * A version in the product page's model switcher: a link to its own page, or (no `href`) its own
+ * name, photos and colours shown on this page when picked.
+ */
+export type ProductModule = {
+  label: string;
+  href?: string;
+  name?: string;
+  gallery?: GalleryImage[];
+  colors?: { name: string; hex: string; image?: GalleryImage }[];
+};
+
 export type ProductFeature = {
   image: { src: string; width: number; height: number; bg?: string };
   title?: string;
@@ -155,7 +167,7 @@ export type GamingProduct = {
   /** Category page only: the filter options this product matches (tags plus options named in its name, tagline or specs); see listingFor() in lib/cms */
   filterTags?: string[];
   gallery?: GalleryImage[];
-  modules?: { label: string; href?: string }[];
+  modules?: ProductModule[];
   /** image: the photo shown first in the gallery while this colour is picked */
   colors?: { name: string; hex: string; image?: GalleryImage }[];
   details?: { title: string; body: string }[];
