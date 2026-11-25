@@ -196,14 +196,19 @@ function MobileProductCard({ product }: { product: GamingProduct }) {
         <div
           className={`relative aspect-[171/168] overflow-hidden border-[1.2px] border-white ${office ? "bg-[#f6f6f6]" : "bg-white"}`}
         >
-          <Image
-            src={product.image.src}
-            alt={product.name}
-            fill
-            sizes="45vw"
-            className="object-contain p-[9%] transition-transform duration-300 group-hover:scale-[1.03]"
-          />
-          <p className="absolute right-4 top-3 font-lexend text-[12px] uppercase leading-[1.2] text-ink">{product.keywords}</p>
+          {/* Image box starts below the label row, so the photo never covers it */}
+          <div className="absolute inset-x-[9%] top-9 bottom-[9%]">
+            <Image
+              src={product.image.src}
+              alt={product.name}
+              fill
+              sizes="45vw"
+              className="object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+          <p className="absolute top-3 right-3 left-3 truncate text-right font-lexend text-[12px] uppercase leading-[1.2] text-ink">
+            {product.keywords}
+          </p>
         </div>
         <h3 className="mt-4 font-lexend text-[16px] font-medium uppercase leading-[1.2] tracking-[-0.16px] text-ink">
           {product.name}
