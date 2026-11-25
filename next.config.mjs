@@ -1,9 +1,20 @@
 // Plain JS (not next.config.ts): the CMS preview is built on Hostinger, whose Linux is too old for
 // Next's native compiler, and the WebAssembly fallback can't load a TypeScript config.
+import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const widths = JSON.parse(readFileSync(new URL("./image-widths.json", import.meta.url), "utf8"));
 const preview = process.env.CMS_PREVIEW === "1";
+
+/** The website code's git commit (GITHUB_SHA in Actions), or null for Next's random ID outside git */
+function gitCommit() {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA;
+  try {
+    return execSync("git rev-parse HEAD", { stdio: ["ignore", "pipe", "ignore"] }).toString().trim() || null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Static export for Netlify: `next build` writes the whole site to `out/`.
@@ -31,6 +42,10 @@ const nextConfig = {
     // The contact and newsletter forms post here from the browser (src/lib/forms.ts)
     CMS_FORMS_URL: `${(process.env.CMS_API_URL ?? "").replace(/\/$/, "")}/api/public/forms`,
   },
+  // The same code builds the same build ID, so a CMS publish only changes the pages whose content
+  // changed and scripts/deploy-ftp.sh uploads just those. (Default: a new random ID on every build,
+  // which changes every page.) A code change gets a new commit, so a new ID.
+  generateBuildId: async () => (preview ? null : gitCommit()),
   trailingSlash: true,
   images: {
     loader: "custom",

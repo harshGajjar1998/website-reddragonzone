@@ -1,4 +1,5 @@
-# Builds the static site and uploads it to a plain Hostinger website (LiteSpeed) over FTPS.
+# Builds the static site and uploads what changed to a plain Hostinger website (LiteSpeed) over FTPS
+# (scripts/deploy-ftp.sh).
 # Runs on pushes to this branch, by hand (Actions → Run workflow), and when the CMS publishes
 # (it calls the workflow_dispatch API with its GitHub token; see CMS_GITHUB_* in the CMS .env).
 #
@@ -30,7 +31,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # A full upload (first deploy, or after one was cut short) takes ~25 min; a normal publish a minute or two
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -58,28 +60,11 @@ jobs:
           </IfModule>
           HT
 
-      - name: Upload over FTPS
+      - name: Upload over FTPS (changed files only)
         env:
           FTP_HOST: ${{ vars.FTP_HOST }}
           FTP_USER: ${{ vars.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           sudo apt-get install -y -qq lftp > /dev/null
-          export LFTP_PASSWORD="$FTP_PASSWORD"   # read by --env-password: any character is safe, and it stays off the command line
-          ftp() { lftp --env-password -u "$FTP_USER" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; set net:max-retries 3; $1; quit" "$FTP_HOST"; }
-          # Hostinger FTP accounts open in the website's folder (next to public_html) or inside public_html.
-          # `cls -1 /` prints entries with their path ("/public_html/"), hence the loose match.
-          listing=$(ftp "cls -1 /") || { echo "::error::FTP login failed – check the FTP_USER variable and FTP_PASSWORD secret"; exit 1; }
-          if echo "$listing" | grep -Eq '(^|/)public_html/?$'; then dir=/public_html
-          elif echo "$listing" | grep -Eq '(^|/)DO_NOT_UPLOAD_HERE$'; then echo "::error::In the domain folder but no public_html – refusing to upload"; exit 1
-          else dir=/; fi
-          # Never mirror (with --delete) into a folder that holds the website's own folders
-          [ "$(ftp "cls -1 $dir" | grep -Ec '(^|/)(public_html/?|DO_NOT_UPLOAD_HERE)$')" = 0 ] || { echo "::error::$dir is not a web root – refusing to upload"; exit 1; }
-          echo "Uploading to $dir"
-          keep="--exclude-glob .well-known/ --exclude-glob .well-known/*"
-          # 1. new/resized files (fresh builds touch every file, so compare sizes, not times) – old pages keep working
-          ftp "mirror -R --ignore-time --parallel=8 $keep out/ $dir"
-          # 2. every page/data file, whatever its size (a text edit can keep the size)
-          ftp "mirror -R --parallel=8 --include-glob *.html --include-glob *.txt --include-glob .htaccess $keep out/ $dir"
-          # 3. remove what the new build no longer has
-          ftp "mirror -R --ignore-time --delete --parallel=8 $keep out/ $dir"
+          bash scripts/deploy-ftp.sh out
