@@ -236,7 +236,14 @@ function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): Gaming
       })),
     ),
     modules: nonEmpty(p.modules.map((m) => ({ label: m.label, ...(m.url ? { href: m.url } : {}) }))),
-    colors: nonEmpty(p.colors),
+    colors: nonEmpty(
+      p.colors.map(({ name, hex, image }) => ({
+        name,
+        hex,
+        // Same slot as the gallery: picking the colour shows this photo in the first cell
+        ...(image ? { image: { src: image, ...(layout("product.gallery", image) ?? dims(image)), alt: `${p.name} ${name}` } } : {}),
+      })),
+    ),
     details: nonEmpty(p.details),
     ...(p.spec_dimensions?.length || p.spec_groups?.length
       ? { specs: { dimensions: p.spec_dimensions ?? [], technical: (p.spec_groups ?? []).map((g) => ({ title: g.title, items: g.items })) } }

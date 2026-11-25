@@ -156,7 +156,8 @@ export type GamingProduct = {
   filterTags?: string[];
   gallery?: GalleryImage[];
   modules?: { label: string; href?: string }[];
-  colors?: { name: string; hex: string }[];
+  /** image: the photo shown first in the gallery while this colour is picked */
+  colors?: { name: string; hex: string; image?: GalleryImage }[];
   details?: { title: string; body: string }[];
   /** Structured "Specifications" panel content; see productSpecs() in data/productInfo.ts */
   specs?: ProductSpecs;

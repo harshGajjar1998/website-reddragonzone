@@ -2,10 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ProductActions from "@/components/product/ProductActions";
 import ProductPointers from "@/components/product/ProductPointers";
 import { categoryHref, rangeOf, type GalleryImage, type GamingCategory, type GamingProduct } from "@/data/gaming";
+
+/**
+ * The gallery with the picked colour's photo in the first cell. The number of cells stays the same
+ * (fixed layout): the photo replaces its own copy if the gallery has one, else the first picture.
+ */
+function withColour(gallery: GalleryImage[], image?: GalleryImage): GalleryImage[] {
+  if (!image) return gallery;
+  const rest = gallery.filter((g) => g.src !== image.src);
+  return [{ ...image, bg: gallery[0]?.bg }, ...rest].slice(0, Math.max(gallery.length, 1));
+}
 
 function GalleryCell({ image, priority }: { image: GalleryImage; priority: boolean }) {
   return (
@@ -51,7 +61,7 @@ export default function ProductOverview({
    */
   special?: { ghost: string };
 }) {
-  const gallery: GalleryImage[] = product.gallery ?? [
+  const baseGallery: GalleryImage[] = product.gallery ?? [
     { ...product.image, alt: product.name, bg: "#f6f6f6" },
   ];
   const modules = product.modules ?? [{ label: product.name }];
@@ -61,6 +71,13 @@ export default function ProductOverview({
   const range = rangeOf(product);
   const [module, setModule] = useState(0);
   const [color, setColor] = useState(0);
+  const gallery = withColour(baseGallery, colors[color]?.image);
+  const carousel = useRef<HTMLUListElement>(null);
+  const pickColor = (i: number) => {
+    setColor(i);
+    // Phone carousel: bring the colour's photo (now first) into view
+    if (colors[i]?.image) carousel.current?.scrollTo({ left: 0, behavior: "smooth" });
+  };
 
   const moduleSwitch = (className = "mt-2") => (
     <div role="radiogroup" aria-label="Module" className={`${className} flex border border-ink/50`}>
@@ -98,7 +115,7 @@ export default function ProductOverview({
           role="radio"
           aria-checked={i === color}
           aria-label={c.name}
-          onClick={() => setColor(i)}
+          onClick={() => pickColor(i)}
           className={`size-6 cursor-pointer rounded-full ${
             i === color && colors.length > 1 ? "ring-2 ring-dragon ring-offset-2" : ""
           }`}
@@ -150,6 +167,7 @@ export default function ProductOverview({
         </div>
 
         <ul
+          ref={carousel}
           aria-label={`${product.name} gallery`}
           className="relative mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >

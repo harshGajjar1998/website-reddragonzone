@@ -57,7 +57,7 @@ export type CmsProduct = {
   tags: Str[];
   gallery: (CmsImage & { bg: Str })[];
   modules: { label: Str; url: Str }[];
-  colors: { name: Str; hex: Str }[];
+  colors: { name: Str; hex: Str; image?: Str }[];
   details: { title: Str; body: Str }[];
   features_description: Str;
   features_image: Str;
