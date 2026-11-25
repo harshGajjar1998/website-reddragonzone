@@ -7,6 +7,7 @@ import CenteredHeading from "@/components/gaming/CenteredHeading";
 import CommunitySection from "@/components/home/CommunitySection";
 import ContactForm, { ContactFormFromUrl } from "@/components/pages/ContactForm";
 import FaqList from "@/components/pages/FaqList";
+import ContactLinks from "@/components/layout/ContactLinks";
 import { getContent } from "@/lib/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Figma "Contact us" */
 export default async function ContactPage() {
-  const { faqs, enquiryTypes, copy } = (await getContent()).pages;
+  const { pages, chrome } = await getContent();
+  const { faqs, enquiryTypes, copy } = pages;
   const c = copy.contact;
   return (
     <>
@@ -37,6 +39,16 @@ export default async function ContactPage() {
         </div>
       </section>
       </CmsSection>
+
+      {/* Phone and email from the CMS (Footer screen); the strip is left out when both are empty */}
+      {(chrome.contact.phone || chrome.contact.email) && (
+        <section className="bg-white">
+          <div className="page-frame flex flex-col items-center gap-2 px-4 py-10 text-center lg:py-12">
+            <p className="font-lexend-deca text-[18px] leading-[1.4] text-ink">Prefer to call or email?</p>
+            <ContactLinks contact={chrome.contact} className="items-center font-archivo text-[15px] leading-[1.6] text-ink/75" />
+          </div>
+        </section>
+      )}
 
       <CmsSection ids={["singleton:contact_page", ...entryIds(faqs)]}>
       <section className="bg-[#f6f6f6]">

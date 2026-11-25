@@ -4,12 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useProductRange } from "@/lib/useProductRange";
 import { useChrome } from "./ChromeProvider";
+import ContactLinks from "./ContactLinks";
 import FooterLogo from "./FooterLogo";
 import MobileFooter from "./MobileFooter";
 
 /** Desktop footer: silver on gaming/shared pages, white on Office pages (Figma Office frames). */
 export default function Footer() {
-  const { footerColumns, footerBlurb, socialLinks, copyright } = useChrome();
+  const { footerColumns, footerBlurb, socialLinks, copyright, contact } = useChrome();
   const office = useProductRange() === "office";
   return (
     <>
@@ -23,6 +24,7 @@ export default function Footer() {
               <p className="font-archivo text-[13px] leading-[1.5] text-ink/75">
                 {footerBlurb}
               </p>
+              <ContactLinks contact={contact} className="font-archivo text-[13px] leading-[1.5] text-ink/75" />
             </div>
 
             {/* API: dynamic data – footer link columns */}

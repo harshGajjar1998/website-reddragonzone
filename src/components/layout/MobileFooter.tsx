@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useChrome } from "./ChromeProvider";
 import { useProductRange } from "@/lib/useProductRange";
+import ContactLinks from "./ContactLinks";
 import FooterLogo from "./FooterLogo";
 import Collapse from "@/components/ui/Collapse";
 
 /** Mobile footer (Figma "iPhone 13 & 14 - 7"): logo + blurb, link columns as an accordion, socials. */
 export default function MobileFooter() {
-  const { footerColumns, footerBlurb, socialLinks, copyright } = useChrome();
+  const { footerColumns, footerBlurb, socialLinks, copyright, contact } = useChrome();
   const range = useProductRange();
   const [open, setOpen] = useState<string | null>(null);
 
@@ -22,6 +23,7 @@ export default function MobileFooter() {
           <p className="font-archivo text-[13px] leading-[20px] text-ink/75">
             {footerBlurb}
           </p>
+          <ContactLinks contact={contact} className="font-archivo text-[13px] leading-[20px] text-ink/75" />
         </div>
 
         <ul className="mt-8 border-t border-[#8d8d8d]">

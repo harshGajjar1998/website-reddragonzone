@@ -113,6 +113,9 @@ export type CmsBundle = {
       footer_text: Str;
       /** Footer's bottom line; {year} becomes the current year */
       copyright?: Str;
+      /** Contact details (CMS Footer screen); empty = not shown */
+      contact_phone?: Str;
+      contact_email?: Str;
       social: Record<string, Str>;
     };
     announcement: { tag: Str; text: Str; cta_text: Str; cta_url: Str } | null;

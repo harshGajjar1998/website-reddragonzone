@@ -99,6 +99,8 @@ export type ChromeContent = {
   footerBlurb: string;
   /** Footer's bottom line (CMS Site-wide › Footer) */
   copyright: string;
+  /** Phone and email from the CMS (Footer screen); empty strings are not shown */
+  contact: { phone: string; email: string };
   socialLinks: SocialLink[];
   community: Community | null;
   /** Settings & SEO logos; each is drawn in a fixed box (object-contain), so a new file can't move the layout */
