@@ -135,11 +135,14 @@ export default function HeroSection({ slides: heroSlides }: { slides: HeroSlide[
   );
   const step = (d: 1 | -1) => goTo(index + d, d);
 
-  // Advance every AUTOPLAY_MS; the timer restarts after any manual navigation.
+  // Advance every AUTOPLAY_MS; the timer restarts after any manual navigation. Paused in the CMS editor.
   // (Reduced motion only drops the animations – see globals.css – not the rotation.)
   useEffect(() => {
     if (paused || drag || count < 2) return;
-    const id = window.setTimeout(() => goTo(index + 1, 1), AUTOPLAY_MS);
+    // Never inside the CMS editor: a click meant for one slide must not land on the next one.
+    const inEditor = () => document.documentElement.dataset.cmsEditor === "1";
+    if (inEditor()) return;
+    const id = window.setTimeout(() => { if (!inEditor()) goTo(index + 1, 1); }, AUTOPLAY_MS);
     return () => window.clearTimeout(id);
   }, [index, paused, drag, count, goTo]);
 

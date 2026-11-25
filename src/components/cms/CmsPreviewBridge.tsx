@@ -181,6 +181,8 @@ export default function CmsPreviewBridge({ adminOrigin }: { adminOrigin: string 
 
   useEffect(() => {
     if (window.parent === window) return; // opened directly, not inside the editor
+    // Tells moving parts (the homepage hero slider) to hold still while someone edits.
+    document.documentElement.dataset.cmsEditor = "1";
     const post = (msg: object) => window.parent.postMessage({ source: "rd-preview", ...msg }, adminOrigin);
     const setHover = (hover: Mark | null) => setMarks((m) => ({ ...m, hover }));
     const sectionsIn = (marker: Element) => {
