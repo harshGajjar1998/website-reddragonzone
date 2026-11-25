@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import ProductActions from "@/components/product/ProductActions";
+import ProductLightbox from "@/components/product/ProductLightbox";
 import ProductPointers from "@/components/product/ProductPointers";
 import { categoryHref, rangeOf, type GalleryImage, type GamingCategory, type GamingProduct } from "@/data/gaming";
 
@@ -17,9 +18,19 @@ function withColour(gallery: GalleryImage[], image?: GalleryImage): GalleryImage
   return [{ ...image, bg: gallery[0]?.bg }, ...rest].slice(0, Math.max(gallery.length, 1));
 }
 
-function GalleryCell({ image, priority }: { image: GalleryImage; priority: boolean }) {
+/**
+ * Image tile rule: an image with a designed background (`bg`, e.g. a photo shot on colour) fills its tile;
+ * any other image (transparent PNG, the CMS default) sits centred and padded on the product tile background.
+ */
+const tiled = (image: GalleryImage) => !image.bg && !image.crop;
+
+const zoomCls =
+  "relative block h-full w-full cursor-zoom-in overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dragon";
+
+function GalleryCell({ image, priority, onOpen }: { image: GalleryImage; priority: boolean; onOpen: () => void }) {
   return (
-    <li className="relative h-[368px] w-[337px] overflow-hidden" style={{ background: image.bg }}>
+    <li className={`relative h-[368px] w-[337px] ${tiled(image) ? "bg-product-tile" : ""}`} style={{ background: image.bg }}>
+      <button type="button" aria-label={`View larger: ${image.alt}`} onClick={onOpen} className={zoomCls}>
       {image.crop ? (
         <Image
           src={image.src}
@@ -36,11 +47,21 @@ function GalleryCell({ image, priority }: { image: GalleryImage; priority: boole
           }}
         />
       ) : (
-        <Image src={image.src} alt={image.alt} fill sizes="337px" preload={priority} className="object-cover" />
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes="337px"
+          preload={priority}
+          className={tiled(image) ? "object-contain p-8 drop-product" : "object-cover"}
+        />
       )}
+      </button>
     </li>
   );
 }
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 // API: dynamic data – product details, gallery, specs (via props)
 /**
@@ -62,15 +83,29 @@ export default function ProductOverview({
   special?: { ghost: string };
 }) {
   const baseGallery: GalleryImage[] = product.gallery ?? [
-    { ...product.image, alt: product.image.alt || product.name, bg: "#f6f6f6" },
+    { ...product.image, alt: product.image.alt || product.name },
   ];
-  const modules = product.modules ?? [{ label: product.name }];
   const colors = product.colors ?? [];
 
   const office = product.range === "office";
   const range = rangeOf(product);
-  const [module, setModule] = useState(0);
   const [color, setColor] = useState(0);
+  const [viewer, setViewer] = useState<number | null>(null);
+
+  /*
+   * Module (model) switch: each module is another version of the product with its own page.
+   * The highlighted one is this page – the module linking here, else the one named like this
+   * product, else the one without a link. Others are links; a module without a page is greyed out.
+   * With no other page to go to, the switch is hidden (it would do nothing).
+   */
+  const modules = product.modules ?? [];
+  const here = `/${product.slug}/`;
+  const names = [product.name, product.model].filter(Boolean).map((s) => norm(s!));
+  const linksHere = (m: { href?: string }) => !!m.href && (m.href.endsWith(here) || m.href.endsWith(here.slice(0, -1)));
+  let current = modules.findIndex(linksHere);
+  if (current < 0) current = modules.findIndex((m) => names.includes(norm(m.label)));
+  if (current < 0) current = modules.findIndex((m) => !m.href);
+  const showModules = modules.some((m, i) => i !== current && !!m.href);
   const gallery = withColour(baseGallery, colors[color]?.image);
   const carousel = useRef<HTMLUListElement>(null);
   const pickColor = (i: number) => {
@@ -80,30 +115,23 @@ export default function ProductOverview({
   };
 
   const moduleSwitch = (className = "mt-2") => (
-    <div role="radiogroup" aria-label="Module" className={`${className} flex border border-ink/50`}>
+    <nav aria-label="Model versions" className={`${className} flex border border-ink/50`}>
       {modules.map((m, i) => {
-        const active = i === module;
+        const active = i === current;
         const cls = `flex flex-1 items-center justify-center px-2 py-[10px] font-lexend text-[12px] leading-none whitespace-nowrap ${
-          active ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : "text-ink hover:bg-black/5"
+          active ? `bg-[#e60012] ${office ? "text-white" : "text-[#1f1c1c]"}` : m.href ? "text-ink hover:bg-black/5" : "text-ink/35"
         } ${i > 0 ? "border-l border-ink/50" : ""}`;
         return m.href && !active ? (
           <Link key={m.label} href={m.href} className={cls}>
             {m.label}
           </Link>
         ) : (
-          <button
-            key={m.label}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            onClick={() => setModule(i)}
-            className={`cursor-pointer ${cls}`}
-          >
+          <span key={m.label} aria-current={active ? "page" : undefined} aria-disabled={active ? undefined : true} className={cls}>
             {m.label}
-          </button>
+          </span>
         );
       })}
-    </div>
+    </nav>
   );
 
   const colorSwatches = (className = "mt-2 gap-3") => (
@@ -174,24 +202,26 @@ export default function ProductOverview({
           {gallery.map((image, i) => (
             <li
               key={image.src + i}
-              className="relative h-[320px] w-[95%] max-w-[344px] shrink-0 snap-start overflow-hidden"
-              style={{ background: image.bg ?? "#f6f6f6" }}
+              className={`relative h-[320px] w-[95%] max-w-[344px] shrink-0 snap-start ${image.bg ? "" : "bg-product-tile"}`}
+              style={image.bg ? { background: image.bg } : undefined}
             >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                sizes="(max-width: 640px) 88vw, 344px"
-                preload={i === 0}
-                className="object-cover"
-              />
+              <button type="button" aria-label={`View larger: ${image.alt}`} onClick={() => setViewer(i)} className={zoomCls}>
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="(max-width: 640px) 88vw, 344px"
+                  preload={i === 0}
+                  className={image.bg ? "object-cover" : "object-contain p-6 drop-product"}
+                />
+              </button>
             </li>
           ))}
         </ul>
 
         <div className="relative px-4">
           <hr className="mt-6 border-0 border-t border-ink" />
-          {!special && (
+          {!special && showModules && (
             <>
               <p className="mt-4 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
               {moduleSwitch("mt-3")}
@@ -232,7 +262,7 @@ export default function ProductOverview({
           <div className="mt-8 flex items-start gap-[65px]">
             <ul className="grid shrink-0 grid-cols-[337px_337px] gap-x-[17px] gap-y-4" aria-label={`${product.name} gallery`}>
               {gallery.map((image, i) => (
-                <GalleryCell key={image.src + i} image={image} priority={i < 2} />
+                <GalleryCell key={image.src + i} image={image} priority={i < 2} onOpen={() => setViewer(i)} />
               ))}
             </ul>
 
@@ -242,8 +272,12 @@ export default function ProductOverview({
               )}
               <h1 className="mt-2 font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">{product.name}</h1>
 
-              <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
-              {moduleSwitch()}
+              {showModules && (
+                <>
+                  <p className="mt-6 font-lexend text-[16px] font-medium leading-[1.2] text-ink">Module</p>
+                  {moduleSwitch()}
+                </>
+              )}
 
               {colors.length > 0 && (
                 <>
@@ -266,6 +300,10 @@ export default function ProductOverview({
             </div>
           </div>
         </div>
+      )}
+
+      {viewer !== null && (
+        <ProductLightbox images={gallery} start={viewer} title={product.name} onClose={() => setViewer(null)} />
       )}
     </section>
   );
