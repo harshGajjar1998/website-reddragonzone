@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import CategoryListing, { CategoryListingFromUrl } from "@/components/gaming/CategoryListing";
 import NewsletterSection from "@/components/office/NewsletterSection";
 import OfficeCategoryHero from "@/components/office/OfficeCategoryHero";
-import { findCategory, getContent, productsIn } from "@/lib/cms";
+import { findCategory, getContent, listingFor } from "@/lib/cms";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbs } from "@/lib/structured-data";
 
@@ -30,7 +30,8 @@ export default async function OfficeCategoryPage({ params }: PageProps<"/office/
   if (!category) notFound();
 
   // API: dynamic data – products in this category
-  const products = productsIn(office.products, category.slug);
+  const listing = listingFor(category, office.products);
+  const products = listing.products;
 
   return (
     <>
@@ -40,8 +41,8 @@ export default async function OfficeCategoryPage({ params }: PageProps<"/office/
       </CmsSection>
       {/* Page 1 is pre-rendered; ?page=N is applied in the browser */}
       <CmsSection ids={[...entryIds([category]), ...entryIds(products, "product")]}>
-        <Suspense fallback={<CategoryListing category={category} products={products} page={1} />}>
-          <CategoryListingFromUrl category={category} products={products} />
+        <Suspense fallback={<CategoryListing category={listing.category} products={products} page={1} />}>
+          <CategoryListingFromUrl category={listing.category} products={products} />
         </Suspense>
       </CmsSection>
       {/* API: dynamic data – office newsletter content */}

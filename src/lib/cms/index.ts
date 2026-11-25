@@ -65,6 +65,34 @@ export const findProduct = (list: GamingProduct[], category: string, slug: strin
   list.find((p) => p.category === category && p.slug === slug);
 export const productsIn = (list: GamingProduct[], category: string) => list.filter((p) => p.category === category);
 
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** `option` as a whole word or phrase in `text` ("Wired" matches "USB Wired Mouse", not "Wireless"; "TKL (80%)" also matches "TKL") */
+const names = (text: string, option: string) =>
+  [option, option.replace(/\s*\(.*\)$/, "")].some((o) => o && new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRe(o)}(?![\\p{L}\\p{N}])`, "iu").test(text));
+
+/**
+ * A category page's filters and products. Products imported from the old site carry its sub-category
+ * tags ("CPU Coolers", "RGB Mice") rather than the CMS filter options, so a product also matches an
+ * option its name, tagline, tags or specs name. Tags no filter covers become a "Type" group, and
+ * options no product matches are left out.
+ */
+export function listingFor<C extends GamingCategory>(category: C, list: GamingProduct[]): { category: C; products: GamingProduct[] } {
+  const inCategory = productsIn(list, category.slug);
+  const options = category.filters.flatMap((g) => g.options);
+  const types = [...new Set(inCategory.flatMap((p) => p.tags ?? []))].filter((t) => !options.some((o) => names(t, o)));
+  const groups = [...(types.length ? [{ title: "Type", options: types }] : []), ...category.filters];
+
+  const products = inCategory.map((p) => {
+    const text = [p.name, p.tagline, ...(p.tags ?? []), ...(p.specs?.technical.flatMap((g) => g.items) ?? [])].join("\n");
+    const matched = options.filter((o) => p.tags?.includes(o) || names(text, o));
+    return { ...p, filterTags: [...new Set([...(p.tags ?? []), ...matched])] };
+  });
+  const filters = groups
+    .map((g) => ({ ...g, options: g.options.filter((o) => products.some((p) => p.filterTags.includes(o))) }))
+    .filter((g) => g.options.length);
+  return { category: { ...category, filters }, products };
+}
+
 // ---------------------------------------------------------------------
 
 const opt = <T>(v: T | "" | undefined | null): T | undefined => (v === "" || v == null ? undefined : v);

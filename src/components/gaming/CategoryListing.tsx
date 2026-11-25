@@ -269,7 +269,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
     const list = products.filter(
       (p) =>
         (!q || p.name.toLowerCase().includes(q) || p.tagline.toLowerCase().includes(q)) &&
-        active.every((set) => p.tags?.some((t) => set.has(t))),
+        active.every((set) => (p.filterTags ?? p.tags)?.some((t) => set.has(t))),
     );
     if (sort === "az") list.sort((a, b) => a.name.localeCompare(b.name));
     if (sort === "za") list.sort((a, b) => b.name.localeCompare(a.name));

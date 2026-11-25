@@ -193,7 +193,15 @@ export type CmsBundle = {
  */
 export const isCmsPreview = () => process.env.CMS_PREVIEW === "1";
 
+/** Bundle saved by scripts/build.mjs for this build, read once per build worker */
+let saved: Promise<CmsBundle> | undefined;
+
 export async function fetchBundle(): Promise<CmsBundle> {
+  const file = process.env.CMS_BUNDLE_FILE;
+  if (file && !isCmsPreview()) {
+    saved ??= import("node:fs/promises").then(async (fs) => (JSON.parse(await fs.readFile(file, "utf8")) as { data: CmsBundle }).data);
+    return saved;
+  }
   const base = process.env.CMS_API_URL?.replace(/\/$/, "");
   if (!base) {
     throw new Error("CMS_API_URL is not set. Point it at the Redragon CMS API, e.g. CMS_API_URL=http://127.0.0.1:8010 (see .env.example).");

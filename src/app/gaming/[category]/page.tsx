@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import CommunitySection from "@/components/home/CommunitySection";
 import CategoryHero from "@/components/gaming/CategoryHero";
 import CategoryListing, { CategoryListingFromUrl } from "@/components/gaming/CategoryListing";
-import { findCategory, getContent, productsIn } from "@/lib/cms";
+import { findCategory, getContent, listingFor } from "@/lib/cms";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbs } from "@/lib/structured-data";
 
@@ -30,7 +30,8 @@ export default async function GamingCategoryPage({ params }: PageProps<"/gaming/
   if (!category) notFound();
 
   // API: dynamic data – products in this category
-  const products = productsIn(gaming.products, category.slug);
+  const listing = listingFor(category, gaming.products);
+  const products = listing.products;
 
   return (
     <>
@@ -40,8 +41,8 @@ export default async function GamingCategoryPage({ params }: PageProps<"/gaming/
       </CmsSection>
       {/* Page 1 is pre-rendered; ?page=N is applied in the browser */}
       <CmsSection ids={[...entryIds([category]), ...entryIds(products, "product")]}>
-        <Suspense fallback={<CategoryListing category={category} products={products} page={1} />}>
-          <CategoryListingFromUrl category={category} products={products} />
+        <Suspense fallback={<CategoryListing category={listing.category} products={products} page={1} />}>
+          <CategoryListingFromUrl category={listing.category} products={products} />
         </Suspense>
       </CmsSection>
       <CmsSection ids={["shared:community"]}>

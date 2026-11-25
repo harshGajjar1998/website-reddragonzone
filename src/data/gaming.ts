@@ -152,6 +152,8 @@ export type GamingProduct = {
   largeArt?: ArtSpec;
   /** Values matched against the category's filter options */
   tags?: string[];
+  /** Category page only: the filter options this product matches (tags plus options named in its name, tagline or specs); see listingFor() in lib/cms */
+  filterTags?: string[];
   gallery?: GalleryImage[];
   modules?: { label: string; href?: string }[];
   colors?: { name: string; hex: string }[];
