@@ -9,15 +9,16 @@ Design source: Figma "Red Dragonzone V1" (`CJElvK5XeCWL1a7hc9QnOZ`), section "Ch
 - Committed and pushed 2026-11-26 (both repos, feature/cms-integration). The website push started its deploy.
 - [x] CMS deployed to staging (5eed263); `products:link-modules` run on staging: 150 products saved, only 5 link
   to another product (BM-4131/BM-4235, M690, K732WLB, K526SP, K769OFL); 220 versions have no page of their own.
-- [x] D8 = (a) on-page version switch (owner, 2026-11-26), built, not committed. Website:
+- [x] D8 = (a) on-page version switch (owner, 2026-11-26), built. Website:
   `src/components/gaming/ProductOverview.tsx`, `src/components/product/ProductLightbox.tsx`, `src/data/gaming.ts`,
   `src/lib/cms/{api,index}.ts`, `docs/change-requests/2026-11-26-product-version-switch.md`. CMS:
   `backend/app/Content/{Schema,ImageSpecs,ModuleLinks}.php`, `backend/app/Import/LiveSite.php`,
   `docs/change-requests/2026-11-26-product-versions.md`.
-- [ ] Then (owner's OK): commit, push, deploy the CMS, and on the server run
-  `import:live-site <export> --only=versions --files=images --dry-run`, then without `--dry-run` (export path on
-  the server: check `storage/app/import-cache` notes). Only products with 2-4 versions have a switch (max 4 buttons).
+- [x] Committed (website 7c3541e, CMS 3ce7f10), CMS deployed, versions imported on staging 2026-11-26: 144 products,
+  833 photos copied (811 kept at the old 482 x 320 size; log `storage/logs/import-2026-11-25-225529.txt`).
 - [ ] Ask the client for HD photos of the versions (export photos are 482 x 320); HD exists for 54 of 597 versions.
+- [ ] Product test (`reddragon-cms/docs/testing/`): run 2 = 556 of 665 pass after manuals import (1250, linked to old site) + colour names (542). Left: 53 no gallery, 42 incomplete switches (28 = 5+ versions), 24 empty content, 2 empty drafts. Then send the workbook to the client.
+- [ ] Production (AWS): copy manuals/drivers to our storage (`import:live-site … --only=firmware --files=all`, ~11 GB) before the old site goes offline; 3 drivers are Google Drive links. Staging has the changes uploaded but not committed (ColourName, NameProductColours, LiveSite).
   The `mediaBg` images are 1920 x 515 dark banners, not usable as gallery tiles.
 - [ ] Set `META_OEMBED_TOKEN` on the CMS server for Instagram covers (optional).
 Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-design-update.md` (another session's).
@@ -80,8 +81,9 @@ Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-de
 - [ ] C4 Compare page content: banner photo and text, category tile photos, step labels. They're in code for now.
 - [ ] C5 Image slot sizes (ImageSpecs) and visual-editor support for every new image and block above.
 - [ ] C6 Editor guide chapters for the quiz, social posts, compare page and colour photos.
-- [ ] U7.5 Landing pages: "Product launch" and "Promotion" templates built from existing website sections
-  (approved 2026-11-26, `reddragon-cms/docs/ux/2026-11-26-u7-website-tree-and-publishing-proposal.md`).
+- [x] U7.5 Landing pages: "Product launch" and "Promotion" templates built from existing website sections
+  (done 2026-11-26, not committed: `reddragon-cms/docs/change-requests/2026-11-26-landing-pages.md`,
+  `docs/change-requests/2026-11-26-landing-pages.md`).
 - [x] Homepage "Discard changes" (done 2026-11-26, not committed: `reddragon-cms/docs/change-requests/2026-11-26-homepage-discard.md`).
 - **Next phase release:** U7.3 review and scheduling: Send for review, field-by-field changes, Send back, publish at a
   set time. Deferred by the owner on 2026-11-26. Until then, the Dashboard's "Not published yet" list shows drafts
