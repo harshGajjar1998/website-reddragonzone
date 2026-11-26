@@ -6,7 +6,7 @@ export const dynamic = "force-static";
 
 /** /sitemap.xml – every public page, built with the site (the CMS publish rebuilds it). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { siteUrl, seo, gaming, office, blog, press, textPages } = await getContent();
+  const { siteUrl, seo, gaming, office, blog, press, textPages, landingPages } = await getContent();
   // Compare and the Support search page are tools, not content: left out
   const paths = [
     "/",
@@ -24,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...blog.posts.map((p) => `/blog/${p.slug}/`),
     ...press.articles.map((a) => `/press-and-awards/${a.slug}/`),
     ...textPages.map((p) => `/${p.slug}/`),
+    ...landingPages.map((p) => `/${p.slug}/`),
   ];
   // lastModified: when the CMS last saved that page's entry (products, categories, posts)
   return [...new Set(paths)].map((path) => {

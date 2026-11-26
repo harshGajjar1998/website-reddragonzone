@@ -5,6 +5,7 @@ import type { BlogPost } from "@/data/blog";
 import type {
   Catalogue,
   FeaturedCard,
+  FeaturedHero,
   FilterGroup,
   GamingCategory,
   GamingContent,
@@ -12,13 +13,13 @@ import type {
   LatestItem,
   MobileFeaturedCard,
 } from "@/data/gaming";
-import type { Community, HomeBlock, HomeContent, Img } from "@/data/home";
+import type { Blueprint, Community, HomeBlock, HomeContent, HomeSplit, Img } from "@/data/home";
 import { SOCIAL_NETWORKS, type ChromeContent, type MegaMenu, type SearchProduct } from "@/data/navigation";
 import type { OfficeCategory, OfficeContent, OfficeTile } from "@/data/office";
 import { amazonLogo, redragonLogo, type CountryStores, type Download, type DownloadGroup, type DownloadOs, type PagesContent, type SupportTile } from "@/data/pages";
 import type { PressContent } from "@/data/press";
 import type { SocialPlatform, SocialWall } from "@/data/social";
-import { fetchBundle, isCmsPreview, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLatest, type CmsProduct, type CmsSeo } from "./api";
+import { fetchBundle, isCmsPreview, type CmsBundle, type CmsCategory, type CmsFeaturedCard, type CmsLandingPage, type CmsLatest, type CmsProduct, type CmsSeo } from "./api";
 import { layout, placed } from "./layout";
 
 /* ==================================================================
@@ -51,9 +52,38 @@ export type SiteContent = {
   blog: { copy: { eyebrow: string; title: string; description: string }; categories: string[]; posts: BlogPost[] };
   press: PressContent;
   textPages: TextPage[];
+  /** CMS landing pages (U7.5), at /<slug>/ beside the text pages */
+  landingPages: LandingPage[];
   /** Community wall: null when no post is published */
   social: SocialWall | null;
 };
+
+/**
+ * CMS landing page at /<slug>/ (U7.5), from one of two fixed templates built from existing sections.
+ * Optional sections are present only when switched on; nothing is reordered or styled.
+ */
+export type LandingPage = {
+  cmsId: number;
+  slug: string;
+  title: string;
+  featuredCards: FeaturedCard[];
+} & (
+  | {
+      template: "launch";
+      /** Null when the launched product is unpublished or not chosen yet */
+      launch: { product: GamingProduct; category: GamingCategory; hero: FeaturedHero } | null;
+      exploded?: Blueprint;
+      newsletter?: { eyebrow: string; title: string; description: string; images: { src: string; alt: string }[] };
+    }
+  | {
+      template: "promotion";
+      hero: GamingCategory["hero"];
+      text?: { title: string; body: string };
+      split?: HomeSplit;
+      store: { title: string; text: string; button: string };
+      faqs?: { q: string; a: string[] }[];
+    }
+);
 
 /** CMS text page (Privacy Policy, Careers, …) at /<slug>/ */
 export type TextPage = { slug: string; title: string; intro: string; updated?: string; sections: { heading: string; paragraphs: string[] }[] };
@@ -144,6 +174,7 @@ function adapt(b: CmsBundle): SiteContent {
       ...(p.updated ? { updated: longDate(p.updated) } : {}),
       sections: (p.sections ?? []).map((s) => ({ heading: s.heading ?? "", paragraphs: (s.paragraphs ?? []).filter(Boolean) })),
     })),
+    landingPages: (b.collections.landing_pages ?? []).map((p) => landingPage(p, products, [...gaming.categories, ...office.categories], dims)),
     blog: {
       copy: { eyebrow: b.singletons.blog_settings.eyebrow, title: b.singletons.blog_settings.title, description: b.singletons.blog_settings.description },
       categories: b.singletons.blog_settings.categories,
@@ -395,6 +426,71 @@ function featuredCards(cards: CmsFeaturedCard[], products: GamingProduct[], dims
       : [{ src: c.image, alt: c.alt, ...dims(c.image), box: { left: 0, top: 56, w: 416, h: 320 }, fit: "contain" }];
     return [{ product: { range: p.range, category: p.category, slug: p.slug }, name: c.name, label: c.label, description: c.description, art }];
   });
+}
+
+function landingPage(p: CmsLandingPage, products: GamingProduct[], categories: GamingCategory[], dims: Dims): LandingPage {
+  const base = { cmsId: p.id, slug: p.slug, title: p.title, featuredCards: featuredCards(p.featured_cards ?? [], products, dims) };
+  if (p.template !== "promotion") {
+    const product = products.find((x) => x.slug === p.product);
+    const category = product && categories.find((c) => c.slug === product.category && (c.range ?? "gaming") === (product.range ?? "gaming"));
+    const own = product?.featured?.hero;
+    const launch =
+      product && category
+        ? {
+            // The banner shows the product's description, so the landing page's own paragraph replaces it
+            product: p.hero_description ? { ...product, description: p.hero_description } : product,
+            category,
+            hero: {
+              eyebrow: own?.eyebrow ?? "",
+              title: own?.title ?? product.name,
+              description: p.hero_description || product.description || "",
+              model: p.hero_model || own?.model || product.model || "",
+              ghostLines: p.hero_ghost?.length ? pair(p.hero_ghost) : (own?.ghostLines ?? (["", ""] as [string, string])),
+              image: p.hero_image ? { src: p.hero_image, alt: p.hero_alt || product.name } : (own?.image ?? { src: product.image.src, alt: product.image.alt ?? product.name }),
+              thumbnails: own?.thumbnails ?? (product.gallery ?? []).slice(0, 3).map((g) => ({ src: g.src, alt: g.alt })),
+            },
+          }
+        : null;
+    return {
+      ...base,
+      template: "launch",
+      launch,
+      ...(p.show_exploded ? { exploded: { eyebrow: p.exploded_eyebrow ?? "", product: p.exploded_product || product?.name || "", parts: p.exploded_parts ?? [] } } : {}),
+      ...(p.show_newsletter
+        ? {
+            newsletter: {
+              eyebrow: p.newsletter_eyebrow ?? "",
+              title: p.newsletter_title ?? "",
+              description: p.newsletter_description ?? "",
+              images: (p.newsletter_images ?? []).filter((i) => i.image).map((i) => ({ src: i.image, alt: i.alt })),
+            },
+          }
+        : {}),
+    };
+  }
+  const panel = (k: "gaming" | "office") => ({
+    title: p[`split_${k}_title`] ?? "",
+    ghost: p[`split_${k}_ghost`] ?? "",
+    description: p[`split_${k}_text`] ?? "",
+    href: p[`split_${k}_url`] || `/${k}/`,
+    image: { src: p[`split_${k}_image`] ?? "", alt: p[`split_${k}_alt`] ?? "" },
+  });
+  return {
+    ...base,
+    template: "promotion",
+    hero: {
+      breadcrumb: (p.promo_breadcrumb || p.title).toUpperCase(),
+      title: p.promo_title || p.title,
+      description: p.promo_description ?? "",
+      image: placed("category.hero", p.promo_image ?? "", p.promo_alt || p.promo_title || p.title, dims),
+    },
+    ...(p.text_title || p.text_body ? { text: { title: p.text_title ?? "", body: p.text_body ?? "" } } : {}),
+    ...(p.show_split ? { split: { gaming: panel("gaming"), office: panel("office") } } : {}),
+    store: { title: p.store_title || "Find a store near you", text: p.store_text ?? "", button: p.store_button || "Where to buy" },
+    ...(p.show_faqs && p.faqs?.length
+      ? { faqs: p.faqs.map((f) => ({ q: f.question, a: (f.answer ?? "").split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean) })) }
+      : {}),
+  };
 }
 
 function gamingContent(b: CmsBundle, products: GamingProduct[], dims: Dims): GamingContent {
@@ -834,6 +930,7 @@ function seoPages(b: CmsBundle): Record<string, PageSeo> {
   for (const p of b.collections.blog_posts) out[`/blog/${p.slug}/`] = one(p);
   for (const p of b.collections.press) out[`/press-and-awards/${p.slug}/`] = one(p);
   for (const p of b.collections.text_pages ?? []) out[`/${p.slug}/`] = one(p);
+  for (const p of b.collections.landing_pages ?? []) out[`/${p.slug}/`] = one(p);
   return out;
 }
 

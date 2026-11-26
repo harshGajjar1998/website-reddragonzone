@@ -11,6 +11,25 @@ type Str = string;
 export type CmsImage = { image: Str; alt: Str };
 
 /** CMS "Search engines & sharing" fields (pages, products, categories, blog and press posts) and the entry's last change */
+/** A landing page entry; only the chosen template's fields matter. Optional sections have a `show_…` switch. */
+export type CmsLandingPage = {
+  id: number; slug: Str; template: Str; title: Str; show_in_menu?: boolean; menu_label?: Str;
+  // Product launch
+  product?: Str; hero_description?: Str; hero_model?: Str; hero_ghost?: Str[]; hero_image?: Str; hero_alt?: Str;
+  show_exploded?: boolean; exploded_eyebrow?: Str; exploded_product?: Str; exploded_parts?: Str[];
+  show_newsletter?: boolean; newsletter_eyebrow?: Str; newsletter_title?: Str; newsletter_description?: Str; newsletter_images?: { image: Str; alt: Str }[];
+  // Promotion
+  promo_breadcrumb?: Str; promo_title?: Str; promo_description?: Str; promo_image?: Str; promo_alt?: Str;
+  text_title?: Str; text_body?: Str;
+  show_split?: boolean;
+  split_gaming_title?: Str; split_gaming_ghost?: Str; split_gaming_text?: Str; split_gaming_url?: Str; split_gaming_image?: Str; split_gaming_alt?: Str;
+  split_office_title?: Str; split_office_ghost?: Str; split_office_text?: Str; split_office_url?: Str; split_office_image?: Str; split_office_alt?: Str;
+  store_title?: Str; store_text?: Str; store_button?: Str;
+  show_faqs?: boolean; faqs?: { question: Str; answer: Str }[];
+  // Both
+  featured_cards?: CmsFeaturedCard[];
+};
+
 export type CmsSeo = { seo_title?: Str; seo_description?: Str; share_image?: Str; updated_at?: Str | null };
 
 export type CmsCategory = {
@@ -153,6 +172,8 @@ export type CmsBundle = {
     awards: { id: number; title: Str; publication: Str; date: Str; description: Str }[];
     /** CMS "Text pages": Privacy Policy, Careers, …, each at /<slug>/ */
     text_pages?: (CmsSeo & { id: number; slug: Str; title: Str; intro: Str; updated: Str; sections: { heading: Str; paragraphs: Str[] }[] })[];
+    /** CMS "Landing pages" (U7.5): Product launch / Promotion templates, each at /<slug>/ */
+    landing_pages?: (CmsSeo & CmsLandingPage)[];
     downloads: { id: number; name: Str; category: Str; keywords: Str; image: Str; software_url: Str; manual_url: Str }[];
     support_topics: { id: number; slug: Str; label: Str; label_lines: Str[]; ghost: Str; image: Str }[];
     about_sections: { id: number; eyebrow: Str; title: Str; paragraphs: Str[]; image: Str; alt: Str; media_left: boolean; tinted: boolean }[];
