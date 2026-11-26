@@ -171,6 +171,8 @@ export type GamingProduct = {
   /** image: the photo shown first in the gallery while this colour is picked */
   colors?: { name: string; hex: string; image?: GalleryImage }[];
   details?: { title: string; body: string }[];
+  /** In the Box list from the CMS, one item per line */
+  inBox?: string[];
   /** Structured "Specifications" panel content; see productSpecs() in data/productInfo.ts */
   specs?: ProductSpecs;
   /** Compare-table values set in the CMS (only the filled-in ones) */

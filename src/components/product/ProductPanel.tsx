@@ -151,7 +151,15 @@ function ProductDetails({ product, titleId }: { product: GamingProduct; titleId:
         <h3 id={`${sectionId("box")}-h`} className={sectionTitle}>
           In the Box
         </h3>
-        <p className={`mt-4 ${body}`}>{productBoxContents(product)}</p>
+        {product.inBox?.length ? (
+          <ul className={`mt-4 ${body}`}>
+            {product.inBox.map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className={`mt-4 ${body}`}>{productBoxContents(product)}</p>
+        )}
       </section>
     </>
   );

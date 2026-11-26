@@ -293,6 +293,7 @@ function product(p: CmsProduct, dims: Dims, downloads?: DownloadGroup[]): Gaming
     ),
     colors: nonEmpty(colorsOf(p.colors, p.name)),
     details: nonEmpty(p.details),
+    inBox: nonEmpty((p.in_box ?? []).filter((s) => s.trim())),
     ...(p.spec_dimensions?.length || p.spec_groups?.length
       ? { specs: { dimensions: p.spec_dimensions ?? [], technical: (p.spec_groups ?? []).map((g) => ({ title: g.title, items: g.items })) } }
       : {}),
