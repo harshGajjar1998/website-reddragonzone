@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CompareToggle from "@/components/compare/CompareToggle";
 import { productHref, type FilterGroup, type GamingCategory, type GamingProduct } from "@/data/gaming";
 import Collapse from "@/components/ui/Collapse";
@@ -154,7 +154,7 @@ function Pagination({
         {icon}
       </span>
     ) : (
-      <Link href={href(target)} aria-label={label} className={`${cell} bg-white hover:bg-[#f0f0f0]`}>
+      <Link href={href(target)} scroll={false} aria-label={label} className={`${cell} bg-white hover:bg-[#f0f0f0]`}>
         {icon}
       </Link>
     );
@@ -173,6 +173,7 @@ function Pagination({
           <li key={p}>
             <Link
               href={href(p)}
+              scroll={false}
               aria-current={p === page ? "page" : undefined}
               className={`${cell} ${p === page ? "bg-[#e60012] text-white" : "bg-white text-[#111] hover:bg-[#f0f0f0]"}`}
             >
@@ -253,6 +254,20 @@ export default function CategoryListing({ category, products, page }: CategoryLi
       document.body.style.overflow = overflow;
     };
   }, [filtersOpen]);
+
+  // Changing page swaps the products in place (no reload): bring the top of the listing into view,
+  // not the top of the page. Pagination links use scroll={false} so Next.js doesn't jump to the top.
+  const listingTop = useRef<HTMLElement>(null);
+  const shownPage = useRef(page);
+  useEffect(() => {
+    if (shownPage.current === page) return;
+    shownPage.current = page;
+    const el = listingTop.current;
+    if (el && el.getBoundingClientRect().top < 0) {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }, [page]);
 
   const otherSize = show ?? DEFAULT_SHOW;
   const firstSize = otherSize + LARGE_CARDS;
@@ -338,7 +353,7 @@ export default function CategoryListing({ category, products, page }: CategoryLi
   );
 
   return (
-    <section className={office ? "bg-white" : "bg-silver-mobile lg:bg-silver"}>
+    <section ref={listingTop} className={office ? "bg-white" : "bg-silver-mobile lg:bg-silver"}>
       {/* ---------- Mobile (Figma "Mice Category" screen 2) ---------- */}
       <div className="mobile-frame px-4 pt-[46px] pb-12 lg:hidden">
         <p className="font-lexend-exa text-[14px] leading-[1.2] tracking-[-0.42px] text-ink">

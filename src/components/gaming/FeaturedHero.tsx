@@ -83,25 +83,29 @@ export default function FeaturedHero({
         </ul>
 
         {/* Spec column */}
-        <nav aria-label="Breadcrumb" className="absolute left-20 top-16">
-          <ol className="flex gap-[0.25em] font-lato text-[20px] leading-normal whitespace-nowrap text-ink/80">
-            <li>
+        {/* Stays in the spec column (the product image starts at ~692px); a long name ends in "…" */}
+        <nav aria-label="Breadcrumb" className="absolute left-20 top-16 max-w-[600px]">
+          <ol className="flex min-w-0 gap-[0.25em] font-lato text-[16px] leading-normal whitespace-nowrap text-ink/70">
+            <li className="shrink-0">
               <Link href="/gaming" className="hover:text-dragon">
                 Gaming Products
               </Link>
               <span aria-hidden className="ml-[0.25em]">/</span>
             </li>
-            <li>
+            <li className="shrink-0">
               <Link href={categoryHref(category)} className="hover:text-dragon">
                 Game {category.label}
               </Link>
               <span aria-hidden className="ml-[0.25em]">/</span>
             </li>
-            <li aria-current="page">{product.name}</li>
+            <li aria-current="page" title={product.name} className="min-w-0 truncate">
+              {product.name}
+            </li>
           </ol>
         </nav>
 
-        <h1 className="absolute left-20 top-[101px] w-[640px] font-lexend-exa text-[56px] font-semibold leading-[1.2] text-ink">
+        {/* 56px fits two lines of ~14 characters before the colours at 259px; longer names step down to 44px (three lines) */}
+        <h1 className={`absolute left-20 top-[101px] w-[640px] font-lexend-exa font-semibold leading-[1.2] text-ink [overflow-wrap:anywhere] ${product.name.length <= 28 ? "text-[56px]" : "text-[44px]"}`}>
           {model ? (
             <>
               <span className="block">{lead}</span>

@@ -3,7 +3,9 @@ import Link from "next/link";
 import type { GamingCategory } from "@/data/gaming";
 import ArtImage from "./ArtImage";
 
-const crumb = "font-lexend-giga text-[24px] leading-[1.2] whitespace-nowrap";
+// Secondary navigation: small and quiet next to the 64px title. Lexend Giga is very wide, so long names
+// (e.g. MECHANICAL KEYBOARDS) must stay inside the copy column and never run into the hero image.
+const crumb = "font-lexend-giga text-[15px] leading-[1.2] tracking-[0.04em] whitespace-nowrap";
 
 // API: dynamic data – category banner (via props)
 /** Figma "Frame 3" of the category page – breadcrumb, title, copy and hero render (688px). */
@@ -59,15 +61,16 @@ export default function CategoryHero({
       <div className="page-frame relative hidden h-[688px] lg:block">
         <ArtImage art={hero.image} />
 
-        <nav aria-label="Breadcrumb" className="absolute left-20 top-[217px]">
-          <ol className="flex items-center text-ink">
+        {/* Copy column ends at 700px; the hero image frame starts at 720px */}
+        <nav aria-label="Breadcrumb" className="absolute left-20 top-[227px] max-w-[620px]">
+          <ol className="flex min-w-0 items-center text-ink/75">
             <li>
               <Link href="/" className={`${crumb} hover:text-dragon`}>
                 HOME
               </Link>
             </li>
             {parent && (
-              <li className="flex items-center pl-3">
+              <li className="flex shrink-0 items-center pl-1">
                 <span aria-hidden className={`${crumb} px-2 [text-box:trim-both_cap_alphabetic]`}>
                   /
                 </span>
@@ -76,11 +79,11 @@ export default function CategoryHero({
                 </Link>
               </li>
             )}
-            <li className="flex items-center pl-3">
+            <li className="flex min-w-0 items-center pl-1">
               <span aria-hidden className={`${crumb} px-2 [text-box:trim-both_cap_alphabetic]`}>
                 /
               </span>
-              <span aria-current="page" className={`${crumb} font-medium text-dragon`}>
+              <span aria-current="page" title={hero.breadcrumb} className={`${crumb} truncate font-medium text-dragon`}>
                 {hero.breadcrumb}
               </span>
             </li>

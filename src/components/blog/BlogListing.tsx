@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BlogCategory, BlogPost } from "@/data/blog";
 import BlogCard, { DiscoverMore, PostMeta } from "./BlogCard";
 
@@ -96,6 +96,19 @@ export default function BlogListing({
   const pathname = usePathname();
   const [category, setCategory] = useState<BlogCategory | null>(null);
 
+  // Changing page swaps the posts in place (no reload): bring the top of the list into view
+  const listTop = useRef<HTMLDivElement>(null);
+  const shownPage = useRef(page);
+  useEffect(() => {
+    if (shownPage.current === page) return;
+    shownPage.current = page;
+    const el = listTop.current;
+    if (el && el.getBoundingClientRect().top < 0) {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }, [page]);
+
   const filtered = category ? posts.filter((p) => p.category === category) : posts;
   // Page 1 of "Browse all" leads with the featured post
   const featured = category ? undefined : filtered[0];
@@ -145,6 +158,7 @@ export default function BlogListing({
 
   return (
     <>
+      <div ref={listTop} aria-hidden className="scroll-mt-6" />
       <div
         role="tablist"
         aria-label="Blog categories"

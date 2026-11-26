@@ -109,6 +109,13 @@ function MobileSpecHero({
  * Office featured product hero (Figma "TECHNICAL SPECIFICATIONS", 1440×688):
  * spec column on the left, spotlight panel with outlined model name, render and thumbnails.
  */
+/** Title size by name length: the design's 56px fits about 12 characters on one line of the 600px column;
+ *  longer names step down so they take at most two short lines and the column stays inside the 688px hero. */
+function titleSize(name: string) {
+  const n = name.length;
+  return n <= 12 ? "text-[56px]" : n <= 18 ? "text-[44px]" : "text-[36px]";
+}
+
 export default function OfficeSpecHero({ product, category }: { product: GamingProduct; category: GamingCategory }) {
   const hero = product.featured!.hero;
   const colors = product.colors ?? [];
@@ -166,45 +173,54 @@ export default function OfficeSpecHero({ product, category }: { product: GamingP
           ))}
         </ul>
 
-        {/* Spec column */}
-        <nav aria-label="Breadcrumb" className="absolute left-20 top-[120px]">
-          <ol className="flex gap-[0.25em] font-lato text-[20px] leading-normal whitespace-nowrap text-ink/80">
-            <li>
-              <Link href="/office" className="hover:text-dragon">
-                Office Products
-              </Link>
-              <span aria-hidden className="ml-[0.25em]">/</span>
-            </li>
-            <li>
-              <Link href={categoryHref(category)} className="hover:text-dragon">
-                Office {category.label}
-              </Link>
-              <span aria-hidden className="ml-[0.25em]">/</span>
-            </li>
-            <li aria-current="page">{product.name}</li>
-          </ol>
-        </nav>
+        {/* Spec column: one top-to-bottom stack (it ends before the product image at 692px), so a long
+            product name wraps and pushes the colours and description down instead of running into the image.
+            Spacing matches the design: breadcrumb 120, title 152, colours 235, rule 302, description 318. */}
+        <div className="absolute left-20 top-[120px] flex w-[600px] flex-col">
+          {/* A long name ends in "…"; the full name is the title below */}
+          <nav aria-label="Breadcrumb">
+            <ol className="flex min-w-0 gap-[0.25em] font-lato text-[16px] leading-normal whitespace-nowrap text-ink/70">
+              <li className="shrink-0">
+                <Link href="/office" className="hover:text-dragon">
+                  Office Products
+                </Link>
+                <span aria-hidden className="ml-[0.25em]">/</span>
+              </li>
+              <li className="shrink-0">
+                <Link href={categoryHref(category)} className="hover:text-dragon">
+                  Office {category.label}
+                </Link>
+                <span aria-hidden className="ml-[0.25em]">/</span>
+              </li>
+              <li aria-current="page" title={product.name} className="min-w-0 truncate">
+                {product.name}
+              </li>
+            </ol>
+          </nav>
 
-        <h1 className="absolute left-[76px] top-[152px] font-lexend-exa text-[56px] font-semibold leading-[1.2] whitespace-nowrap text-ink">
-          {product.name}
-        </h1>
+          <h1 className={`-ml-1 mt-2 font-lexend-exa font-semibold leading-[1.2] text-ink [overflow-wrap:anywhere] ${titleSize(product.name)}`}>
+            {product.name}
+          </h1>
 
-        {colors.length > 0 && (
-          <div className="absolute left-20 top-[235px]">
-            <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Color {colors[color].name}</p>
-            <Swatches colors={colors} color={color} setColor={setColor} size="size-6" />
+          <div className="mt-4 min-h-[51px]">
+            {colors.length > 0 && (
+              <>
+                <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Color {colors[color].name}</p>
+                <Swatches colors={colors} color={color} setColor={setColor} size="size-6" />
+              </>
+            )}
           </div>
-        )}
 
-        <hr className="absolute left-20 top-[302px] h-[1.5px] w-[632px] border-0 bg-ink/50" />
+          <hr className="mt-4 h-[1.5px] w-[632px] border-0 bg-ink/50" />
 
-        <div className="absolute left-20 top-[318px] w-[632px]">
-          <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
-          <p className="mt-2 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-ink/75">
-            {product.description ?? product.tagline}
-          </p>
-          <ProductPointers product={product} className="mt-4 gap-4" />
-          <ProductActions product={product} className="mt-4" />
+          <div className="mt-4 w-[632px]">
+            <p className="font-lexend text-[16px] font-medium leading-[1.2] text-ink">Description</p>
+            <p className="mt-2 font-lexend text-[14px] font-light capitalize leading-[1.2] tracking-[0.84px] text-ink/75">
+              {product.description ?? product.tagline}
+            </p>
+            <ProductPointers product={product} className="mt-4 gap-4" />
+            <ProductActions product={product} className="mt-4" />
+          </div>
         </div>
       </div>
     </section>
