@@ -1,6 +1,6 @@
 # Pending tasks – Redragon website + CMS
 
-Updated 2026-11-26. Hosting: staging on Hostinger; production will be AWS Singapore (no China server).
+Updated 2026-11-28. Hosting: staging on Hostinger; production will be AWS Singapore (no China server).
 Design source: Figma "Red Dragonzone V1" (`CJElvK5XeCWL1a7hc9QnOZ`), section "Change to be made in design"
 (`3223:4652`), last read 2026-11-26 (newest node 3367). The Figma MCP Starter limit is used up; read the local copy
 `Figma/Red Dragonzone V1.fig/` instead (how: memory note `redragon-figma`).
@@ -17,8 +17,9 @@ Design source: Figma "Red Dragonzone V1" (`CJElvK5XeCWL1a7hc9QnOZ`), section "Ch
 - [x] Committed (website 7c3541e, CMS 3ce7f10), CMS deployed, versions imported on staging 2026-11-26: 144 products,
   833 photos copied (811 kept at the old 482 x 320 size; log `storage/logs/import-2026-11-25-225529.txt`).
 - [ ] Ask the client for HD photos of the versions (export photos are 482 x 320); HD exists for 54 of 597 versions.
-- [ ] Product test (`reddragon-cms/docs/testing/`): run 2 = 556 of 665 pass after manuals import (1250, linked to old site) + colour names (542). Left: 53 no gallery, 42 incomplete switches (28 = 5+ versions), 24 empty content, 2 empty drafts. Then send the workbook to the client.
-- [ ] Production (AWS): copy manuals/drivers to our storage (`import:live-site … --only=firmware --files=all`, ~11 GB) before the old site goes offline; 3 drivers are Google Drive links. Staging has the changes uploaded but not committed (ColourName, NameProductColours, LiveSite).
+- [ ] Product test (`reddragon-cms/docs/testing/`): run 3 = 611 of 665 pass, no old-site dependency (T10 = 0). Left: 28 products with 5+ versions (client decision, Versions Decision sheet), 23 empty content, 10 new-only products without photos, 4 version details, 2 empty drafts; 54 low-res (HD request xlsx). Next: send both workbooks to the client.
+- [ ] Production (AWS): copy manuals/drivers to our storage (`import:live-site … --only=firmware --files=all`, ~9.3 GB) before the old site goes offline, then **publish** the firmware entries (the import saves drafts) and run `products:tag-filters`. Staging done 2026-11-27: 1250 files copied and published, live on the site; import cache cleared (CMS 193919c, 559ddab). Checked 2026-11-28: 3 Google Drive drivers (7 products) were Drive preview pages, now the real zips; GB-82 manual removed (old link was an address). Left: K753-RGB-M driver is an online web driver on 30112cz.redragonzone.com (ask the client for a file). On production, Drive links need the same fix (see the CMS change request).
+- [x] Filter tags from specs on staging (CMS 31e2425, `products:tag-filters`): 480 products tagged, 14 typed. Products with nothing to filter: 62 → 40 (30 mouse pads with no data, 10 combos whose specs don't say wired/wireless: ask the client). Offered: proper filters for Connectivity-only categories (PC components, speakers, content creation, gamer room); 194 of 218 gaming keyboards have no switch colour.
   The `mediaBg` images are 1920 x 515 dark banners, not usable as gallery tiles.
 - [ ] Set `META_OEMBED_TOKEN` on the CMS server for Instagram covers (optional).
 Not to commit: `Figma/`, `UI-Errors/`, `docs/change-requests/2026-11-24-figma-design-update.md` (another session's).
